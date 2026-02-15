@@ -38,6 +38,7 @@ class BitBucketClient(BaseClient):
         verify_ssl: bool = True,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
+        normalized_url = self._normalize_url(url)
         resolved_auth = self._resolve_auth(
             username=username,
             password=password,
@@ -46,7 +47,7 @@ class BitBucketClient(BaseClient):
         )
 
         super().__init__(
-            base_url=url,
+            base_url=normalized_url,
             auth=resolved_auth,
             timeout=timeout,
             max_retries=max_retries,
@@ -67,6 +68,13 @@ class BitBucketClient(BaseClient):
         self._mirroring: MirroringResource | None = None
         self._jira_integration: JiraIntegrationResource | None = None
         self._markup: MarkupResource | None = None
+
+    @staticmethod
+    def _normalize_url(url: str) -> str:
+        stripped = url.rstrip("/")
+        if stripped.endswith("/rest"):
+            return stripped
+        return f"{stripped}/rest"
 
     @staticmethod
     def _resolve_auth(

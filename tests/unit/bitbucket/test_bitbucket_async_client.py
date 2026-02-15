@@ -73,5 +73,16 @@ async def test_projects_get_projects_paged_returns_items() -> None:
     iterator = client.projects.get_projects()
     values = [item async for item in iterator]
 
-    assert len(values) == 3
+    assert [value.key for value in values] == ["A", "B", "C"]
+    assert calls["index"] == 2
     await client.aclose()
+
+
+def test_async_bitbucket_client_normalizes_url_with_rest_suffix() -> None:
+    client = AsyncBitBucketClient(url="https://bitbucket.example.com")
+    assert str(client._client.base_url) == "https://bitbucket.example.com/rest/"
+
+
+def test_async_bitbucket_client_keeps_existing_rest_suffix() -> None:
+    client = AsyncBitBucketClient(url="https://bitbucket.example.com/rest")
+    assert str(client._client.base_url) == "https://bitbucket.example.com/rest/"

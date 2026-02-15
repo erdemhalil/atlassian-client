@@ -36,6 +36,7 @@ class AsyncBitBucketClient(AsyncBaseClient):
         verify_ssl: bool = True,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
+        normalized_url = self._normalize_url(url)
         resolved_auth = self._resolve_auth(
             username=username,
             password=password,
@@ -44,7 +45,7 @@ class AsyncBitBucketClient(AsyncBaseClient):
         )
 
         super().__init__(
-            base_url=url,
+            base_url=normalized_url,
             auth=resolved_auth,
             timeout=timeout,
             max_retries=max_retries,
@@ -65,6 +66,13 @@ class AsyncBitBucketClient(AsyncBaseClient):
         self._mirroring: AsyncMirroringResource | None = None
         self._jira_integration: AsyncJiraIntegrationResource | None = None
         self._markup: AsyncMarkupResource | None = None
+
+    @staticmethod
+    def _normalize_url(url: str) -> str:
+        stripped = url.rstrip("/")
+        if stripped.endswith("/rest"):
+            return stripped
+        return f"{stripped}/rest"
 
     @staticmethod
     def _resolve_auth(
