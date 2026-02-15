@@ -31,10 +31,10 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.unasyncd]
 files = { "atlassian/core/async_client.py" = "atlassian/core/client.py", "atlassian/bitbucket/async_client.py" = "atlassian/bitbucket/client.py", "atlassian/bitbucket/async_resources.py" = "atlassian/bitbucket/resources.py" }
-add_replacements = { "httpx.AsyncClient" = "httpx.Client", "AsyncBaseClient" = "BaseClient", "AsyncResource" = "Resource", "AsyncBitBucketClient" = "BitBucketClient", "AsyncPageIterator" = "PageIterator" }
+add_replacements = { "httpx.AsyncClient" = "httpx.Client", "AsyncBaseClient" = "BaseClient", "AsyncResource" = "Resource", "AsyncBitBucketClient" = "BitBucketClient", "AsyncPageIterator" = "PageIterator", "httpx.AsyncBaseTransport" = "httpx.BaseTransport", "AsyncProjectsResource" = "ProjectsResource", "AsyncRepositoriesResource" = "RepositoriesResource", "AsyncPullRequestsResource" = "PullRequestsResource", "AsyncAuthenticationResource" = "AuthenticationResource", "AsyncBuildsResource" = "BuildsResource", "AsyncPermissionsResource" = "PermissionsResource", "AsyncSecurityResource" = "SecurityResource", "AsyncAdminResource" = "AdminResource", "AsyncDashboardResource" = "DashboardResource", "AsyncMirroringResource" = "MirroringResource", "AsyncJiraIntegrationResource" = "JiraIntegrationResource", "AsyncMarkupResource" = "MarkupResource" }
 transform_docstrings = true
-ruff_fix = true
-ruff_format = true
+ruff_fix = false
+ruff_format = false
 add_editors_note = true
 
 [tool.deptry.per_rule_ignores]

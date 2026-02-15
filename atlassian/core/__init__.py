@@ -2,6 +2,7 @@
 
 from .async_client import AsyncBaseClient
 from .auth import AuthBase, BasicAuth, TokenAuth
+from .client import BaseClient
 from .endpoint import Endpoint
 from .exceptions import (
     AtlassianError,
@@ -15,11 +16,12 @@ from .exceptions import (
     ValidationError,
     raise_for_status,
 )
-from .pagination import AsyncPageIterator, Page
-from .resource import AsyncResource
+from .pagination import AsyncPageIterator, Page, PageIterator
+from .resource import AsyncResource, Resource
 
 __all__ = [
     "AsyncBaseClient",
+    "BaseClient",
     "AuthBase",
     "BasicAuth",
     "TokenAuth",
@@ -36,5 +38,7 @@ __all__ = [
     "Endpoint",
     "Page",
     "AsyncPageIterator",
+    "PageIterator",
     "AsyncResource",
+    "Resource",
 ]
