@@ -26,10 +26,10 @@ jobs:
           uv sync --locked
 
       - name: Run ruff format
-        run: uv run ruff format
+        run: uv run ruff format --check --output-format github
 
       - name: Run ruff check
-        run: uv run ruff check
+        run: uv run ruff check --output-format github
 
       - name: Run type checks
-        run: uv run ty check
+        run: uv run ty check --output-format github
