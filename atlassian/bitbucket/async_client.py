@@ -6,8 +6,8 @@ from atlassian.core.async_client import AsyncBaseClient
 from atlassian.core.auth import AuthBase, BasicAuth, TokenAuth
 
 from .async_resources import (
-    AsyncAccessTokensResource,
     AsyncAdminResource,
+    AsyncAuthenticationResource,
     AsyncBuildsResource,
     AsyncDashboardResource,
     AsyncJiraIntegrationResource,
@@ -18,7 +18,6 @@ from .async_resources import (
     AsyncPullRequestsResource,
     AsyncRepositoriesResource,
     AsyncSecurityResource,
-    AsyncSshKeysResource,
 )
 
 
@@ -57,8 +56,7 @@ class AsyncBitBucketClient(AsyncBaseClient):
         self._projects: AsyncProjectsResource | None = None
         self._repositories: AsyncRepositoriesResource | None = None
         self._pull_requests: AsyncPullRequestsResource | None = None
-        self._access_tokens: AsyncAccessTokensResource | None = None
-        self._ssh_keys: AsyncSshKeysResource | None = None
+        self._authentication: AsyncAuthenticationResource | None = None
         self._builds: AsyncBuildsResource | None = None
         self._permissions: AsyncPermissionsResource | None = None
         self._security: AsyncSecurityResource | None = None
@@ -112,16 +110,10 @@ class AsyncBitBucketClient(AsyncBaseClient):
         return self._pull_requests
 
     @property
-    def access_tokens(self) -> AsyncAccessTokensResource:
-        if self._access_tokens is None:
-            self._access_tokens = AsyncAccessTokensResource(self)
-        return self._access_tokens
-
-    @property
-    def ssh_keys(self) -> AsyncSshKeysResource:
-        if self._ssh_keys is None:
-            self._ssh_keys = AsyncSshKeysResource(self)
-        return self._ssh_keys
+    def authentication(self) -> AsyncAuthenticationResource:
+        if self._authentication is None:
+            self._authentication = AsyncAuthenticationResource(self)
+        return self._authentication
 
     @property
     def builds(self) -> AsyncBuildsResource:

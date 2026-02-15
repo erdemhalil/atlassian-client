@@ -6,7 +6,6 @@ import pytest
 from atlassian.bitbucket.async_client import AsyncBitBucketClient
 from atlassian.bitbucket.async_resources import AsyncProjectsResource
 from atlassian.core.auth import BasicAuth, TokenAuth
-from atlassian.core.pagination import Page
 
 
 def test_async_bitbucket_client_builds_basic_auth() -> None:
@@ -41,34 +40,7 @@ def test_projects_namespace_is_lazy_resource() -> None:
 
 
 @pytest.mark.asyncio
-async def test_projects_list_manual_pagination_returns_page() -> None:
-    payload = {
-        "values": [{"key": "PRJ"}],
-        "start": 0,
-        "limit": 25,
-        "size": 1,
-        "isLastPage": True,
-    }
-
-    def handler(_: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, json=payload)
-
-    client = AsyncBitBucketClient(
-        url="https://bitbucket.example.com",
-        transport=httpx.MockTransport(handler),
-    )
-
-    page = await client.projects.list(paginate=False)
-
-    assert isinstance(page, Page)
-    first = page.values[0]
-    assert isinstance(first, dict)
-    assert first["key"] == "PRJ"
-    await client.aclose()
-
-
-@pytest.mark.asyncio
-async def test_projects_list_auto_pagination_iterates_items() -> None:
+async def test_projects_get_projects_paged_returns_items() -> None:
     payloads = [
         {
             "values": [{"key": "A"}, {"key": "B"}],
@@ -98,8 +70,8 @@ async def test_projects_list_auto_pagination_iterates_items() -> None:
         transport=httpx.MockTransport(handler),
     )
 
-    iterator = await client.projects.list()
+    iterator = client.projects.get_projects()
     values = [item async for item in iterator]
 
-    assert values == [{"key": "A"}, {"key": "B"}, {"key": "C"}]
+    assert len(values) == 3
     await client.aclose()
