@@ -5251,10 +5251,13 @@ class AsyncPermissionsResource(AsyncResource):
             model=RestDetailedUser,
         )
 
-    def get_groups(self, *, filter: str | None = None, start: int = 0, limit: int = 25) -> None:
+    async def get_groups(
+        self, *, filter: str | None = None, start: float | None = None, limit: float | None = None
+    ) -> None:
         """Get group names"""
-        params: dict[str, Any] = {"filter": filter}
-        return self._get_paged(GET_GROUPS.path, params=params, model=None, start=start, limit=limit)
+        return await self._get(
+            GET_GROUPS.path, params={"filter": filter, "start": start, "limit": limit}
+        )
 
     async def revoke_permissions_1(
         self,

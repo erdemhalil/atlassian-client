@@ -66,7 +66,7 @@ class AsyncBaseClient:
                 headers=headers,
             )
             if self.auth is not None:
-                request = await self.auth.apply(request)
+                request = self.auth.apply(request)
 
             response = await self._client.send(request)
             if not self._is_retryable(response.status_code):

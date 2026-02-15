@@ -9,7 +9,7 @@ from atlassian.core.exceptions import NotFoundError, ServerError
 
 
 class HeaderAuth(AuthBase):
-    async def apply(self, request: httpx.Request) -> httpx.Request:
+    def apply(self, request: httpx.Request) -> httpx.Request:
         request.headers["X-Test-Auth"] = "applied"
         return request
 

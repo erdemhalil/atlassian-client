@@ -8,7 +8,7 @@ import httpx
 
 class AuthBase(ABC):
     @abstractmethod
-    async def apply(self, request: httpx.Request) -> httpx.Request:
+    def apply(self, request: httpx.Request) -> httpx.Request:
         raise NotImplementedError
 
 
@@ -17,7 +17,7 @@ class BasicAuth(AuthBase):
         self.username = username
         self.password = password
 
-    async def apply(self, request: httpx.Request) -> httpx.Request:
+    def apply(self, request: httpx.Request) -> httpx.Request:
         auth_value = f"{self.username}:{self.password}".encode()
         encoded = base64.b64encode(auth_value).decode("ascii")
         request.headers["Authorization"] = f"Basic {encoded}"
@@ -28,6 +28,6 @@ class TokenAuth(AuthBase):
     def __init__(self, token: str) -> None:
         self.token = token
 
-    async def apply(self, request: httpx.Request) -> httpx.Request:
+    def apply(self, request: httpx.Request) -> httpx.Request:
         request.headers["Authorization"] = f"Bearer {self.token}"
         return request
