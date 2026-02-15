@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any
 
 import httpx
@@ -51,6 +53,27 @@ class RateLimitError(AtlassianError):
     retry_after: float | None = None
 
 
+def _parse_retry_after(value: str | None) -> float | None:
+    if value is None:
+        return None
+
+    try:
+        return float(value)
+    except ValueError:
+        pass
+
+    try:
+        parsed = parsedate_to_datetime(value)
+    except (TypeError, ValueError):
+        return None
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+
+    delta = (parsed - datetime.now(timezone.utc)).total_seconds()
+    return max(0.0, delta)
+
+
 def _extract_message(response: httpx.Response) -> tuple[str, Any]:
     try:
         payload = response.json()
@@ -92,7 +115,7 @@ def raise_for_status(response: httpx.Response) -> None:
         raise ConflictError(message=message, status_code=status_code, response=payload)
     if status_code == 429:
         retry_after_raw = response.headers.get("Retry-After")
-        retry_after = float(retry_after_raw) if retry_after_raw is not None else None
+        retry_after = _parse_retry_after(retry_after_raw)
         raise RateLimitError(
             message=message,
             status_code=status_code,

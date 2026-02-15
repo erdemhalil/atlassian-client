@@ -35,6 +35,8 @@ SPEC_MAP = {
     Product.JIRA: JIRA_OPENAPI_URL,
 }
 
+HTTP_TIMEOUT_SECONDS = 30.0
+
 
 def _get_project_root() -> Path:
     """Return repository root directory."""
@@ -46,7 +48,7 @@ def _save_openapi_spec(product: Product) -> Path:
     url = SPEC_MAP[product]
     if not url:
         raise ValueError(f"OpenAPI URL is not configured for '{product.value}'.")
-    response = httpx.get(url)
+    response = httpx.get(url, timeout=HTTP_TIMEOUT_SECONDS)
     response.raise_for_status()
 
     try:

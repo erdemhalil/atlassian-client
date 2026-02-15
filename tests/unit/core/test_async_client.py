@@ -14,6 +14,16 @@ class HeaderAuth(AuthBase):
         return request
 
 
+def test_client_init_rejects_negative_max_retries() -> None:
+    with pytest.raises(ValueError, match="max_retries"):
+        AsyncBaseClient(base_url="https://example.test", max_retries=-1)
+
+
+def test_client_init_rejects_negative_retry_backoff_factor() -> None:
+    with pytest.raises(ValueError, match="retry_backoff_factor"):
+        AsyncBaseClient(base_url="https://example.test", retry_backoff_factor=-0.1)
+
+
 @pytest.mark.asyncio
 async def test_request_applies_auth_and_returns_response() -> None:
     def handler(request: httpx.Request) -> httpx.Response:

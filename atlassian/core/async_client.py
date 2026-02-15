@@ -22,6 +22,11 @@ class AsyncBaseClient:
         verify_ssl: bool = True,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
+        if max_retries < 0:
+            raise ValueError("max_retries must be >= 0")
+        if retry_backoff_factor < 0:
+            raise ValueError("retry_backoff_factor must be >= 0")
+
         self.auth = auth
         self.max_retries = max_retries
         self.retry_backoff_factor = retry_backoff_factor
