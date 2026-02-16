@@ -173,7 +173,9 @@ async def test_jira_pagination_follows_next_page_for_non_offset_shape() -> None:
 
     assert [item.worklog_id for item in values] == [101, 102, 103]
     assert len(requests) == 2
-    assert str(requests[0].url) == "https://jira.example.com/rest/api/2/worklog/updated?since=100&startAt=0&maxResults=2"
+    assert (
+        str(requests[0].url) == "https://jira.example.com/rest/api/2/worklog/updated?since=100&startAt=0&maxResults=2"
+    )
     assert str(requests[1].url) == "https://jira.example.com/rest/api/2/worklog/updated?since=200"
 
     await client.aclose()
