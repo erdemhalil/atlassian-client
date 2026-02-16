@@ -18,6 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 NAME_REPLACEMENTS: dict[str, str] = {
     "AsyncBaseClient": "BaseClient",
     "AsyncResource": "Resource",
+    "AsyncJiraResource": "JiraResource",
     "ConfluenceAsyncResource": "ConfluenceResource",
     "AsyncPageIterator": "PageIterator",
     "AsyncProjectsResource": "ProjectsResource",
@@ -57,8 +58,20 @@ NAME_REPLACEMENTS: dict[str, str] = {
     "AsyncCategoryResource": "CategoryResource",
     "AsyncAccessModeResource": "AccessModeResource",
     "AsyncServerInfoResource": "ServerInfoResource",
+    "AsyncAgileResource": "AgileResource",
+    "AsyncIssueResource": "IssueResource",
+    "AsyncProjectResource": "ProjectResource",
+    "AsyncIssueMetaResource": "IssueMetaResource",
+    "AsyncPermissionSecurityResource": "PermissionSecurityResource",
+    "AsyncAvatarResource": "AvatarResource",
+    "AsyncDashboardFilterResource": "DashboardFilterResource",
+    "AsyncSystemResource": "SystemResource",
+    "AsyncOperationsResource": "OperationsResource",
+    "AsyncAuthResource": "AuthResource",
+    "AsyncJiraMiscResource": "JiraMiscResource",
     "AsyncBitBucketClient": "BitBucketClient",
     "AsyncConfluenceClient": "ConfluenceClient",
+    "AsyncJiraClient": "JiraClient",
 }
 
 # (file, old_import_text, new_import_text) tuples — simple string replacements
@@ -91,6 +104,17 @@ IMPORT_FIXES: list[tuple[Path, str, str]] = [
         "from .async_resources import",
         "from .resources import",
     ),
+    # jira/client.py: fix module paths
+    (
+        PROJECT_ROOT / "atlassian" / "jira" / "client.py",
+        "from atlassian.core.async_client import",
+        "from atlassian.core.client import",
+    ),
+    (
+        PROJECT_ROOT / "atlassian" / "jira" / "client.py",
+        "from .async_resources import",
+        "from .resources import",
+    ),
 ]
 
 # Files that need Async→Sync name fixes in import statements
@@ -100,6 +124,8 @@ SYNC_FILES: list[Path] = [
     PROJECT_ROOT / "atlassian" / "bitbucket" / "resources.py",
     PROJECT_ROOT / "atlassian" / "confluence" / "client.py",
     PROJECT_ROOT / "atlassian" / "confluence" / "resources.py",
+    PROJECT_ROOT / "atlassian" / "jira" / "client.py",
+    PROJECT_ROOT / "atlassian" / "jira" / "resources.py",
 ]
 
 

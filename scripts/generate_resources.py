@@ -7,6 +7,7 @@ Reads the OpenAPI spec and generates:
 Usage:
     uv run python scripts/generate_resources.py bitbucket
     uv run python scripts/generate_resources.py confluence
+    uv run python scripts/generate_resources.py jira
 """
 
 from __future__ import annotations
@@ -78,6 +79,74 @@ CONFLUENCE_TAG_TO_RESOURCE: dict[str, str] = {
     "Instance Metrics": "AsyncServerInfoResource",
 }
 
+JIRA_TAG_TO_RESOURCE: dict[str, str] = {
+    "application-properties": "AsyncSystemResource",
+    "applicationrole": "AsyncUserResource",
+    "attachment": "AsyncIssueResource",
+    "avatar": "AsyncAvatarResource",
+    "backlog": "AsyncAgileResource",
+    "board": "AsyncAgileResource",
+    "cluster": "AsyncOperationsResource",
+    "comment": "AsyncIssueResource",
+    "component": "AsyncProjectResource",
+    "configuration": "AsyncSystemResource",
+    "customFieldOption": "AsyncIssueMetaResource",
+    "customFields": "AsyncIssueMetaResource",
+    "dashboard": "AsyncDashboardFilterResource",
+    "email-templates": "AsyncSystemResource",
+    "epic": "AsyncAgileResource",
+    "field": "AsyncIssueMetaResource",
+    "filter": "AsyncDashboardFilterResource",
+    "group": "AsyncGroupResource",
+    "groups": "AsyncGroupResource",
+    "groupuserpicker": "AsyncUserResource",
+    "index": "AsyncOperationsResource",
+    "index-snapshot": "AsyncOperationsResource",
+    "issue": "AsyncIssueResource",
+    "issueLink": "AsyncIssueResource",
+    "issueLinkType": "AsyncIssueResource",
+    "issuesecurityschemes": "AsyncPermissionSecurityResource",
+    "issuetype": "AsyncIssueMetaResource",
+    "issuetypescheme": "AsyncIssueMetaResource",
+    "jql": "AsyncIssueResource",
+    "licenseValidator": "AsyncSystemResource",
+    "monitoring": "AsyncOperationsResource",
+    "mypermissions": "AsyncPermissionSecurityResource",
+    "mypreferences": "AsyncUserResource",
+    "myself": "AsyncUserResource",
+    "notificationscheme": "AsyncPermissionSecurityResource",
+    "password": "AsyncAuthResource",
+    "permissions": "AsyncPermissionSecurityResource",
+    "permissionscheme": "AsyncPermissionSecurityResource",
+    "priority": "AsyncIssueMetaResource",
+    "priorityschemes": "AsyncIssueMetaResource",
+    "project": "AsyncProjectResource",
+    "projectCategory": "AsyncProjectResource",
+    "projects": "AsyncProjectResource",
+    "projectvalidate": "AsyncProjectResource",
+    "reindex": "AsyncOperationsResource",
+    "resolution": "AsyncIssueMetaResource",
+    "role": "AsyncProjectResource",
+    "screens": "AsyncIssueMetaResource",
+    "search": "AsyncIssueResource",
+    "securitylevel": "AsyncPermissionSecurityResource",
+    "serverInfo": "AsyncSystemResource",
+    "session": "AsyncAuthResource",
+    "settings": "AsyncSystemResource",
+    "sprint": "AsyncAgileResource",
+    "status": "AsyncIssueMetaResource",
+    "statuscategory": "AsyncIssueMetaResource",
+    "terminology": "AsyncSystemResource",
+    "universal_avatar": "AsyncAvatarResource",
+    "upgrade": "AsyncOperationsResource",
+    "user": "AsyncUserResource",
+    "version": "AsyncProjectResource",
+    "websudo": "AsyncAuthResource",
+    "workflow": "AsyncIssueMetaResource",
+    "workflowscheme": "AsyncIssueMetaResource",
+    "worklog": "AsyncIssueResource",
+}
+
 BITBUCKET_RESOURCE_ORDER: list[str] = [
     "AsyncProjectsResource",
     "AsyncRepositoriesResource",
@@ -123,6 +192,22 @@ CONFLUENCE_RESOURCE_ORDER: list[str] = [
     "AsyncAdminResource",
 ]
 
+JIRA_RESOURCE_ORDER: list[str] = [
+    "AsyncAgileResource",
+    "AsyncProjectResource",
+    "AsyncIssueResource",
+    "AsyncIssueMetaResource",
+    "AsyncPermissionSecurityResource",
+    "AsyncUserResource",
+    "AsyncGroupResource",
+    "AsyncAvatarResource",
+    "AsyncDashboardFilterResource",
+    "AsyncSystemResource",
+    "AsyncOperationsResource",
+    "AsyncAuthResource",
+    "AsyncJiraMiscResource",
+]
+
 
 # ---------------------------------------------------------------------------
 # Product configuration
@@ -143,6 +228,7 @@ class ProductConfig:
     base_resource_class: str
     base_resource_import: str
     pagination_items_field: str
+    default_resource_class: str | None = None
 
 
 PRODUCT_CONFIGS: dict[str, ProductConfig] = {
@@ -170,6 +256,19 @@ PRODUCT_CONFIGS: dict[str, ProductConfig] = {
         base_resource_import="from atlassian.confluence.resource import ConfluenceAsyncResource",
         pagination_items_field="results",
     ),
+    "jira": ProductConfig(
+        name="jira",
+        display_name="Jira Data Center",
+        spec_path=PROJECT_ROOT / "specs" / "jira" / "openapi.json",
+        endpoints_out=PROJECT_ROOT / "atlassian" / "jira" / "endpoints.py",
+        resources_out=PROJECT_ROOT / "atlassian" / "jira" / "async_resources.py",
+        tag_to_resource=JIRA_TAG_TO_RESOURCE,
+        resource_order=JIRA_RESOURCE_ORDER,
+        base_resource_class="AsyncJiraResource",
+        base_resource_import="from atlassian.jira.resource import AsyncJiraResource",
+        pagination_items_field="__none__",
+        default_resource_class="AsyncJiraMiscResource",
+    ),
 }
 
 
@@ -182,12 +281,22 @@ def _camel_to_snake(name: str) -> str:
     """Convert camelCase / PascalCase to snake_case."""
     s = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
     s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)
-    return s.lower()
+    s = s.lower()
+    s = re.sub(r"[^a-z0-9_]", "_", s)
+    s = re.sub(r"_+", "_", s).strip("_")
+    return s
 
 
 def _operation_id_to_method(op_id: str) -> str:
     """Convert operationId like 'getProjects' or 'getAllAccessTokens_1' to snake_case."""
-    return _camel_to_snake(op_id)
+    method_name = _camel_to_snake(op_id)
+    if not method_name:
+        method_name = "op"
+    if re.match(r"^\d", method_name):
+        method_name = f"_{method_name}"
+    if method_name in PYTHON_KEYWORDS:
+        method_name = f"{method_name}_"
+    return method_name
 
 
 def _path_param_to_python(name: str) -> str:
@@ -203,8 +312,91 @@ def _endpoint_const_name(op_id: str) -> str:
 def _resolve_ref(ref: str) -> str | None:
     """Extract model name from $ref like '#/components/schemas/RestProject'."""
     if ref and ref.startswith("#/components/schemas/"):
-        return ref.split("/")[-1]
+        model_name = ref.split("/")[-1]
+        if model_name and model_name[0].islower():
+            model_name = model_name[0].upper() + model_name[1:]
+        return model_name
     return None
+
+
+def _lookup_schema(components: dict[str, dict], schema_name: str) -> dict:
+    """Get a schema object by name with lowercase-first fallback handling."""
+    schemas = components.get("schemas", {})
+    if schema_name in schemas:
+        return schemas[schema_name]
+    if schema_name:
+        lower_first = schema_name[0].lower() + schema_name[1:]
+        return schemas.get(lower_first, {})
+    return {}
+
+
+def _find_jira_items_field(props: dict[str, dict]) -> tuple[str, str] | None:
+    """Return (items_field_name, item_model_name) when schema matches Jira page shape."""
+    array_props: list[tuple[str, str]] = []
+    for field_name, field_schema in props.items():
+        if field_schema.get("type") != "array":
+            continue
+        item_ref = field_schema.get("items", {}).get("$ref", "")
+        item_model = _resolve_ref(item_ref)
+        if item_model:
+            array_props.append((field_name, item_model))
+
+    if not array_props:
+        return None
+
+    if "values" in props:
+        for field_name, item_model in array_props:
+            if field_name == "values":
+                return field_name, item_model
+
+    preferred = (
+        "issues",
+        "worklogs",
+        "comments",
+        "dashboards",
+        "sprints",
+        "boards",
+        "versions",
+        "projects",
+        "users",
+        "epics",
+        "statuses",
+        "priorities",
+        "resolutions",
+    )
+    for preferred_name in preferred:
+        for field_name, item_model in array_props:
+            if field_name == preferred_name:
+                return field_name, item_model
+
+    if len(array_props) == 1:
+        return array_props[0]
+
+    return None
+
+
+def _detect_jira_paged_model(schema: dict) -> tuple[str, str] | None:
+    """Detect Jira-style pagination and return (item_model, items_field)."""
+    if schema.get("type") != "object":
+        return None
+
+    props = schema.get("properties", {})
+    if not props:
+        return None
+
+    has_start = "startAt" in props
+    has_max = "maxResults" in props
+    has_total = "total" in props
+    has_is_last = "isLast" in props or "isLastPage" in props
+    has_paging_markers = (has_start and has_max) or (has_start and has_total) or has_is_last
+    if not has_paging_markers:
+        return None
+
+    found = _find_jira_items_field(props)
+    if not found:
+        return None
+    items_field, item_model = found
+    return item_model, items_field
 
 
 PYTHON_KEYWORDS = {
@@ -270,6 +462,18 @@ def _truncate_with_ellipsis(text: str, max_len: int) -> str:
     return text[: max_len - 3] + "..."
 
 
+def _op_key(op: OperationInfo) -> str:
+    """Return a stable unique key for an operation within generation pass."""
+    return f"{op.resource_class}::{op.op_id}::{op.method}::{op.path}"
+
+
+def _extract_model_refs_from_type(type_str: str) -> set[str]:
+    """Extract candidate model names from a generated Python type string."""
+    primitives = {"Any", "None", "bool", "dict", "float", "int", "list", "str"}
+    candidates = set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", type_str))
+    return {name for name in candidates if name[0].isupper() and name not in primitives}
+
+
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
@@ -299,6 +503,7 @@ class OperationInfo:
     request_body_model: str | None = None
     response_model: str | None = None
     is_paged: bool = False
+    paged_items_field: str | None = None
     resource_class: str = ""
     is_deprecated: bool = False
 
@@ -354,6 +559,14 @@ def _route_untagged_op(path: str, config: ProductConfig) -> str:
         if "/rest/api/space/" in path:
             return "AsyncSpaceResource"
         return "AsyncAdminResource"
+    if config.name == "jira":
+        if "/agile/" in path:
+            return "AsyncAgileResource"
+        if "/api/2/project" in path:
+            return "AsyncProjectResource"
+        if "/api/2/issue" in path:
+            return "AsyncIssueResource"
+        return config.default_resource_class or "AsyncJiraMiscResource"
     return "AsyncAdminResource"
 
 
@@ -377,18 +590,20 @@ def parse_spec(spec: dict, config: ProductConfig) -> list[OperationInfo]:
             for tag in tags:
                 if tag == "Deprecated":
                     continue
-                if tag in config.tag_to_resource:
-                    resource_class = config.tag_to_resource[tag]
-                break
-            # Untagged ops: infer from path
-            if not resource_class and not tags:
-                resource_class = _route_untagged_op(path, config)
-            if not resource_class and is_deprecated:
+                mapped_resource = config.tag_to_resource.get(tag)
+                if mapped_resource:
+                    resource_class = mapped_resource
+                    break
+
+            if not resource_class and tags and config.default_resource_class:
+                resource_class = config.default_resource_class
+            if not resource_class:
                 resource_class = _route_untagged_op(path, config)
 
             # Parse parameters
             path_params: list[ParamInfo] = []
             query_params: list[ParamInfo] = []
+            used_param_names: set[str] = set()
             for param in op.get("parameters", []):
                 pname = param.get("name", "")
                 ploc = param.get("in", "")
@@ -400,9 +615,17 @@ def parse_spec(spec: dict, config: ProductConfig) -> list[OperationInfo]:
                 if "default" in pschema:
                     pdefault = repr(pschema["default"])
 
+                python_name = _safe_param_name(pname)
+                if python_name in used_param_names:
+                    suffix = 2
+                    while f"{python_name}_{suffix}" in used_param_names:
+                        suffix += 1
+                    python_name = f"{python_name}_{suffix}"
+                used_param_names.add(python_name)
+
                 info = ParamInfo(
                     name=pname,
-                    python_name=_safe_param_name(pname),
+                    python_name=python_name,
                     location=ploc,
                     param_type=ptype,
                     required=prequired,
@@ -428,6 +651,8 @@ def parse_spec(spec: dict, config: ProductConfig) -> list[OperationInfo]:
             # Response type
             response_model = None
             is_paged = False
+            paged_items_field = None
+            components = spec.get("components", {})
             for code in ["200", "201", "202"]:
                 if code not in op.get("responses", {}):
                     continue
@@ -438,22 +663,33 @@ def parse_spec(spec: dict, config: ProductConfig) -> list[OperationInfo]:
                     ref = schema.get("$ref", "")
                     if ref:
                         response_model = _resolve_ref(ref)
+                        if config.name == "jira" and response_model:
+                            ref_schema = _lookup_schema(components, response_model)
+                            jira_paged = _detect_jira_paged_model(ref_schema)
+                            if jira_paged:
+                                response_model, paged_items_field = jira_paged
+                                is_paged = True
                     elif schema.get("type") == "object":
                         props = schema.get("properties", {})
-                        items_field = config.pagination_items_field
-                        is_paged_response = False
-                        if items_field == "values":
-                            is_paged_response = "values" in props and "isLastPage" in props
-                        elif items_field == "results":
-                            has_cursor = any(p.get("name") == "cursor" for p in op.get("parameters", []))
-                            is_paged_response = "results" in props and "_links" in props and not has_cursor
-                        if is_paged_response:
-                            field_items = props[items_field].get("items", {})
-                            field_ref = field_items.get("$ref", "")
-                            response_model = _resolve_ref(field_ref) if field_ref else None
-                            # Only mark as paged if we have a typed model
-                            if response_model:
+                        if config.name == "jira":
+                            jira_paged = _detect_jira_paged_model(schema)
+                            if jira_paged:
+                                response_model, paged_items_field = jira_paged
                                 is_paged = True
+                        else:
+                            items_field = config.pagination_items_field
+                            is_paged_response = False
+                            if items_field == "values":
+                                is_paged_response = "values" in props and "isLastPage" in props
+                            elif items_field == "results":
+                                has_cursor = any(p.get("name") == "cursor" for p in op.get("parameters", []))
+                                is_paged_response = "results" in props and "_links" in props and not has_cursor
+                            if is_paged_response:
+                                field_items = props[items_field].get("items", {})
+                                field_ref = field_items.get("$ref", "")
+                                response_model = _resolve_ref(field_ref) if field_ref else None
+                                if response_model:
+                                    is_paged = True
                     elif schema.get("type") == "array":
                         items = schema.get("items", {})
                         items_ref = items.get("$ref", "")
@@ -475,6 +711,7 @@ def parse_spec(spec: dict, config: ProductConfig) -> list[OperationInfo]:
                     request_body_model=request_body_model,
                     response_model=response_model,
                     is_paged=is_paged,
+                    paged_items_field=paged_items_field,
                     resource_class=resource_class,
                     is_deprecated=is_deprecated,
                 )
@@ -496,7 +733,7 @@ def _disambiguate_method_names(ops: list[OperationInfo]) -> dict[str, str]:
         by_resource[op.resource_class].append(op)
 
     result: dict[str, str] = {}
-    for resource, resource_ops in by_resource.items():
+    for _resource, resource_ops in by_resource.items():
         # Check for duplicate method names within this resource
         name_count: dict[str, list[OperationInfo]] = defaultdict(list)
         for op in resource_ops:
@@ -505,13 +742,12 @@ def _disambiguate_method_names(ops: list[OperationInfo]) -> dict[str, str]:
 
         for base_name, collision_ops in name_count.items():
             if len(collision_ops) == 1:
-                # Use a stable key: resource + op_id
-                key = f"{resource}::{collision_ops[0].op_id}"
+                key = _op_key(collision_ops[0])
                 result[key] = base_name
             else:
                 # Disambiguate using path context
                 for op in collision_ops:
-                    key = f"{resource}::{op.op_id}"
+                    key = _op_key(op)
                     suffix = _derive_suffix(op.path, op.path_params)
                     if suffix:
                         result[key] = f"{base_name}_{suffix}"
@@ -549,12 +785,12 @@ def _build_const_name_map(
 ) -> dict[str, str]:
     """Build globally unique endpoint constant name map.
 
-    Returns key (resource::op_id) → unique UPPER_SNAKE constant name.
+    Returns key (resource::op_id::method::path) → unique UPPER_SNAKE constant name.
     """
     const_name_map: dict[str, str] = {}
     used: set[str] = set()
     for op in ops:
-        key = f"{op.resource_class}::{op.op_id}"
+        key = _op_key(op)
         method_name = names.get(key, _operation_id_to_method(op.op_id))
         base_const = method_name.upper()
 
@@ -613,7 +849,7 @@ def generate_endpoints(
         lines.append("")
 
         for op in sorted(resource_ops, key=lambda o: (o.path, o.method)):
-            key = f"{resource}::{op.op_id}"
+            key = _op_key(op)
             const_name = const_name_map[key]
 
             summary = op.summary.replace('"', '\\"') if op.summary else ""
@@ -621,7 +857,15 @@ def generate_endpoints(
             suffix = '")'
             max_summary_len = LINE_LENGTH - len(prefix) - len(suffix)
             summary = _truncate_with_ellipsis(summary, max_summary_len)
-            lines.append(f'{const_name} = Endpoint("{op.method}", "{op.path}", "{summary}")')
+            one_line = f'{const_name} = Endpoint("{op.method}", "{op.path}", "{summary}")'
+            if len(one_line) <= LINE_LENGTH:
+                lines.append(one_line)
+            else:
+                lines.append(f"{const_name} = Endpoint(")
+                lines.append(f'    "{op.method}",')
+                lines.append(f'    "{op.path}",')
+                lines.append(f'    "{summary}",')
+                lines.append(")")
 
         lines.append("")
 
@@ -637,6 +881,7 @@ def _build_method_signature(
     op: OperationInfo,
     method_name: str,
     display_name: str = "Bitbucket Data Center",
+    product_name: str | None = None,
 ) -> tuple[list[str], str, list[str]]:
     """Build the method signature params, return type, and docstring lines.
 
@@ -663,7 +908,7 @@ def _build_method_signature(
 
     # Query params (optional kwargs) — skip start/limit for paged
     for qp in op.query_params:
-        if op.is_paged and qp.name in ("start", "limit"):
+        if op.is_paged and qp.name in ("start", "limit", "startAt", "maxResults"):
             continue
         default = qp.default if qp.default is not None else "None"
         if not qp.required:
@@ -675,8 +920,12 @@ def _build_method_signature(
 
     # For paged endpoints, add start/limit as explicit kwargs
     if op.is_paged:
-        params.append("start: int = 0")
-        params.append("limit: int = 25")
+        if product_name == "jira":
+            params.append("start_at: int = 0")
+            params.append("max_results: int = 50")
+        else:
+            params.append("start: int = 0")
+            params.append("limit: int = 25")
 
     # Return type
     if op.is_paged and op.response_model:
@@ -752,20 +1001,43 @@ def _build_method_body(op: OperationInfo, const_name: str, config: ProductConfig
     for pp in op.path_params:
         path_format_args[pp.name] = pp.python_name
 
-    if path_format_args:
-        format_kwargs = ", ".join(f"{k}={v}" for k, v in path_format_args.items())
-        path_expr = f"{const_name}.path.format({format_kwargs})"
-    else:
-        path_expr = f"{const_name}.path"
+    path_expr = f"{const_name}.path"
+    for key, value in path_format_args.items():
+        path_expr = f'{path_expr}.replace("{{{key}}}", str({value}))'
 
     # Build query params dict
     query_params_entries: list[str] = []
     for qp in op.query_params:
-        if op.is_paged and qp.name in ("start", "limit"):
+        if op.is_paged and qp.name in ("start", "limit", "startAt", "maxResults"):
             continue
         query_params_entries.append(f'"{qp.name}": {qp.python_name}')
 
     if op.is_paged:
+        if config.name == "jira":
+            items_field = op.paged_items_field or "values"
+            if op.method == "GET":
+                kwargs_parts: list[str] = [path_expr]
+                if query_params_entries:
+                    kwargs_parts.append(f"params={{{', '.join(query_params_entries)}}}")
+                kwargs_parts.append(f"model={op.response_model}")
+                kwargs_parts.append(f'items_field="{items_field}"')
+                kwargs_parts.append("start_at=start_at")
+                kwargs_parts.append("max_results=max_results")
+                call_expr = f"return self._get_paged({', '.join(kwargs_parts)})"
+                return _format_call(call_expr, indent=_BODY_INDENT)
+
+            kwargs_parts = [f'"{op.method}"', path_expr]
+            if query_params_entries:
+                kwargs_parts.append(f"params={{{', '.join(query_params_entries)}}}")
+            if op.request_body_model:
+                kwargs_parts.append("json=body.model_dump(by_alias=True, exclude_none=True)")
+            kwargs_parts.append(f"model={op.response_model}")
+            kwargs_parts.append(f'items_field="{items_field}"')
+            kwargs_parts.append("start_at=start_at")
+            kwargs_parts.append("max_results=max_results")
+            call_expr = f"return self._request_paged({', '.join(kwargs_parts)})"
+            return _format_call(call_expr, indent=_BODY_INDENT)
+
         if op.method == "GET":
             kwargs_parts: list[str] = [path_expr]
             if query_params_entries:
@@ -851,6 +1123,10 @@ def generate_resources(
             model_refs.add(op.response_model)
         if op.request_body_model:
             model_refs.add(op.request_body_model)
+        for pp in op.path_params:
+            model_refs.update(_extract_model_refs_from_type(pp.param_type))
+        for qp in op.query_params:
+            model_refs.update(_extract_model_refs_from_type(qp.param_type))
         # Check if Any is needed (query params with dict type, or untyped response)
         for qp in op.query_params:
             if "Any" in qp.param_type:
@@ -886,7 +1162,7 @@ def generate_resources(
     # Collect all endpoint constants used
     endpoint_consts: set[str] = set()
     for op in emitted_ops:
-        key = f"{op.resource_class}::{op.op_id}"
+        key = _op_key(op)
         endpoint_consts.add(const_name_map[key])
     for const in sorted(endpoint_consts):
         lines.append(f"    {const},")
@@ -909,7 +1185,7 @@ def generate_resources(
         lines.append(f"class {resource}({config.base_resource_class}):")
 
         for op in sorted(resource_ops, key=lambda o: (o.path, o.method)):
-            key = f"{resource}::{op.op_id}"
+            key = _op_key(op)
             method_name = names.get(key, _operation_id_to_method(op.op_id))
             const_name = const_name_map[key]
 
@@ -917,6 +1193,7 @@ def generate_resources(
                 op,
                 method_name,
                 config.display_name,
+                config.name,
             )
             body_lines = _build_method_body(op, const_name, config)
 
@@ -962,7 +1239,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate resource classes from OpenAPI spec.",
     )
-    parser.add_argument("product", choices=["bitbucket", "confluence"])
+    parser.add_argument("product", choices=["bitbucket", "confluence", "jira"])
     args = parser.parse_args()
 
     config = PRODUCT_CONFIGS[args.product]

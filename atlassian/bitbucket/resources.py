@@ -750,7 +750,7 @@ from .models import (
 class ProjectsResource(Resource):
     def get_avatar(self, hook_key: str, *, version: str | None = None) -> None:
         """Get project avatar"""
-        return self._get(GET_AVATAR.path.format(hookKey=hook_key), params={"version": version})
+        return self._get(GET_AVATAR.path.replace("{hookKey}", str(hook_key)), params={"version": version})
 
     def get_projects(
         self,
@@ -779,28 +779,28 @@ class ProjectsResource(Resource):
 
     def delete_project(self, project_key: str) -> None:
         """Delete project"""
-        return self._delete(DELETE_PROJECT.path.format(projectKey=project_key))
+        return self._delete(DELETE_PROJECT.path.replace("{projectKey}", str(project_key)))
 
     def get_project(self, project_key: str) -> RestProject:
         """Get a project"""
-        return self._get(GET_PROJECT.path.format(projectKey=project_key), model=RestProject)
+        return self._get(GET_PROJECT.path.replace("{projectKey}", str(project_key)), model=RestProject)
 
     def update_project(self, project_key: str, body: RestProject) -> RestProject:
         """Update project"""
         return self._put(
-            UPDATE_PROJECT.path.format(projectKey=project_key),
+            UPDATE_PROJECT.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestProject,
         )
 
     def get_project_avatar(self, project_key: str, *, s: str | None = None) -> None:
         """Get avatar for project"""
-        return self._get(GET_PROJECT_AVATAR.path.format(projectKey=project_key), params={"s": s})
+        return self._get(GET_PROJECT_AVATAR.path.replace("{projectKey}", str(project_key)), params={"s": s})
 
     def upload_avatar(self, project_key: str, body: ExampleAvatarMultipartFormData) -> None:
         """Update project avatar"""
         return self._post(
-            UPLOAD_AVATAR.path.format(projectKey=project_key),
+            UPLOAD_AVATAR.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -813,7 +813,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestHookScriptConfig]:
         """Get configured hook scripts"""
         return self._get_paged(
-            GET_CONFIGURATIONS.path.format(projectKey=project_key),
+            GET_CONFIGURATIONS.path.replace("{projectKey}", str(project_key)),
             model=RestHookScriptConfig,
             start=start,
             limit=limit,
@@ -821,7 +821,9 @@ class ProjectsResource(Resource):
 
     def remove_configuration(self, project_key: str, script_id: str) -> None:
         """Remove a hook script"""
-        return self._delete(REMOVE_CONFIGURATION.path.format(projectKey=project_key, scriptId=script_id))
+        return self._delete(
+            REMOVE_CONFIGURATION.path.replace("{projectKey}", str(project_key)).replace("{scriptId}", str(script_id)),
+        )
 
     def set_configuration(
         self,
@@ -831,7 +833,7 @@ class ProjectsResource(Resource):
     ) -> RestHookScriptConfig:
         """Create/update a hook script"""
         return self._put(
-            SET_CONFIGURATION.path.format(projectKey=project_key, scriptId=script_id),
+            SET_CONFIGURATION.path.replace("{projectKey}", str(project_key)).replace("{scriptId}", str(script_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestHookScriptConfig,
         )
@@ -839,14 +841,14 @@ class ProjectsResource(Resource):
     def revoke_permissions(self, project_key: str, *, user: str | None = None, group: str | None = None) -> None:
         """Revoke project permissions"""
         return self._delete(
-            REVOKE_PERMISSIONS.path.format(projectKey=project_key),
+            REVOKE_PERMISSIONS.path.replace("{projectKey}", str(project_key)),
             params={"user": user, "group": group},
         )
 
     def revoke_permissions_for_group_1(self, project_key: str, *, name: str | None = None) -> None:
         """Revoke group project permission"""
         return self._delete(
-            REVOKE_PERMISSIONS_FOR_GROUP_1.path.format(projectKey=project_key),
+            REVOKE_PERMISSIONS_FOR_GROUP_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name},
         )
 
@@ -860,7 +862,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestPermittedGroup]:
         """Get groups with permission to project"""
         return self._get_paged(
-            GET_GROUPS_WITH_ANY_PERMISSION_1.path.format(projectKey=project_key),
+            GET_GROUPS_WITH_ANY_PERMISSION_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestPermittedGroup,
             start=start,
@@ -876,7 +878,7 @@ class ProjectsResource(Resource):
     ) -> None:
         """Update group project permission"""
         return self._put(
-            SET_PERMISSION_FOR_GROUPS_1.path.format(projectKey=project_key),
+            SET_PERMISSION_FOR_GROUPS_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name, "permission": permission},
         )
 
@@ -890,7 +892,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestDetailedGroup]:
         """Get groups without project permission"""
         return self._get_paged(
-            GET_GROUPS_WITHOUT_ANY_PERMISSION_1.path.format(projectKey=project_key),
+            GET_GROUPS_WITHOUT_ANY_PERMISSION_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestDetailedGroup,
             start=start,
@@ -907,14 +909,14 @@ class ProjectsResource(Resource):
     ) -> None:
         """Search project permissions"""
         return self._get(
-            SEARCH_PERMISSIONS.path.format(projectKey=project_key),
+            SEARCH_PERMISSIONS.path.replace("{projectKey}", str(project_key)),
             params={"permission": permission, "filterText": filter_text, "type": type_},
         )
 
     def revoke_permissions_for_user_1(self, project_key: str, *, name: str | None = None) -> None:
         """Revoke user project permission"""
         return self._delete(
-            REVOKE_PERMISSIONS_FOR_USER_1.path.format(projectKey=project_key),
+            REVOKE_PERMISSIONS_FOR_USER_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name},
         )
 
@@ -928,7 +930,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestPermittedUser]:
         """Get users with permission to project"""
         return self._get_paged(
-            GET_USERS_WITH_ANY_PERMISSION_1.path.format(projectKey=project_key),
+            GET_USERS_WITH_ANY_PERMISSION_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestPermittedUser,
             start=start,
@@ -944,7 +946,7 @@ class ProjectsResource(Resource):
     ) -> None:
         """Update user project permission"""
         return self._put(
-            SET_PERMISSION_FOR_USERS_1.path.format(projectKey=project_key),
+            SET_PERMISSION_FOR_USERS_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name, "permission": permission},
         )
 
@@ -958,7 +960,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestApplicationUser]:
         """Get users without project permission"""
         return self._get_paged(
-            GET_USERS_WITHOUT_PERMISSION.path.format(projectKey=project_key),
+            GET_USERS_WITHOUT_PERMISSION.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestApplicationUser,
             start=start,
@@ -968,14 +970,18 @@ class ProjectsResource(Resource):
     def has_all_user_permission(self, project_key: str, permission: str) -> RestPermitted:
         """Check default project permission"""
         return self._get(
-            HAS_ALL_USER_PERMISSION.path.format(projectKey=project_key, permission=permission),
+            HAS_ALL_USER_PERMISSION.path.replace("{projectKey}", str(project_key)).replace(
+                "{permission}", str(permission)
+            ),
             model=RestPermitted,
         )
 
     def modify_all_user_permission(self, project_key: str, permission: str, *, allow: str | None = None) -> None:
         """Grant project permission"""
         return self._post(
-            MODIFY_ALL_USER_PERMISSION.path.format(projectKey=project_key, permission=permission),
+            MODIFY_ALL_USER_PERMISSION.path.replace("{projectKey}", str(project_key)).replace(
+                "{permission}", str(permission)
+            ),
             params={"allow": allow},
         )
 
@@ -988,7 +994,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestRepository]:
         """Get repositories for project"""
         return self._get_paged(
-            GET_REPOSITORIES.path.format(projectKey=project_key),
+            GET_REPOSITORIES.path.replace("{projectKey}", str(project_key)),
             model=RestRepository,
             start=start,
             limit=limit,
@@ -997,26 +1003,34 @@ class ProjectsResource(Resource):
     def create_repository(self, project_key: str, body: RestRepository) -> RestRepository:
         """Create repository"""
         return self._post(
-            CREATE_REPOSITORY.path.format(projectKey=project_key),
+            CREATE_REPOSITORY.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepository,
         )
 
     def delete_repository(self, project_key: str, repository_slug: str) -> None:
         """Delete repository"""
-        return self._delete(DELETE_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return self._delete(
+            DELETE_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
+        )
 
     def get_repository(self, project_key: str, repository_slug: str) -> RestRepository:
         """Get repository"""
         return self._get(
-            GET_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
         )
 
     def fork_repository(self, project_key: str, repository_slug: str, body: RestRepository) -> RestRepository:
         """Fork repository"""
         return self._post(
-            FORK_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            FORK_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepository,
         )
@@ -1024,7 +1038,9 @@ class ProjectsResource(Resource):
     def update_repository(self, project_key: str, repository_slug: str, body: RestRepository) -> RestRepository:
         """Update repository"""
         return self._put(
-            UPDATE_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            UPDATE_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepository,
         )
@@ -1042,7 +1058,9 @@ class ProjectsResource(Resource):
     ) -> None:
         """Get repository contributing guidelines"""
         return self._get(
-            STREAM_CONTRIBUTING.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_CONTRIBUTING.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "at": at,
                 "markup": markup,
@@ -1055,14 +1073,18 @@ class ProjectsResource(Resource):
     def get_default_branch_2(self, project_key: str, repository_slug: str) -> RestMinimalRef:
         """Get repository default branch"""
         return self._get(
-            GET_DEFAULT_BRANCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_DEFAULT_BRANCH_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestMinimalRef,
         )
 
     def set_default_branch_2(self, project_key: str, repository_slug: str, body: RestBranch) -> None:
         """Update default branch for repository"""
         return self._put(
-            SET_DEFAULT_BRANCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_DEFAULT_BRANCH_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -1076,7 +1098,9 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestRepository]:
         """Get repository forks"""
         return self._get_paged(
-            GET_FORKED_REPOSITORIES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_FORKED_REPOSITORIES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
             start=start,
             limit=limit,
@@ -1095,7 +1119,9 @@ class ProjectsResource(Resource):
     ) -> None:
         """Get repository license"""
         return self._get(
-            STREAM_LICENSE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_LICENSE.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "at": at,
                 "markup": markup,
@@ -1118,7 +1144,9 @@ class ProjectsResource(Resource):
     ) -> None:
         """Get repository readme"""
         return self._get(
-            STREAM_README.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_README.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "at": at,
                 "markup": markup,
@@ -1131,7 +1159,9 @@ class ProjectsResource(Resource):
     def retry_create_repository(self, project_key: str, repository_slug: str) -> RestRepository:
         """Retry repository creation"""
         return self._post(
-            RETRY_CREATE_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            RETRY_CREATE_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
         )
 
@@ -1145,7 +1175,9 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestRepository]:
         """Get related repository"""
         return self._get_paged(
-            GET_RELATED_REPOSITORIES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_RELATED_REPOSITORIES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
             start=start,
             limit=limit,
@@ -1161,7 +1193,7 @@ class ProjectsResource(Resource):
     ) -> None:
         """Stop enforcing project restriction"""
         return self._delete(
-            DELETE_9.path.format(projectKey=project_key),
+            DELETE_9.path.replace("{projectKey}", str(project_key)),
             params={"namespace": namespace, "componentKey": component_key, "featureKey": feature_key},
         )
 
@@ -1175,7 +1207,7 @@ class ProjectsResource(Resource):
     ) -> RestProjectSettingsRestriction:
         """Get enforcing project setting"""
         return self._get(
-            GET_7.path.format(projectKey=project_key),
+            GET_7.path.replace("{projectKey}", str(project_key)),
             params={"namespace": namespace, "componentKey": component_key, "featureKey": feature_key},
             model=RestProjectSettingsRestriction,
         )
@@ -1187,7 +1219,7 @@ class ProjectsResource(Resource):
     ) -> RestProjectSettingsRestriction:
         """Enforce project restriction"""
         return self._post(
-            CREATE_3.path.format(projectKey=project_key),
+            CREATE_3.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestProjectSettingsRestriction,
         )
@@ -1203,7 +1235,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestProjectSettingsRestriction]:
         """Get all enforcing project settings"""
         return self._get_paged(
-            GET_ALL.path.format(projectKey=project_key),
+            GET_ALL.path.replace("{projectKey}", str(project_key)),
             params={"namespace": namespace, "featureKey": feature_key},
             model=RestProjectSettingsRestriction,
             start=start,
@@ -1212,12 +1244,12 @@ class ProjectsResource(Resource):
 
     def delete_auto_decline_settings(self, project_key: str) -> None:
         """Delete auto decline settings"""
-        return self._delete(DELETE_AUTO_DECLINE_SETTINGS.path.format(projectKey=project_key))
+        return self._delete(DELETE_AUTO_DECLINE_SETTINGS.path.replace("{projectKey}", str(project_key)))
 
     def get_auto_decline_settings(self, project_key: str) -> RestAutoDeclineSettings:
         """Get auto decline settings"""
         return self._get(
-            GET_AUTO_DECLINE_SETTINGS.path.format(projectKey=project_key),
+            GET_AUTO_DECLINE_SETTINGS.path.replace("{projectKey}", str(project_key)),
             model=RestAutoDeclineSettings,
         )
 
@@ -1228,23 +1260,26 @@ class ProjectsResource(Resource):
     ) -> RestAutoDeclineSettings:
         """Create/Update auto decline settings"""
         return self._put(
-            SET_AUTO_DECLINE_SETTINGS.path.format(projectKey=project_key),
+            SET_AUTO_DECLINE_SETTINGS.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoDeclineSettings,
         )
 
     def delete_4(self, project_key: str) -> None:
         """Delete pull request auto-merge settings"""
-        return self._delete(DELETE_4.path.format(projectKey=project_key))
+        return self._delete(DELETE_4.path.replace("{projectKey}", str(project_key)))
 
     def get_4(self, project_key: str) -> RestAutoMergeRestrictedSettings:
         """Get pull request auto-merge settings"""
-        return self._get(GET_4.path.format(projectKey=project_key), model=RestAutoMergeRestrictedSettings)
+        return self._get(
+            GET_4.path.replace("{projectKey}", str(project_key)),
+            model=RestAutoMergeRestrictedSettings,
+        )
 
     def set(self, project_key: str, body: RestAutoMergeProjectSettingsRequest) -> RestAutoMergeRestrictedSettings:
         """Create or update the pull request auto-merge settings"""
         return self._put(
-            SET.path.format(projectKey=project_key),
+            SET.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoMergeRestrictedSettings,
         )
@@ -1259,7 +1294,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestRepositoryHook]:
         """Get repository hooks"""
         return self._get_paged(
-            GET_REPOSITORY_HOOKS.path.format(projectKey=project_key),
+            GET_REPOSITORY_HOOKS.path.replace("{projectKey}", str(project_key)),
             params={"type": type_},
             model=RestRepositoryHook,
             start=start,
@@ -1269,35 +1304,35 @@ class ProjectsResource(Resource):
     def get_repository_hook(self, project_key: str, hook_key: str) -> RestRepositoryHook:
         """Get a repository hook"""
         return self._get(
-            GET_REPOSITORY_HOOK.path.format(projectKey=project_key, hookKey=hook_key),
+            GET_REPOSITORY_HOOK.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=RestRepositoryHook,
         )
 
     def disable_hook(self, project_key: str, hook_key: str) -> RestRepositoryHook:
         """Disable repository hook"""
         return self._delete(
-            DISABLE_HOOK.path.format(projectKey=project_key, hookKey=hook_key),
+            DISABLE_HOOK.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=RestRepositoryHook,
         )
 
     def enable_hook(self, project_key: str, hook_key: str) -> RestRepositoryHook:
         """Enable repository hook"""
         return self._put(
-            ENABLE_HOOK.path.format(projectKey=project_key, hookKey=hook_key),
+            ENABLE_HOOK.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=RestRepositoryHook,
         )
 
     def get_settings(self, project_key: str, hook_key: str) -> ExampleSettings:
         """Get repository hook settings"""
         return self._get(
-            GET_SETTINGS.path.format(projectKey=project_key, hookKey=hook_key),
+            GET_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=ExampleSettings,
         )
 
     def set_settings(self, project_key: str, hook_key: str, body: ExampleSettings) -> ExampleSettings:
         """Update repository hook settings"""
         return self._put(
-            SET_SETTINGS.path.format(projectKey=project_key, hookKey=hook_key),
+            SET_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ExampleSettings,
         )
@@ -1305,7 +1340,7 @@ class ProjectsResource(Resource):
     def get_pull_request_settings(self, project_key: str, scm_id: str) -> RestPullRequestSettings:
         """Get merge strategy"""
         return self._get(
-            GET_PULL_REQUEST_SETTINGS.path.format(projectKey=project_key, scmId=scm_id),
+            GET_PULL_REQUEST_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{scmId}", str(scm_id)),
             model=RestPullRequestSettings,
         )
 
@@ -1317,7 +1352,7 @@ class ProjectsResource(Resource):
     ) -> RestPullRequestSettings:
         """Update merge strategy"""
         return self._post(
-            UPDATE_PULL_REQUEST_SETTINGS.path.format(projectKey=project_key, scmId=scm_id),
+            UPDATE_PULL_REQUEST_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{scmId}", str(scm_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestSettings,
         )
@@ -1331,14 +1366,14 @@ class ProjectsResource(Resource):
     ) -> None:
         """Find webhooks"""
         return self._get(
-            FIND_WEBHOOKS.path.format(projectKey=project_key),
+            FIND_WEBHOOKS.path.replace("{projectKey}", str(project_key)),
             params={"event": event, "statistics": statistics},
         )
 
     def create_webhook(self, project_key: str, body: RestWebhook) -> RestWebhook:
         """Create webhook"""
         return self._post(
-            CREATE_WEBHOOK.path.format(projectKey=project_key),
+            CREATE_WEBHOOK.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -1354,7 +1389,7 @@ class ProjectsResource(Resource):
     ) -> RestWebhookRequestResponse:
         """Test webhook"""
         return self._post(
-            TEST_WEBHOOK.path.format(projectKey=project_key),
+            TEST_WEBHOOK.path.replace("{projectKey}", str(project_key)),
             params={"webhookId": webhook_id, "sslVerificationRequired": ssl_verification_required, "url": url},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhookRequestResponse,
@@ -1362,12 +1397,14 @@ class ProjectsResource(Resource):
 
     def delete_webhook(self, project_key: str, webhook_id: str) -> None:
         """Delete webhook"""
-        return self._delete(DELETE_WEBHOOK.path.format(projectKey=project_key, webhookId=webhook_id))
+        return self._delete(
+            DELETE_WEBHOOK.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
+        )
 
     def get_webhook(self, project_key: str, webhook_id: str, *, statistics: str | None = None) -> RestWebhook:
         """Get webhook"""
         return self._get(
-            GET_WEBHOOK.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_WEBHOOK.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
             params={"statistics": statistics},
             model=RestWebhook,
         )
@@ -1375,7 +1412,7 @@ class ProjectsResource(Resource):
     def update_webhook(self, project_key: str, webhook_id: str, body: RestWebhook) -> RestWebhook:
         """Update webhook"""
         return self._put(
-            UPDATE_WEBHOOK.path.format(projectKey=project_key, webhookId=webhook_id),
+            UPDATE_WEBHOOK.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -1390,7 +1427,9 @@ class ProjectsResource(Resource):
     ) -> RestDetailedInvocation:
         """Get last webhook invocation details"""
         return self._get(
-            GET_LATEST_INVOCATION.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_LATEST_INVOCATION.path.replace("{projectKey}", str(project_key)).replace(
+                "{webhookId}", str(webhook_id)
+            ),
             params={"event": event, "outcome": outcome},
             model=RestDetailedInvocation,
         )
@@ -1404,7 +1443,7 @@ class ProjectsResource(Resource):
     ) -> RestInvocationHistory:
         """Get webhook statistics"""
         return self._get(
-            GET_STATISTICS.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_STATISTICS.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
             params={"event": event},
             model=RestInvocationHistory,
         )
@@ -1412,7 +1451,9 @@ class ProjectsResource(Resource):
     def get_statistics_summary(self, project_key: str, webhook_id: str) -> RestInvocationHistory:
         """Get webhook statistics summary"""
         return self._get(
-            GET_STATISTICS_SUMMARY.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_STATISTICS_SUMMARY.path.replace("{projectKey}", str(project_key)).replace(
+                "{webhookId}", str(webhook_id)
+            ),
             model=RestInvocationHistory,
         )
 
@@ -1428,7 +1469,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestRefRestriction]:
         """Search for ref restrictions"""
         return self._get_paged(
-            GET_RESTRICTIONS.path.format(projectKey=project_key),
+            GET_RESTRICTIONS.path.replace("{projectKey}", str(project_key)),
             params={"matcherType": matcher_type, "matcherId": matcher_id, "type": type_},
             model=RestRefRestriction,
             start=start,
@@ -1437,19 +1478,27 @@ class ProjectsResource(Resource):
 
     def create_restrictions(self, project_key: str) -> RestRefRestriction:
         """Create multiple ref restrictions"""
-        return self._post(CREATE_RESTRICTIONS.path.format(projectKey=project_key), model=RestRefRestriction)
+        return self._post(
+            CREATE_RESTRICTIONS.path.replace("{projectKey}", str(project_key)),
+            model=RestRefRestriction,
+        )
 
     def delete_restriction(self, project_key: str, id: str) -> None:
         """Delete a ref restriction"""
-        return self._delete(DELETE_RESTRICTION.path.format(projectKey=project_key, id=id))
+        return self._delete(
+            DELETE_RESTRICTION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+        )
 
     def get_restriction(self, project_key: str, id: str) -> RestRefRestriction:
         """Get a ref restriction"""
-        return self._get(GET_RESTRICTION.path.format(projectKey=project_key, id=id), model=RestRefRestriction)
+        return self._get(
+            GET_RESTRICTION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+            model=RestRefRestriction,
+        )
 
     def delete_all_default_tasks(self, project_key: str) -> None:
         """Deletes all default tasks for the project"""
-        return self._delete(DELETE_ALL_DEFAULT_TASKS.path.format(projectKey=project_key))
+        return self._delete(DELETE_ALL_DEFAULT_TASKS.path.replace("{projectKey}", str(project_key)))
 
     def get_default_tasks(
         self,
@@ -1461,7 +1510,7 @@ class ProjectsResource(Resource):
     ) -> PageIterator[RestDefaultTask]:
         """Get a page of default tasks"""
         return self._get_paged(
-            GET_DEFAULT_TASKS.path.format(projectKey=project_key),
+            GET_DEFAULT_TASKS.path.replace("{projectKey}", str(project_key)),
             params={"markup": markup},
             model=RestDefaultTask,
             start=start,
@@ -1471,14 +1520,16 @@ class ProjectsResource(Resource):
     def add_default_task(self, project_key: str, body: RestDefaultTaskRequest) -> RestDefaultTask:
         """Add a default task"""
         return self._post(
-            ADD_DEFAULT_TASK.path.format(projectKey=project_key),
+            ADD_DEFAULT_TASK.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
 
     def delete_default_task(self, project_key: str, task_id: str) -> None:
         """Delete a specific default task"""
-        return self._delete(DELETE_DEFAULT_TASK.path.format(projectKey=project_key, taskId=task_id))
+        return self._delete(
+            DELETE_DEFAULT_TASK.path.replace("{projectKey}", str(project_key)).replace("{taskId}", str(task_id)),
+        )
 
     def update_default_task(
         self,
@@ -1488,7 +1539,7 @@ class ProjectsResource(Resource):
     ) -> RestDefaultTask:
         """Update a default task"""
         return self._put(
-            UPDATE_DEFAULT_TASK.path.format(projectKey=project_key, taskId=task_id),
+            UPDATE_DEFAULT_TASK.path.replace("{projectKey}", str(project_key)).replace("{taskId}", str(task_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
@@ -1524,32 +1575,34 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Stream archive of repository"""
         return self._get(
-            GET_ARCHIVE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_ARCHIVE.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"path": path, "filename": filename, "at": at, "prefix": prefix, "format": format},
         )
 
     def delete_attachment(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Delete an attachment"""
         return self._delete(
-            DELETE_ATTACHMENT.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            DELETE_ATTACHMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_attachment(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Get an attachment"""
         return self._get(
-            GET_ATTACHMENT.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            GET_ATTACHMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def delete_attachment_metadata(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Delete attachment metadata"""
         return self._delete(
-            DELETE_ATTACHMENT_METADATA.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            DELETE_ATTACHMENT_METADATA.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_attachment_metadata(
@@ -1560,18 +1613,18 @@ class RepositoriesResource(Resource):
     ) -> RestAttachmentMetadata:
         """Get attachment metadata"""
         return self._get(
-            GET_ATTACHMENT_METADATA.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            GET_ATTACHMENT_METADATA.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAttachmentMetadata,
         )
 
     def save_attachment_metadata(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Save attachment metadata"""
         return self._put(
-            SAVE_ATTACHMENT_METADATA.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            SAVE_ATTACHMENT_METADATA.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_branches(
@@ -1590,7 +1643,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestBranch]:
         """Find branches"""
         return self._get_paged(
-            GET_BRANCHES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_BRANCHES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "boostMatches": boost_matches,
                 "context": context,
@@ -1612,7 +1667,9 @@ class RepositoriesResource(Resource):
     ) -> RestBranch:
         """Create branch"""
         return self._post(
-            CREATE_BRANCH_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_BRANCH_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestBranch,
         )
@@ -1624,7 +1681,9 @@ class RepositoriesResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._get(
-            GET_DEFAULT_BRANCH_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_DEFAULT_BRANCH_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestBranch,
         )
 
@@ -1635,7 +1694,9 @@ class RepositoriesResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._put(
-            SET_DEFAULT_BRANCH_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_DEFAULT_BRANCH_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -1652,7 +1713,9 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Get file content at revision"""
         return self._get(
-            GET_CONTENT.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_CONTENT.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"noContent": no_content, "at": at, "size": size, "blame": blame, "type": type_},
         )
 
@@ -1670,7 +1733,9 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Get file content"""
         return self._get(
-            GET_CONTENT_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            GET_CONTENT_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"noContent": no_content, "at": at, "size": size, "blame": blame, "type": type_},
         )
 
@@ -1683,7 +1748,9 @@ class RepositoriesResource(Resource):
     ) -> RestCommit:
         """Edit file"""
         return self._put(
-            EDIT_FILE.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            EDIT_FILE.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestCommit,
         )
@@ -1700,7 +1767,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestChange]:
         """Get changes made in commit"""
         return self._get_paged(
-            GET_CHANGES_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_CHANGES_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"until": until, "since": since},
             model=RestChange,
             start=start,
@@ -1726,7 +1795,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestCommit]:
         """Get commits"""
         return self._get_paged(
-            GET_COMMITS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_COMMITS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "avatarScheme": avatar_scheme,
                 "path": path,
@@ -1753,7 +1824,9 @@ class RepositoriesResource(Resource):
     ) -> RestCommit:
         """Get commit by ID"""
         return self._get(
-            GET_COMMIT.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_COMMIT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"path": path},
             model=RestCommit,
         )
@@ -1771,7 +1844,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestChange]:
         """Get changes in commit"""
         return self._get_paged(
-            GET_CHANGES.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_CHANGES.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"withComments": with_comments, "since": since},
             model=RestChange,
             start=start,
@@ -1791,7 +1866,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestComment]:
         """Search for commit comments"""
         return self._get_paged(
-            GET_COMMENTS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_COMMENTS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"path": path, "since": since},
             model=RestComment,
             start=start,
@@ -1809,7 +1886,9 @@ class RepositoriesResource(Resource):
     ) -> RestComment:
         """Add a new commit comment"""
         return self._post(
-            CREATE_COMMENT.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            CREATE_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"since": since},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
@@ -1826,18 +1905,20 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Delete a commit comment"""
         return self._delete(
-            DELETE_COMMENT.path.format(
-                projectKey=project_key, commentId=comment_id, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            DELETE_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
         )
 
     def get_comment(self, project_key: str, comment_id: str, commit_id: str, repository_slug: str) -> RestComment:
         """Get a commit comment"""
         return self._get(
-            GET_COMMENT.path.format(
-                projectKey=project_key, commentId=comment_id, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            GET_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
         )
 
@@ -1851,9 +1932,10 @@ class RepositoriesResource(Resource):
     ) -> RestComment:
         """Update a commit comment"""
         return self._put(
-            UPDATE_COMMENT.path.format(
-                projectKey=project_key, commentId=comment_id, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            UPDATE_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -1872,9 +1954,10 @@ class RepositoriesResource(Resource):
     ) -> RestDiffStatsSummary:
         """Get diff stats summary between revisions"""
         return self._get(
-            GET_DIFF_STATS_SUMMARY.path.format(
-                path=path, projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            GET_DIFF_STATS_SUMMARY.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"srcPath": src_path, "autoSrcPath": auto_src_path, "whitespace": whitespace, "since": since},
             model=RestDiffStatsSummary,
         )
@@ -1898,9 +1981,10 @@ class RepositoriesResource(Resource):
     ) -> RestDiff:
         """Get diff between revisions"""
         return self._get(
-            STREAM_DIFF.path.format(
-                commitId=commit_id, repositorySlug=repository_slug, path=path, projectKey=project_key
-            ),
+            STREAM_DIFF.path.replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key)),
             params={
                 "srcPath": src_path,
                 "avatarSize": avatar_size,
@@ -1925,7 +2009,9 @@ class RepositoriesResource(Resource):
     ) -> RestCommit:
         """Get the common ancestor between two commits"""
         return self._get(
-            GET_MERGE_BASE.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_MERGE_BASE.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"otherCommitId": other_commit_id},
             model=RestCommit,
         )
@@ -1933,13 +2019,17 @@ class RepositoriesResource(Resource):
     def unwatch(self, project_key: str, commit_id: str, repository_slug: str) -> None:
         """Stop watching commit"""
         return self._delete(
-            UNWATCH.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            UNWATCH.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def watch(self, project_key: str, commit_id: str, repository_slug: str) -> None:
         """Watch commit"""
         return self._post(
-            WATCH.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            WATCH.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def stream_changes(
@@ -1955,7 +2045,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestChange]:
         """Compare commits"""
         return self._get_paged(
-            STREAM_CHANGES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_CHANGES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"fromRepo": from_repo, "from": from_, "to": to},
             model=RestChange,
             start=start,
@@ -1975,7 +2067,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestCommit]:
         """Get accessible commits"""
         return self._get_paged(
-            STREAM_COMMITS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_COMMITS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"fromRepo": from_repo, "from": from_, "to": to},
             model=RestCommit,
             start=start,
@@ -1996,7 +2090,9 @@ class RepositoriesResource(Resource):
     ) -> RestDiff:
         """Retrieve the diff stats summary between commits"""
         return self._get(
-            GET_DIFF_STATS_SUMMARY_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            GET_DIFF_STATS_SUMMARY_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"fromRepo": from_repo, "srcPath": src_path, "from": from_, "to": to, "whitespace": whitespace},
             model=RestDiff,
         )
@@ -2016,7 +2112,9 @@ class RepositoriesResource(Resource):
     ) -> RestDiff:
         """Get diff between commits"""
         return self._get(
-            STREAM_DIFF_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_DIFF_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "contextLines": context_lines,
                 "fromRepo": from_repo,
@@ -2041,7 +2139,9 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Get raw diff for path"""
         return self._get(
-            STREAM_RAW_DIFF.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_RAW_DIFF.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "contextLines": context_lines,
                 "srcPath": src_path,
@@ -2065,7 +2165,9 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Get raw diff for path"""
         return self._get(
-            STREAM_RAW_DIFF_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_RAW_DIFF_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "contextLines": context_lines,
                 "srcPath": src_path,
@@ -2086,7 +2188,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[FileListResource]:
         """Get files in directory"""
         return self._get_paged(
-            STREAM_FILES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_FILES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"at": at},
             model=FileListResource,
             start=start,
@@ -2105,7 +2209,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[FileListResource]:
         """Get files in directory"""
         return self._get_paged(
-            STREAM_FILES_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_FILES_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"at": at},
             model=FileListResource,
             start=start,
@@ -2122,7 +2228,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestHookScriptConfig]:
         """Get hook scripts"""
         return self._get_paged(
-            GET_CONFIGURATIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_CONFIGURATIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestHookScriptConfig,
             start=start,
             limit=limit,
@@ -2131,9 +2239,9 @@ class RepositoriesResource(Resource):
     def remove_configuration_1(self, project_key: str, script_id: str, repository_slug: str) -> None:
         """Remove a hook script"""
         return self._delete(
-            REMOVE_CONFIGURATION_1.path.format(
-                projectKey=project_key, scriptId=script_id, repositorySlug=repository_slug
-            ),
+            REMOVE_CONFIGURATION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{scriptId}", str(script_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def set_configuration_1(
@@ -2145,7 +2253,9 @@ class RepositoriesResource(Resource):
     ) -> RestHookScriptConfig:
         """Create/update a hook script"""
         return self._put(
-            SET_CONFIGURATION_1.path.format(projectKey=project_key, scriptId=script_id, repositorySlug=repository_slug),
+            SET_CONFIGURATION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{scriptId}", str(script_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestHookScriptConfig,
         )
@@ -2153,14 +2263,16 @@ class RepositoriesResource(Resource):
     def get_all_labels_for_repository(self, project_key: str, repository_slug: str) -> RestLabel:
         """Get repository labels"""
         return self._get(
-            GET_ALL_LABELS_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_ALL_LABELS_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestLabel,
         )
 
     def add_label(self, project_key: str, repository_slug: str, body: RestLabel) -> RestLabel:
         """Add repository label"""
         return self._post(
-            ADD_LABEL.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            ADD_LABEL.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestLabel,
         )
@@ -2168,13 +2280,15 @@ class RepositoriesResource(Resource):
     def remove_label(self, project_key: str, label_name: str, repository_slug: str) -> None:
         """Remove repository label"""
         return self._delete(
-            REMOVE_LABEL.path.format(projectKey=project_key, labelName=label_name, repositorySlug=repository_slug),
+            REMOVE_LABEL.path.replace("{projectKey}", str(project_key))
+            .replace("{labelName}", str(label_name))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def stream(self, project_key: str, repository_slug: str, *, at: str | None = None) -> ExampleFiles:
         """Stream files"""
         return self._get(
-            STREAM.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"at": at},
             model=ExampleFiles,
         )
@@ -2189,7 +2303,9 @@ class RepositoriesResource(Resource):
     ) -> ExampleFiles:
         """Stream files with last modified commit in path"""
         return self._get(
-            STREAM_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"at": at},
             model=ExampleFiles,
         )
@@ -2205,7 +2321,9 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Get patch content at revision"""
         return self._get(
-            STREAM_PATCH.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_PATCH.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"until": until, "allAncestors": all_ancestors, "since": since},
         )
 
@@ -2223,7 +2341,9 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Get raw content of a file at revision"""
         return self._get(
-            STREAM_RAW.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_RAW.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "at": at,
                 "markup": markup,
@@ -2244,7 +2364,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestRepositoryRefChangeActivity]:
         """Get ref change activity"""
         return self._get_paged(
-            GET_REF_CHANGE_ACTIVITY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REF_CHANGE_ACTIVITY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"ref": ref},
             model=RestRepositoryRefChangeActivity,
             start=start,
@@ -2262,7 +2384,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestMinimalRef]:
         """Get branches with ref change activities for repository"""
         return self._get_paged(
-            FIND_BRANCHES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            FIND_BRANCHES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filterText": filter_text},
             model=RestMinimalRef,
             start=start,
@@ -2272,13 +2396,17 @@ class RepositoriesResource(Resource):
     def delete_auto_decline_settings_1(self, project_key: str, repository_slug: str) -> None:
         """Delete auto decline settings"""
         return self._delete(
-            DELETE_AUTO_DECLINE_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            DELETE_AUTO_DECLINE_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
         )
 
     def get_auto_decline_settings_1(self, project_key: str, repository_slug: str) -> RestAutoDeclineSettings:
         """Get auto decline settings"""
         return self._get(
-            GET_AUTO_DECLINE_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_AUTO_DECLINE_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestAutoDeclineSettings,
         )
 
@@ -2290,19 +2418,23 @@ class RepositoriesResource(Resource):
     ) -> RestAutoDeclineSettings:
         """Create auto decline settings"""
         return self._put(
-            SET_AUTO_DECLINE_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_AUTO_DECLINE_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoDeclineSettings,
         )
 
     def delete_5(self, project_key: str, repository_slug: str) -> None:
         """Delete pull request auto-merge settings"""
-        return self._delete(DELETE_5.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return self._delete(
+            DELETE_5.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
+        )
 
     def get_5(self, project_key: str, repository_slug: str) -> RestAutoMergeRestrictedSettings:
         """Get pull request auto-merge settings"""
         return self._get(
-            GET_5.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_5.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             model=RestAutoMergeRestrictedSettings,
         )
 
@@ -2314,7 +2446,7 @@ class RepositoriesResource(Resource):
     ) -> RestAutoMergeRestrictedSettings:
         """Create or update the pull request auto-merge settings"""
         return self._put(
-            SET_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_1.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoMergeRestrictedSettings,
         )
@@ -2330,7 +2462,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestRepositoryHook]:
         """Get repository hooks"""
         return self._get_paged(
-            GET_REPOSITORY_HOOKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPOSITORY_HOOKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"type": type_},
             model=RestRepositoryHook,
             start=start,
@@ -2340,36 +2474,44 @@ class RepositoriesResource(Resource):
     def delete_repository_hook(self, project_key: str, hook_key: str, repository_slug: str) -> None:
         """Delete repository hook"""
         return self._delete(
-            DELETE_REPOSITORY_HOOK.path.format(
-                projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug
-            ),
+            DELETE_REPOSITORY_HOOK.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_repository_hook_1(self, project_key: str, hook_key: str, repository_slug: str) -> RestRepositoryHook:
         """Get repository hook"""
         return self._get(
-            GET_REPOSITORY_HOOK_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            GET_REPOSITORY_HOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRepositoryHook,
         )
 
     def disable_hook_1(self, project_key: str, hook_key: str, repository_slug: str) -> RestRepositoryHook:
         """Disable repository hook"""
         return self._delete(
-            DISABLE_HOOK_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            DISABLE_HOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRepositoryHook,
         )
 
     def enable_hook_1(self, project_key: str, hook_key: str, repository_slug: str) -> RestRepositoryHook:
         """Enable repository hook"""
         return self._put(
-            ENABLE_HOOK_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            ENABLE_HOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRepositoryHook,
         )
 
     def get_settings_1(self, project_key: str, hook_key: str, repository_slug: str) -> ExampleSettings:
         """Get repository hook settings"""
         return self._get(
-            GET_SETTINGS_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            GET_SETTINGS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=ExampleSettings,
         )
 
@@ -2382,7 +2524,9 @@ class RepositoriesResource(Resource):
     ) -> ExampleSettings:
         """Update repository hook settings"""
         return self._put(
-            SET_SETTINGS_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            SET_SETTINGS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ExampleSettings,
         )
@@ -2394,7 +2538,9 @@ class RepositoriesResource(Resource):
     ) -> RestRepositoryPullRequestSettings:
         """Get pull request settings"""
         return self._get(
-            GET_PULL_REQUEST_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_PULL_REQUEST_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepositoryPullRequestSettings,
         )
 
@@ -2406,7 +2552,9 @@ class RepositoriesResource(Resource):
     ) -> RestRepositoryPullRequestSettings:
         """Update pull request settings"""
         return self._post(
-            UPDATE_PULL_REQUEST_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            UPDATE_PULL_REQUEST_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepositoryPullRequestSettings,
         )
@@ -2423,7 +2571,7 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestTag]:
         """Find tag"""
         return self._get_paged(
-            GET_TAGS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_TAGS.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"orderBy": order_by, "filterText": filter_text},
             model=RestTag,
             start=start,
@@ -2438,7 +2586,9 @@ class RepositoriesResource(Resource):
     ) -> RestTag:
         """Create tag"""
         return self._post(
-            CREATE_TAG_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_TAG_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestTag,
         )
@@ -2446,18 +2596,22 @@ class RepositoriesResource(Resource):
     def get_tag(self, project_key: str, name: str, repository_slug: str) -> RestTag:
         """Get tag"""
         return self._get(
-            GET_TAG.path.format(projectKey=project_key, name=name, repositorySlug=repository_slug),
+            GET_TAG.path.replace("{projectKey}", str(project_key))
+            .replace("{name}", str(name))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestTag,
         )
 
     def unwatch_2(self, project_key: str, repository_slug: str) -> None:
         """Stop watching repository"""
-        return self._delete(UNWATCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return self._delete(
+            UNWATCH_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
+        )
 
     def watch_2(self, project_key: str, repository_slug: str, body: RestRepository) -> None:
         """Watch repository"""
         return self._post(
-            WATCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            WATCH_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -2471,14 +2625,18 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Find webhooks"""
         return self._get(
-            FIND_WEBHOOKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            FIND_WEBHOOKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"event": event, "statistics": statistics},
         )
 
     def create_webhook_1(self, project_key: str, repository_slug: str, body: RestWebhook) -> RestWebhook:
         """Create webhook"""
         return self._post(
-            CREATE_WEBHOOK_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_WEBHOOK_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -2494,7 +2652,9 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Search webhooks"""
         return self._get(
-            SEARCH_WEBHOOKS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_WEBHOOKS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"scopeType": scope_type, "event": event, "statistics": statistics},
         )
 
@@ -2510,7 +2670,9 @@ class RepositoriesResource(Resource):
     ) -> RestWebhookRequestResponse:
         """Test webhook"""
         return self._post(
-            TEST_WEBHOOK_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            TEST_WEBHOOK_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"webhookId": webhook_id, "sslVerificationRequired": ssl_verification_required, "url": url},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhookRequestResponse,
@@ -2519,7 +2681,9 @@ class RepositoriesResource(Resource):
     def delete_webhook_1(self, project_key: str, webhook_id: str, repository_slug: str) -> None:
         """Delete webhook"""
         return self._delete(
-            DELETE_WEBHOOK_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            DELETE_WEBHOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_webhook_1(
@@ -2532,7 +2696,9 @@ class RepositoriesResource(Resource):
     ) -> RestWebhook:
         """Get webhook"""
         return self._get(
-            GET_WEBHOOK_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            GET_WEBHOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"statistics": statistics},
             model=RestWebhook,
         )
@@ -2546,7 +2712,9 @@ class RepositoriesResource(Resource):
     ) -> RestWebhook:
         """Update webhook"""
         return self._put(
-            UPDATE_WEBHOOK_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            UPDATE_WEBHOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -2562,9 +2730,9 @@ class RepositoriesResource(Resource):
     ) -> RestDetailedInvocation:
         """Get last webhook invocation details"""
         return self._get(
-            GET_LATEST_INVOCATION_1.path.format(
-                projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug
-            ),
+            GET_LATEST_INVOCATION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"event": event, "outcome": outcome},
             model=RestDetailedInvocation,
         )
@@ -2579,7 +2747,9 @@ class RepositoriesResource(Resource):
     ) -> RestInvocationHistory:
         """Get webhook statistics"""
         return self._get(
-            GET_STATISTICS_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            GET_STATISTICS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"event": event},
             model=RestInvocationHistory,
         )
@@ -2592,9 +2762,9 @@ class RepositoriesResource(Resource):
     ) -> RestInvocationHistory:
         """Get webhook statistics summary"""
         return self._get(
-            GET_STATISTICS_SUMMARY_1.path.format(
-                projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug
-            ),
+            GET_STATISTICS_SUMMARY_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestInvocationHistory,
         )
 
@@ -2641,7 +2811,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestRefRestriction]:
         """Search for ref restrictions"""
         return self._get_paged(
-            GET_RESTRICTIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_RESTRICTIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"matcherType": matcher_type, "matcherId": matcher_id, "type": type_},
             model=RestRefRestriction,
             start=start,
@@ -2651,31 +2823,43 @@ class RepositoriesResource(Resource):
     def create_restrictions_1(self, project_key: str, repository_slug: str) -> RestRefRestriction:
         """Create multiple ref restrictions"""
         return self._post(
-            CREATE_RESTRICTIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_RESTRICTIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRefRestriction,
         )
 
     def delete_restriction_1(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete a ref restriction"""
         return self._delete(
-            DELETE_RESTRICTION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_RESTRICTION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_restriction_1(self, project_key: str, id: str, repository_slug: str) -> RestRefRestriction:
         """Get a ref restriction"""
         return self._get(
-            GET_RESTRICTION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_RESTRICTION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRefRestriction,
         )
 
     def delete_branch(self, project_key: str, repository_slug: str, body: RestBranchDeleteRequest) -> None:
         """Delete branch"""
-        return self._delete(DELETE_BRANCH.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return self._delete(
+            DELETE_BRANCH.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
+        )
 
     def create_branch(self, project_key: str, repository_slug: str, body: RestBranchCreateRequest) -> RestBranch:
         """Create branch"""
         return self._post(
-            CREATE_BRANCH.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_BRANCH.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestBranch,
         )
@@ -2691,7 +2875,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestMinimalRef]:
         """Get branch"""
         return self._get_paged(
-            FIND_BY_COMMIT.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            FIND_BY_COMMIT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestMinimalRef,
             start=start,
             limit=limit,
@@ -2707,13 +2893,11 @@ class RepositoriesResource(Resource):
     ) -> None:
         """Remove a reaction from comment"""
         return self._delete(
-            UN_REACT.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                commitId=commit_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            UN_REACT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def react(
@@ -2726,20 +2910,20 @@ class RepositoriesResource(Resource):
     ) -> RestUserReaction:
         """React to a comment"""
         return self._put(
-            REACT.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                commitId=commit_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            REACT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestUserReaction,
         )
 
     def delete_all_default_tasks_1(self, project_key: str, repository_slug: str) -> None:
         """Deletes all default tasks for the repository"""
         return self._delete(
-            DELETE_ALL_DEFAULT_TASKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            DELETE_ALL_DEFAULT_TASKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
         )
 
     def get_default_tasks_1(
@@ -2753,7 +2937,9 @@ class RepositoriesResource(Resource):
     ) -> PageIterator[RestDefaultTask]:
         """Get a page of default tasks"""
         return self._get_paged(
-            GET_DEFAULT_TASKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_DEFAULT_TASKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"markup": markup},
             model=RestDefaultTask,
             start=start,
@@ -2768,7 +2954,9 @@ class RepositoriesResource(Resource):
     ) -> RestDefaultTask:
         """Add a default task"""
         return self._post(
-            ADD_DEFAULT_TASK_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            ADD_DEFAULT_TASK_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
@@ -2776,7 +2964,9 @@ class RepositoriesResource(Resource):
     def delete_default_task_1(self, project_key: str, repository_slug: str, task_id: str) -> None:
         """Delete a specific default task"""
         return self._delete(
-            DELETE_DEFAULT_TASK_1.path.format(projectKey=project_key, repositorySlug=repository_slug, taskId=task_id),
+            DELETE_DEFAULT_TASK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{taskId}", str(task_id)),
         )
 
     def update_default_task_1(
@@ -2788,7 +2978,9 @@ class RepositoriesResource(Resource):
     ) -> RestDefaultTask:
         """Update a default task"""
         return self._put(
-            UPDATE_DEFAULT_TASK_1.path.format(projectKey=project_key, repositorySlug=repository_slug, taskId=task_id),
+            UPDATE_DEFAULT_TASK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{taskId}", str(task_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
@@ -2796,7 +2988,7 @@ class RepositoriesResource(Resource):
     def create_tag(self, project_key: str, repository_slug: str, body: RestGitTagCreateRequest) -> RestTag:
         """Create tag"""
         return self._post(
-            CREATE_TAG.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_TAG.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestTag,
         )
@@ -2804,13 +2996,17 @@ class RepositoriesResource(Resource):
     def delete_tag(self, project_key: str, name: str, repository_slug: str) -> None:
         """Delete tag"""
         return self._delete(
-            DELETE_TAG.path.format(projectKey=project_key, name=name, repositorySlug=repository_slug),
+            DELETE_TAG.path.replace("{projectKey}", str(project_key))
+            .replace("{name}", str(name))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_status(self, project_key: str, repository_slug: str, *, at: str | None = None) -> RestRefSyncStatus:
         """Get synchronization status"""
         return self._get(
-            GET_STATUS_PROJECTS_REPOS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_STATUS_PROJECTS_REPOS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"at": at},
             model=RestRefSyncStatus,
         )
@@ -2818,7 +3014,9 @@ class RepositoriesResource(Resource):
     def set_enabled(self, project_key: str, repository_slug: str, body: RestRefSyncStatus) -> RestRefSyncStatus:
         """Disable synchronization"""
         return self._post(
-            SET_ENABLED.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_ENABLED.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRefSyncStatus,
         )
@@ -2826,7 +3024,9 @@ class RepositoriesResource(Resource):
     def synchronize(self, project_key: str, repository_slug: str, body: RestRefSyncRequest) -> RestRejectedRef:
         """Manual synchronization"""
         return self._post(
-            SYNCHRONIZE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SYNCHRONIZE.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRejectedRef,
         )
@@ -2835,12 +3035,12 @@ class RepositoriesResource(Resource):
 class PullRequestsResource(Resource):
     def get_merge_config(self, scm_id: str) -> RestPullRequestMergeConfig:
         """Get merge strategies"""
-        return self._get(GET_MERGE_CONFIG.path.format(scmId=scm_id), model=RestPullRequestMergeConfig)
+        return self._get(GET_MERGE_CONFIG.path.replace("{scmId}", str(scm_id)), model=RestPullRequestMergeConfig)
 
     def set_merge_config(self, scm_id: str, body: RestPullRequestSettings) -> RestPullRequestMergeConfig:
         """Update merge strategies"""
         return self._post(
-            SET_MERGE_CONFIG.path.format(scmId=scm_id),
+            SET_MERGE_CONFIG.path.replace("{scmId}", str(scm_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestMergeConfig,
         )
@@ -2856,7 +3056,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestPullRequest]:
         """Get repository pull requests containing commit"""
         return self._get_paged(
-            GET_PULL_REQUESTS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_PULL_REQUESTS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequest,
             start=start,
             limit=limit,
@@ -2875,7 +3077,7 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestApplicationUser]:
         """Search pull request participants"""
         return self._get_paged(
-            SEARCH.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"filter": filter, "role": role, "direction": direction},
             model=RestApplicationUser,
             start=start,
@@ -2900,7 +3102,7 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestPullRequest]:
         """Get pull requests for repository"""
         return self._get_paged(
-            GET_PAGE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_PAGE.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={
                 "withAttributes": with_attributes,
                 "at": at,
@@ -2919,7 +3121,7 @@ class PullRequestsResource(Resource):
     def create(self, project_key: str, repository_slug: str, body: RestPullRequest) -> RestPullRequest:
         """Create pull request"""
         return self._post(
-            CREATE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
         )
@@ -2933,13 +3135,17 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Delete pull request"""
         return self._delete(
-            DELETE_3.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            DELETE_3.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_3(self, project_key: str, pull_request_id: str, repository_slug: str) -> RestPullRequest:
         """Get pull request"""
         return self._get(
-            GET_3.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            GET_3.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequest,
         )
 
@@ -2952,7 +3158,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequest:
         """Update pull request metadata"""
         return self._put(
-            UPDATE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            UPDATE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
         )
@@ -2968,18 +3176,18 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Stream raw pull request diff"""
         return self._get(
-            STREAM_RAW_DIFF_2.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_RAW_DIFF_2.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"contextLines": context_lines, "whitespace": whitespace},
         )
 
     def stream_patch_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Stream pull request as patch"""
         return self._get(
-            STREAM_PATCH_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_PATCH_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_activities(
@@ -2995,9 +3203,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestPullRequestActivity]:
         """Get pull request activity"""
         return self._get_paged(
-            GET_ACTIVITIES.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_ACTIVITIES.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"fromType": from_type, "fromId": from_id},
             model=RestPullRequestActivity,
             start=start,
@@ -3016,9 +3224,9 @@ class PullRequestsResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._delete(
-            WITHDRAW_APPROVAL.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            WITHDRAW_APPROVAL.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestParticipant,
         )
 
@@ -3029,16 +3237,18 @@ class PullRequestsResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._post(
-            APPROVE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            APPROVE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestParticipant,
         )
 
     def cancel_auto_merge(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Cancel auto-merge for pull request"""
         return self._delete(
-            CANCEL_AUTO_MERGE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CANCEL_AUTO_MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_auto_merge_request(
@@ -3049,9 +3259,9 @@ class PullRequestsResource(Resource):
     ) -> RestAutoMergeRequest:
         """Get auto-merge request for pull request"""
         return self._get(
-            GET_AUTO_MERGE_REQUEST.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_AUTO_MERGE_REQUEST.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAutoMergeRequest,
         )
 
@@ -3063,9 +3273,9 @@ class PullRequestsResource(Resource):
     ) -> RestAutoMergeProcessingResult:
         """Auto-merge pull request"""
         return self._post(
-            TRY_AUTO_MERGE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            TRY_AUTO_MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAutoMergeProcessingResult,
         )
 
@@ -3083,9 +3293,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestComment]:
         """Search pull request comments"""
         return self._get_paged(
-            GET_COMMENTS_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMENTS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"count": count, "state": state, "states": states},
             model=RestComment,
             start=start,
@@ -3101,9 +3311,9 @@ class PullRequestsResource(Resource):
     ) -> RestComment:
         """Add new blocker comment"""
         return self._post(
-            CREATE_COMMENT_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CREATE_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3119,12 +3329,10 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Delete pull request comment"""
         return self._delete(
-            DELETE_COMMENT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            DELETE_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
         )
 
@@ -3137,12 +3345,10 @@ class PullRequestsResource(Resource):
     ) -> RestComment:
         """Get pull request comment"""
         return self._get(
-            GET_COMMENT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            GET_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
         )
 
@@ -3156,12 +3362,10 @@ class PullRequestsResource(Resource):
     ) -> RestComment:
         """Update pull request comment"""
         return self._put(
-            UPDATE_COMMENT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UPDATE_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3181,9 +3385,9 @@ class PullRequestsResource(Resource):
     ) -> RestChange:
         """Gets pull request changes"""
         return self._get(
-            STREAM_CHANGES_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_CHANGES_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "sinceId": since_id,
                 "changeScope": change_scope,
@@ -3214,9 +3418,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestComment]:
         """Get pull request comments for path"""
         return self._get_paged(
-            GET_COMMENTS_2.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMENTS_2.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "path": path,
                 "fromHash": from_hash,
@@ -3241,9 +3445,9 @@ class PullRequestsResource(Resource):
     ) -> RestComment:
         """Add pull request comment"""
         return self._post(
-            CREATE_COMMENT_2.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CREATE_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3259,12 +3463,10 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Delete a pull request comment"""
         return self._delete(
-            DELETE_COMMENT_2.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            DELETE_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
         )
 
@@ -3277,12 +3479,10 @@ class PullRequestsResource(Resource):
     ) -> RestComment:
         """Get a pull request comment"""
         return self._get(
-            GET_COMMENT_2.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            GET_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
         )
 
@@ -3296,12 +3496,10 @@ class PullRequestsResource(Resource):
     ) -> RestComment:
         """Update pull request comment"""
         return self._put(
-            UPDATE_COMMENT_2.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UPDATE_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3316,12 +3514,10 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Apply pull request suggestion"""
         return self._post(
-            APPLY_SUGGESTION.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            APPLY_SUGGESTION.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -3333,9 +3529,9 @@ class PullRequestsResource(Resource):
     ) -> RestCommitMessageSuggestion:
         """Get commit message suggestion"""
         return self._get(
-            GET_COMMIT_MESSAGE_SUGGESTION.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMIT_MESSAGE_SUGGESTION.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestCommitMessageSuggestion,
         )
 
@@ -3353,9 +3549,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestCommit]:
         """Get pull request commits"""
         return self._get_paged(
-            GET_COMMITS_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMITS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"avatarScheme": avatar_scheme, "withCounts": with_counts, "avatarSize": avatar_size},
             model=RestCommit,
             start=start,
@@ -3373,7 +3569,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequest:
         """Decline pull request"""
         return self._post(
-            DECLINE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            DECLINE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
@@ -3393,9 +3591,10 @@ class PullRequestsResource(Resource):
     ) -> RestDiffStatsSummary:
         """Get diff stats summary for pull request"""
         return self._get(
-            GET_DIFF_STATS_SUMMARY_2.path.format(
-                path=path, projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_DIFF_STATS_SUMMARY_2.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"sinceId": since_id, "srcPath": src_path, "untilId": until_id, "whitespace": whitespace},
             model=RestDiffStatsSummary,
         )
@@ -3419,9 +3618,10 @@ class PullRequestsResource(Resource):
     ) -> RestDiff:
         """Stream a diff within a pull request"""
         return self._get(
-            STREAM_DIFF_2.path.format(
-                path=path, projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_DIFF_2.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "avatarScheme": avatar_scheme,
                 "contextLines": context_lines,
@@ -3444,9 +3644,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestMergeability:
         """Test if pull request can be merged"""
         return self._get(
-            CAN_MERGE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CAN_MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestMergeability,
         )
 
@@ -3461,7 +3661,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequest:
         """Merge pull request"""
         return self._post(
-            MERGE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
@@ -3470,9 +3672,9 @@ class PullRequestsResource(Resource):
     def get_merge_base_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> RestCommit:
         """Get the common ancestor between the latest commits of the source and target branches of the pull request"""
         return self._get(
-            GET_MERGE_BASE_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_MERGE_BASE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestCommit,
         )
 
@@ -3490,9 +3692,9 @@ class PullRequestsResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._delete(
-            UNASSIGN_PARTICIPANT_ROLE_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            UNASSIGN_PARTICIPANT_ROLE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"username": username},
         )
 
@@ -3507,9 +3709,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestPullRequestParticipant]:
         """Get pull request participants"""
         return self._get_paged(
-            LIST_PARTICIPANTS.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            LIST_PARTICIPANTS.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestParticipant,
             start=start,
             limit=limit,
@@ -3524,9 +3726,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestParticipant:
         """Assign pull request participant role"""
         return self._post(
-            ASSIGN_PARTICIPANT_ROLE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            ASSIGN_PARTICIPANT_ROLE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestParticipant,
         )
@@ -3540,12 +3742,10 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Unassign pull request participant"""
         return self._delete(
-            UNASSIGN_PARTICIPANT_ROLE.path.format(
-                projectKey=project_key,
-                userSlug=user_slug,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UNASSIGN_PARTICIPANT_ROLE.path.replace("{projectKey}", str(project_key))
+            .replace("{userSlug}", str(user_slug))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def update_status(
@@ -3560,12 +3760,10 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestParticipant:
         """Change pull request status"""
         return self._put(
-            UPDATE_STATUS.path.format(
-                projectKey=project_key,
-                userSlug=user_slug,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UPDATE_STATUS.path.replace("{projectKey}", str(project_key))
+            .replace("{userSlug}", str(user_slug))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestParticipant,
@@ -3582,7 +3780,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequest:
         """Re-open pull request"""
         return self._post(
-            REOPEN.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            REOPEN.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
@@ -3591,9 +3791,9 @@ class PullRequestsResource(Resource):
     def discard_review(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Discard pull request review"""
         return self._delete(
-            DISCARD_REVIEW.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            DISCARD_REVIEW.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_review(
@@ -3607,9 +3807,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestComment]:
         """Get pull request comment thread"""
         return self._get_paged(
-            GET_REVIEW.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_REVIEW.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
             start=start,
             limit=limit,
@@ -3626,9 +3826,9 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Complete pull request review"""
         return self._put(
-            FINISH_REVIEW.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            FINISH_REVIEW.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
@@ -3636,15 +3836,17 @@ class PullRequestsResource(Resource):
     def unwatch_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Stop watching pull request"""
         return self._delete(
-            UNWATCH_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            UNWATCH_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def watch_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Watch pull request"""
         return self._post(
-            WATCH_1.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            WATCH_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_reviewer_groups_1(
@@ -3657,7 +3859,9 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestReviewerGroup]:
         """Get all reviewer groups"""
         return self._get_paged(
-            GET_REVIEWER_GROUPS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REVIEWER_GROUPS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestReviewerGroup,
             start=start,
             limit=limit,
@@ -3666,19 +3870,25 @@ class PullRequestsResource(Resource):
     def create_2(self, project_key: str, repository_slug: str, body: RestReviewerGroup) -> RestReviewerGroup:
         """Create reviewer group"""
         return self._post(
-            CREATE_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
 
     def delete_7(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete reviewer group"""
-        return self._delete(DELETE_7.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug))
+        return self._delete(
+            DELETE_7.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
+        )
 
     def get_reviewer_group_1(self, project_key: str, id: str, repository_slug: str) -> RestReviewerGroup:
         """Get reviewer group"""
         return self._get(
-            GET_REVIEWER_GROUP_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_REVIEWER_GROUP_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestReviewerGroup,
         )
 
@@ -3691,7 +3901,9 @@ class PullRequestsResource(Resource):
     ) -> RestReviewerGroup:
         """Update reviewer group attributes"""
         return self._put(
-            UPDATE_2.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            UPDATE_2.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
@@ -3699,7 +3911,9 @@ class PullRequestsResource(Resource):
     def get_users(self, project_key: str, id: str, repository_slug: str) -> RestApplicationUser:
         """Get reviewer group users"""
         return self._get(
-            GET_USERS.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_USERS.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestApplicationUser,
         )
 
@@ -3712,7 +3926,7 @@ class PullRequestsResource(Resource):
     ) -> PageIterator[RestReviewerGroup]:
         """Get all reviewer groups"""
         return self._get_paged(
-            GET_REVIEWER_GROUPS.path.format(projectKey=project_key),
+            GET_REVIEWER_GROUPS.path.replace("{projectKey}", str(project_key)),
             model=RestReviewerGroup,
             start=start,
             limit=limit,
@@ -3721,23 +3935,26 @@ class PullRequestsResource(Resource):
     def create_1(self, project_key: str, body: RestReviewerGroup) -> RestReviewerGroup:
         """Create reviewer group"""
         return self._post(
-            CREATE_1.path.format(projectKey=project_key),
+            CREATE_1.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
 
     def delete_6(self, project_key: str, id: str) -> None:
         """Delete reviewer group"""
-        return self._delete(DELETE_6.path.format(projectKey=project_key, id=id))
+        return self._delete(DELETE_6.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)))
 
     def get_reviewer_group(self, project_key: str, id: str) -> RestReviewerGroup:
         """Get reviewer group"""
-        return self._get(GET_REVIEWER_GROUP.path.format(projectKey=project_key, id=id), model=RestReviewerGroup)
+        return self._get(
+            GET_REVIEWER_GROUP.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+            model=RestReviewerGroup,
+        )
 
     def update_1(self, project_key: str, id: str, body: RestReviewerGroup) -> RestReviewerGroup:
         """Update reviewer group attributes"""
         return self._put(
-            UPDATE_1.path.format(projectKey=project_key, id=id),
+            UPDATE_1.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
@@ -3752,13 +3969,11 @@ class PullRequestsResource(Resource):
     ) -> None:
         """Remove a reaction from a PR comment"""
         return self._delete(
-            UN_REACT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            UN_REACT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def react_1(
@@ -3771,13 +3986,11 @@ class PullRequestsResource(Resource):
     ) -> RestUserReaction:
         """React to a PR comment"""
         return self._put(
-            REACT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            REACT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestUserReaction,
         )
 
@@ -3788,14 +4001,16 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestCondition:
         """Create default reviewer"""
         return self._post(
-            CREATE_PULL_REQUEST_CONDITION.path.format(projectKey=project_key),
+            CREATE_PULL_REQUEST_CONDITION.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestCondition,
         )
 
     def delete_pull_request_condition(self, project_key: str, id: str) -> None:
         """Remove default reviewer"""
-        return self._delete(DELETE_PULL_REQUEST_CONDITION.path.format(projectKey=project_key, id=id))
+        return self._delete(
+            DELETE_PULL_REQUEST_CONDITION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+        )
 
     def update_pull_request_condition(
         self,
@@ -3805,7 +4020,7 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestCondition:
         """Update the default reviewer"""
         return self._put(
-            UPDATE_PULL_REQUEST_CONDITION.path.format(projectKey=project_key, id=id),
+            UPDATE_PULL_REQUEST_CONDITION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestCondition,
         )
@@ -3813,7 +4028,7 @@ class PullRequestsResource(Resource):
     def get_pull_request_conditions(self, project_key: str) -> RestPullRequestCondition:
         """Get default reviewers"""
         return self._get(
-            GET_PULL_REQUEST_CONDITIONS.path.format(projectKey=project_key),
+            GET_PULL_REQUEST_CONDITIONS.path.replace("{projectKey}", str(project_key)),
             model=RestPullRequestCondition,
         )
 
@@ -3825,7 +4040,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestCondition:
         """Create default reviewers condition"""
         return self._post(
-            CREATE_PULL_REQUEST_CONDITION_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_PULL_REQUEST_CONDITION_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestCondition,
         )
@@ -3833,7 +4050,9 @@ class PullRequestsResource(Resource):
     def delete_pull_request_condition_1(self, project_key: str, id: int, repository_slug: str) -> None:
         """Delete a default reviewer condition"""
         return self._delete(
-            DELETE_PULL_REQUEST_CONDITION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_PULL_REQUEST_CONDITION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def update_pull_request_condition_1(
@@ -3844,14 +4063,18 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestCondition:
         """Update a default reviewer condition"""
         return self._put(
-            UPDATE_PULL_REQUEST_CONDITION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            UPDATE_PULL_REQUEST_CONDITION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestCondition,
         )
 
     def get_pull_request_conditions_1(self, project_key: str, repository_slug: str) -> RestPullRequestCondition:
         """Get configured default reviewers"""
         return self._get(
-            GET_PULL_REQUEST_CONDITIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_PULL_REQUEST_CONDITIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestPullRequestCondition,
         )
 
@@ -3867,7 +4090,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestCondition:
         """Get required reviewers for PR creation"""
         return self._get(
-            GET_REVIEWERS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REVIEWERS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "targetRepoId": target_repo_id,
                 "sourceRepoId": source_repo_id,
@@ -3885,9 +4110,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestRebaseability:
         """Check PR rebase precondition"""
         return self._get(
-            CAN_REBASE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CAN_REBASE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestRebaseability,
         )
 
@@ -3900,7 +4125,9 @@ class PullRequestsResource(Resource):
     ) -> RestPullRequestRebaseResult:
         """Rebase pull request"""
         return self._post(
-            REBASE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            REBASE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestRebaseResult,
         )
@@ -3916,7 +4143,7 @@ class AuthenticationResource(Resource):
     ) -> PageIterator[RestAccessToken]:
         """Get project HTTP tokens"""
         return self._get_paged(
-            GET_ALL_ACCESS_TOKENS.path.format(projectKey=project_key),
+            GET_ALL_ACCESS_TOKENS.path.replace("{projectKey}", str(project_key)),
             model=RestAccessToken,
             start=start,
             limit=limit,
@@ -3925,7 +4152,7 @@ class AuthenticationResource(Resource):
     def create_access_token(self, project_key: str, body: RestAccessTokenRequest) -> RestRawAccessToken:
         """Create project HTTP token"""
         return self._put(
-            CREATE_ACCESS_TOKEN.path.format(projectKey=project_key),
+            CREATE_ACCESS_TOKEN.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRawAccessToken,
         )
@@ -3940,7 +4167,9 @@ class AuthenticationResource(Resource):
     ) -> PageIterator[RestAccessToken]:
         """Get repository HTTP tokens"""
         return self._get_paged(
-            GET_ALL_ACCESS_TOKENS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_ALL_ACCESS_TOKENS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestAccessToken,
             start=start,
             limit=limit,
@@ -3954,7 +4183,9 @@ class AuthenticationResource(Resource):
     ) -> RestRawAccessToken:
         """Create repository HTTP token"""
         return self._put(
-            CREATE_ACCESS_TOKEN_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_ACCESS_TOKEN_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRawAccessToken,
         )
@@ -3962,13 +4193,17 @@ class AuthenticationResource(Resource):
     def delete_by_id_1(self, project_key: str, token_id: str, repository_slug: str) -> None:
         """Delete a HTTP token"""
         return self._delete(
-            DELETE_BY_ID_1.path.format(projectKey=project_key, tokenId=token_id, repositorySlug=repository_slug),
+            DELETE_BY_ID_1.path.replace("{projectKey}", str(project_key))
+            .replace("{tokenId}", str(token_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_by_id_1(self, project_key: str, token_id: str, repository_slug: str) -> RestAccessToken:
         """Get HTTP token by ID"""
         return self._get(
-            GET_BY_ID_1.path.format(projectKey=project_key, tokenId=token_id, repositorySlug=repository_slug),
+            GET_BY_ID_1.path.replace("{projectKey}", str(project_key))
+            .replace("{tokenId}", str(token_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAccessToken,
         )
 
@@ -3981,18 +4216,25 @@ class AuthenticationResource(Resource):
     ) -> RestAccessToken:
         """Update HTTP token"""
         return self._post(
-            UPDATE_ACCESS_TOKEN_1.path.format(projectKey=project_key, tokenId=token_id, repositorySlug=repository_slug),
+            UPDATE_ACCESS_TOKEN_1.path.replace("{projectKey}", str(project_key))
+            .replace("{tokenId}", str(token_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAccessToken,
         )
 
     def delete_by_id(self, project_key: str, token_id: str) -> None:
         """Delete a HTTP token"""
-        return self._delete(DELETE_BY_ID.path.format(projectKey=project_key, tokenId=token_id))
+        return self._delete(
+            DELETE_BY_ID.path.replace("{projectKey}", str(project_key)).replace("{tokenId}", str(token_id)),
+        )
 
     def get_by_id(self, project_key: str, token_id: str) -> RestAccessToken:
         """Get HTTP token by ID"""
-        return self._get(GET_BY_ID.path.format(projectKey=project_key, tokenId=token_id), model=RestAccessToken)
+        return self._get(
+            GET_BY_ID.path.replace("{projectKey}", str(project_key)).replace("{tokenId}", str(token_id)),
+            model=RestAccessToken,
+        )
 
     def update_access_token(
         self,
@@ -4002,7 +4244,7 @@ class AuthenticationResource(Resource):
     ) -> RestAccessToken:
         """Update HTTP token"""
         return self._post(
-            UPDATE_ACCESS_TOKEN.path.format(projectKey=project_key, tokenId=token_id),
+            UPDATE_ACCESS_TOKEN.path.replace("{projectKey}", str(project_key)).replace("{tokenId}", str(token_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAccessToken,
         )
@@ -4016,7 +4258,7 @@ class AuthenticationResource(Resource):
     ) -> PageIterator[RestAccessToken]:
         """Get personal HTTP tokens"""
         return self._get_paged(
-            GET_ALL_ACCESS_TOKENS_2.path.format(userSlug=user_slug),
+            GET_ALL_ACCESS_TOKENS_2.path.replace("{userSlug}", str(user_slug)),
             model=RestAccessToken,
             start=start,
             limit=limit,
@@ -4025,18 +4267,23 @@ class AuthenticationResource(Resource):
     def create_access_token_2(self, user_slug: str, body: RestAccessTokenRequest) -> RestRawAccessToken:
         """Create personal HTTP token"""
         return self._put(
-            CREATE_ACCESS_TOKEN_2.path.format(userSlug=user_slug),
+            CREATE_ACCESS_TOKEN_2.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRawAccessToken,
         )
 
     def delete_by_id_2(self, token_id: str, user_slug: str) -> None:
         """Delete a HTTP token"""
-        return self._delete(DELETE_BY_ID_2.path.format(tokenId=token_id, userSlug=user_slug))
+        return self._delete(
+            DELETE_BY_ID_2.path.replace("{tokenId}", str(token_id)).replace("{userSlug}", str(user_slug)),
+        )
 
     def get_by_id_2(self, token_id: str, user_slug: str) -> RestAccessToken:
         """Get HTTP token by ID"""
-        return self._get(GET_BY_ID_2.path.format(tokenId=token_id, userSlug=user_slug), model=RestAccessToken)
+        return self._get(
+            GET_BY_ID_2.path.replace("{tokenId}", str(token_id)).replace("{userSlug}", str(user_slug)),
+            model=RestAccessToken,
+        )
 
     def update_access_token_2(
         self,
@@ -4046,7 +4293,7 @@ class AuthenticationResource(Resource):
     ) -> RestAccessToken:
         """Update HTTP token"""
         return self._post(
-            UPDATE_ACCESS_TOKEN_2.path.format(tokenId=token_id, userSlug=user_slug),
+            UPDATE_ACCESS_TOKEN_2.path.replace("{tokenId}", str(token_id)).replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAccessToken,
         )
@@ -4065,16 +4312,16 @@ class AuthenticationResource(Resource):
 
     def remove_idp(self, id: str) -> IdpConfigEntity:
         """Delete IdP configuration"""
-        return self._delete(REMOVE_IDP.path.format(id=id), model=IdpConfigEntity)
+        return self._delete(REMOVE_IDP.path.replace("{id}", str(id)), model=IdpConfigEntity)
 
     def get_idp(self, id: str) -> IdpConfigEntity:
         """Get IdP configuration"""
-        return self._get(GET_IDP.path.format(id=id), model=IdpConfigEntity)
+        return self._get(GET_IDP.path.replace("{id}", str(id)), model=IdpConfigEntity)
 
     def update_idp(self, id: str, body: IdpConfigEntity) -> IdpConfigEntity:
         """Update IdP configuration"""
         return self._patch(
-            UPDATE_IDP.path.format(id=id),
+            UPDATE_IDP.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=IdpConfigEntity,
         )
@@ -4121,7 +4368,9 @@ class AuthenticationResource(Resource):
     ) -> PageIterator[RestSshAccessKey]:
         """Get repository SSH keys"""
         return self._get_paged(
-            GET_FOR_REPOSITORY_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_FOR_REPOSITORY_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "filter": filter,
                 "effective": effective,
@@ -4141,7 +4390,9 @@ class AuthenticationResource(Resource):
     ) -> RestSshAccessKey:
         """Add repository SSH key"""
         return self._post(
-            ADD_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            ADD_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSshAccessKey,
         )
@@ -4149,13 +4400,17 @@ class AuthenticationResource(Resource):
     def revoke_for_repository(self, project_key: str, key_id: str, repository_slug: str) -> None:
         """Revoke repository SSH key"""
         return self._delete(
-            REVOKE_FOR_REPOSITORY.path.format(projectKey=project_key, keyId=key_id, repositorySlug=repository_slug),
+            REVOKE_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_for_repository(self, project_key: str, key_id: str, repository_slug: str) -> RestSshAccessKey:
         """Get repository SSH key"""
         return self._get(
-            GET_FOR_REPOSITORY.path.format(projectKey=project_key, keyId=key_id, repositorySlug=repository_slug),
+            GET_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSshAccessKey,
         )
 
@@ -4168,9 +4423,10 @@ class AuthenticationResource(Resource):
     ) -> RestSshAccessKey:
         """Update repository SSH key permission"""
         return self._put(
-            UPDATE_PERMISSION_1.path.format(
-                projectKey=project_key, keyId=key_id, permission=permission, repositorySlug=repository_slug
-            ),
+            UPDATE_PERMISSION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{permission}", str(permission))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSshAccessKey,
         )
 
@@ -4185,7 +4441,7 @@ class AuthenticationResource(Resource):
     ) -> PageIterator[RestSshAccessKey]:
         """Get SSH key"""
         return self._get_paged(
-            GET_SSH_KEYS_FOR_PROJECT.path.format(projectKey=project_key),
+            GET_SSH_KEYS_FOR_PROJECT.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter, "permission": permission},
             model=RestSshAccessKey,
             start=start,
@@ -4195,41 +4451,45 @@ class AuthenticationResource(Resource):
     def add_for_project(self, project_key: str, body: RestSshAccessKey) -> RestSshAccessKey:
         """Add project SSH key"""
         return self._post(
-            ADD_FOR_PROJECT.path.format(projectKey=project_key),
+            ADD_FOR_PROJECT.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSshAccessKey,
         )
 
     def revoke_for_project(self, project_key: str, key_id: str) -> None:
         """Revoke project SSH key"""
-        return self._delete(REVOKE_FOR_PROJECT.path.format(projectKey=project_key, keyId=key_id))
+        return self._delete(
+            REVOKE_FOR_PROJECT.path.replace("{projectKey}", str(project_key)).replace("{keyId}", str(key_id)),
+        )
 
     def get_for_project(self, project_key: str, key_id: str) -> RestSshAccessKey:
         """Get project SSH key"""
         return self._get(
-            GET_FOR_PROJECT.path.format(projectKey=project_key, keyId=key_id),
+            GET_FOR_PROJECT.path.replace("{projectKey}", str(project_key)).replace("{keyId}", str(key_id)),
             model=RestSshAccessKey,
         )
 
     def update_permission(self, project_key: str, key_id: str, permission: str) -> RestSshAccessKey:
         """Update project SSH key permission"""
         return self._put(
-            UPDATE_PERMISSION.path.format(projectKey=project_key, keyId=key_id, permission=permission),
+            UPDATE_PERMISSION.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{permission}", str(permission)),
             model=RestSshAccessKey,
         )
 
     def revoke_many(self, key_id: str) -> None:
         """Revoke project SSH key"""
-        return self._delete(REVOKE_MANY.path.format(keyId=key_id))
+        return self._delete(REVOKE_MANY.path.replace("{keyId}", str(key_id)))
 
     def get_for_projects(self, key_id: int) -> None:
         """Get project SSH keys"""
-        return self._get(GET_FOR_PROJECTS.path.format(keyId=key_id))
+        return self._get(GET_FOR_PROJECTS.path.replace("{keyId}", str(key_id)))
 
     def get_for_repositories(self, key_id: str, *, with_restrictions: str | None = None) -> None:
         """Get repository SSH key"""
         return self._get(
-            GET_FOR_REPOSITORIES.path.format(keyId=key_id),
+            GET_FOR_REPOSITORIES.path.replace("{keyId}", str(key_id)),
             params={"withRestrictions": with_restrictions},
         )
 
@@ -4260,11 +4520,11 @@ class AuthenticationResource(Resource):
 
     def delete_ssh_key(self, key_id: str) -> None:
         """Remove SSH key"""
-        return self._delete(DELETE_SSH_KEY.path.format(keyId=key_id))
+        return self._delete(DELETE_SSH_KEY.path.replace("{keyId}", str(key_id)))
 
     def get_ssh_key(self, key_id: str) -> RestSshKey:
         """Get SSH key for user by keyId"""
-        return self._get(GET_SSH_KEY.path.format(keyId=key_id), model=RestSshKey)
+        return self._get(GET_SSH_KEY.path.replace("{keyId}", str(key_id)), model=RestSshKey)
 
     def ssh_settings(self) -> RestSshSettings:
         """Get SSH settings"""
@@ -4396,7 +4656,7 @@ class AuthenticationResource(Resource):
 
     def unenroll_user(self, user_name: str, body: TotpElevationRestDTO) -> None:
         """Unenroll specific user from two-step verification"""
-        return self._delete(UNENROLL_USER.path.format(userName=user_name))
+        return self._delete(UNENROLL_USER.path.replace("{userName}", str(user_name)))
 
 
 class BuildsResource(Resource):
@@ -4411,14 +4671,18 @@ class BuildsResource(Resource):
     def delete(self, project_key: str, commit_id: str, repository_slug: str, *, key: str) -> None:
         """Delete a specific build status"""
         return self._delete(
-            DELETE.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            DELETE.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"key": key},
         )
 
     def get(self, project_key: str, commit_id: str, repository_slug: str, *, key: str) -> RestBuildStatus:
         """Get a specific build status"""
         return self._get(
-            GET_COMMITS_BUILDS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_COMMITS_BUILDS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"key": key},
             model=RestBuildStatus,
         )
@@ -4432,7 +4696,9 @@ class BuildsResource(Resource):
     ) -> None:
         """Store a build status"""
         return self._post(
-            ADD.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            ADD.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4448,7 +4714,9 @@ class BuildsResource(Resource):
     ) -> None:
         """Delete a deployment"""
         return self._delete(
-            DELETE_1.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            DELETE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "deploymentSequenceNumber": deployment_sequence_number,
                 "key": key,
@@ -4468,7 +4736,9 @@ class BuildsResource(Resource):
     ) -> RestDeployment:
         """Get a deployment"""
         return self._get(
-            GET_1.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "deploymentSequenceNumber": deployment_sequence_number,
                 "key": key,
@@ -4486,9 +4756,9 @@ class BuildsResource(Resource):
     ) -> RestDeployment:
         """Create or update a deployment"""
         return self._post(
-            CREATE_OR_UPDATE_DEPLOYMENT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            CREATE_OR_UPDATE_DEPLOYMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDeployment,
         )
@@ -4508,7 +4778,7 @@ class BuildsResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._get(
-            GET_BUILD_STATUS_STATS.path.format(commitId=commit_id),
+            GET_BUILD_STATUS_STATS.path.replace("{commitId}", str(commit_id)),
             params={"includeUnique": include_unique},
             model=RestBuildStats,
         )
@@ -4527,7 +4797,7 @@ class BuildsResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._get_paged(
-            GET_BUILD_STATUS.path.format(commitId=commit_id),
+            GET_BUILD_STATUS.path.replace("{commitId}", str(commit_id)),
             params={"orderBy": order_by},
             model=RestBuildStatus,
             start=start,
@@ -4541,7 +4811,7 @@ class BuildsResource(Resource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._post(
-            ADD_BUILD_STATUS.path.format(commitId=commit_id),
+            ADD_BUILD_STATUS.path.replace("{commitId}", str(commit_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4559,7 +4829,9 @@ class BuildsResource(Resource):
     ) -> RestInsightAnnotationsResponse:
         """Get Code Insights annotations for a commit"""
         return self._get(
-            GET_ANNOTATIONS_1.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_ANNOTATIONS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"severity": severity, "path": path, "externalId": external_id, "type": type_, "key": key},
             model=RestInsightAnnotationsResponse,
         )
@@ -4575,7 +4847,9 @@ class BuildsResource(Resource):
     ) -> PageIterator[RestInsightReport]:
         """Get all Code Insights reports for a commit"""
         return self._get_paged(
-            GET_REPORTS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_REPORTS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestInsightReport,
             start=start,
             limit=limit,
@@ -4590,9 +4864,10 @@ class BuildsResource(Resource):
     ) -> None:
         """Delete a Code Insights report"""
         return self._delete(
-            DELETE_A_CODE_INSIGHTS_REPORT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            DELETE_A_CODE_INSIGHTS_REPORT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
         )
 
     def get_a_code_insights_report(
@@ -4604,9 +4879,10 @@ class BuildsResource(Resource):
     ) -> RestInsightReport:
         """Get a Code Insights report"""
         return self._get(
-            GET_A_CODE_INSIGHTS_REPORT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            GET_A_CODE_INSIGHTS_REPORT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             model=RestInsightReport,
         )
 
@@ -4620,9 +4896,10 @@ class BuildsResource(Resource):
     ) -> RestInsightReport:
         """Create a Code Insights report"""
         return self._put(
-            SET_A_CODE_INSIGHTS_REPORT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            SET_A_CODE_INSIGHTS_REPORT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestInsightReport,
         )
@@ -4638,9 +4915,10 @@ class BuildsResource(Resource):
     ) -> None:
         """Delete Code Insights annotations"""
         return self._delete(
-            DELETE_ANNOTATIONS.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            DELETE_ANNOTATIONS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             params={"externalId": external_id},
         )
 
@@ -4653,9 +4931,10 @@ class BuildsResource(Resource):
     ) -> RestInsightAnnotationsResponse:
         """Get Code Insights annotations for a report"""
         return self._get(
-            GET_ANNOTATIONS.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            GET_ANNOTATIONS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             model=RestInsightAnnotationsResponse,
         )
 
@@ -4669,9 +4948,10 @@ class BuildsResource(Resource):
     ) -> None:
         """Add Code Insights annotations"""
         return self._post(
-            ADD_ANNOTATIONS.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            ADD_ANNOTATIONS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4686,13 +4966,11 @@ class BuildsResource(Resource):
     ) -> None:
         """Create or replace a Code Insights annotation"""
         return self._put(
-            SET_ANNOTATION.path.format(
-                projectKey=project_key,
-                externalId=external_id,
-                commitId=commit_id,
-                repositorySlug=repository_slug,
-                key=key,
-            ),
+            SET_ANNOTATION.path.replace("{projectKey}", str(project_key))
+            .replace("{externalId}", str(external_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4704,7 +4982,9 @@ class BuildsResource(Resource):
     ) -> RestRequiredBuildCondition:
         """Create a required builds merge check"""
         return self._post(
-            CREATE_REQUIRED_BUILDS_MERGE_CHECK.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_REQUIRED_BUILDS_MERGE_CHECK.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRequiredBuildCondition,
         )
@@ -4712,9 +4992,9 @@ class BuildsResource(Resource):
     def delete_required_builds_merge_check(self, project_key: str, id: int, repository_slug: str) -> None:
         """Delete a required builds merge check"""
         return self._delete(
-            DELETE_REQUIRED_BUILDS_MERGE_CHECK.path.format(
-                projectKey=project_key, id=id, repositorySlug=repository_slug
-            ),
+            DELETE_REQUIRED_BUILDS_MERGE_CHECK.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def update_required_builds_merge_check(
@@ -4726,9 +5006,9 @@ class BuildsResource(Resource):
     ) -> RestRequiredBuildCondition:
         """Update a required builds merge check"""
         return self._put(
-            UPDATE_REQUIRED_BUILDS_MERGE_CHECK.path.format(
-                projectKey=project_key, id=id, repositorySlug=repository_slug
-            ),
+            UPDATE_REQUIRED_BUILDS_MERGE_CHECK.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRequiredBuildCondition,
         )
@@ -4743,8 +5023,8 @@ class BuildsResource(Resource):
     ) -> PageIterator[RestRequiredBuildCondition]:
         """Get required builds merge checks"""
         return self._get_paged(
-            GET_PAGE_OF_REQUIRED_BUILDS_MERGE_CHECKS.path.format(
-                projectKey=project_key, repositorySlug=repository_slug
+            GET_PAGE_OF_REQUIRED_BUILDS_MERGE_CHECKS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
             ),
             model=RestRequiredBuildCondition,
             start=start,
@@ -5064,14 +5344,18 @@ class PermissionsResource(Resource):
     ) -> None:
         """Revoke all repository permissions for users and groups"""
         return self._delete(
-            REVOKE_PERMISSIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            REVOKE_PERMISSIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"user": user, "group": group},
         )
 
     def revoke_permissions_for_group_2(self, project_key: str, repository_slug: str, *, name: str) -> None:
         """Revoke group repository permission"""
         return self._delete(
-            REVOKE_PERMISSIONS_FOR_GROUP_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            REVOKE_PERMISSIONS_FOR_GROUP_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name},
         )
 
@@ -5086,7 +5370,9 @@ class PermissionsResource(Resource):
     ) -> PageIterator[RestPermittedGroup]:
         """Get groups with permission to repository"""
         return self._get_paged(
-            GET_GROUPS_WITH_ANY_PERMISSION_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_GROUPS_WITH_ANY_PERMISSION_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestPermittedGroup,
             start=start,
@@ -5103,7 +5389,9 @@ class PermissionsResource(Resource):
     ) -> None:
         """Update group repository permission"""
         return self._put(
-            SET_PERMISSION_FOR_GROUP.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_PERMISSION_FOR_GROUP.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name, "permission": permission},
         )
 
@@ -5118,7 +5406,9 @@ class PermissionsResource(Resource):
     ) -> PageIterator[RestDetailedGroup]:
         """Get groups without repository permission"""
         return self._get_paged(
-            GET_GROUPS_WITHOUT_ANY_PERMISSION_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_GROUPS_WITHOUT_ANY_PERMISSION_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestDetailedGroup,
             start=start,
@@ -5136,14 +5426,18 @@ class PermissionsResource(Resource):
     ) -> None:
         """Search repository permissions"""
         return self._get(
-            SEARCH_PERMISSIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_PERMISSIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"permission": permission, "filterText": filter_text, "type": type_},
         )
 
     def revoke_permissions_for_user_2(self, project_key: str, repository_slug: str, *, name: str) -> None:
         """Revoke user repository permission"""
         return self._delete(
-            REVOKE_PERMISSIONS_FOR_USER_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            REVOKE_PERMISSIONS_FOR_USER_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name},
         )
 
@@ -5158,7 +5452,9 @@ class PermissionsResource(Resource):
     ) -> PageIterator[RestPermittedUser]:
         """Get users with permission to repository"""
         return self._get_paged(
-            GET_USERS_WITH_ANY_PERMISSION_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_USERS_WITH_ANY_PERMISSION_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestPermittedUser,
             start=start,
@@ -5175,7 +5471,9 @@ class PermissionsResource(Resource):
     ) -> None:
         """Update user repository permission"""
         return self._put(
-            SET_PERMISSION_FOR_USER.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_PERMISSION_FOR_USER.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name, "permission": permission},
         )
 
@@ -5190,7 +5488,9 @@ class PermissionsResource(Resource):
     ) -> PageIterator[RestApplicationUser]:
         """Get users without repository permission"""
         return self._get_paged(
-            GET_USERS_WITHOUT_PERMISSION_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_USERS_WITHOUT_PERMISSION_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestApplicationUser,
             start=start,
@@ -5211,7 +5511,7 @@ class SecurityResource(Resource):
     ) -> PageIterator[RestSecretScanningAllowlistRule]:
         """Find repository secret scanning allowlist rules"""
         return self._get_paged(
-            SEARCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningAllowlistRule,
             start=start,
@@ -5226,7 +5526,9 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningAllowlistRule:
         """Create repository secret scanning allowlist rule"""
         return self._post(
-            CREATE_ALLOWLIST_RULE_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
@@ -5234,7 +5536,9 @@ class SecurityResource(Resource):
     def delete_allowlist_rule_1(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete a repository secret scanning allowlist rule"""
         return self._delete(
-            DELETE_ALLOWLIST_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_allowlist_rule_1(
@@ -5245,7 +5549,9 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningAllowlistRule:
         """Get a repository secret scanning allowlist rule"""
         return self._get(
-            GET_ALLOWLIST_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSecretScanningAllowlistRule,
         )
 
@@ -5258,7 +5564,9 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningAllowlistRule:
         """Edit an existing repository secret scanning allowlist rule"""
         return self._put(
-            EDIT_ALLOWLIST_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            EDIT_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
@@ -5287,7 +5595,7 @@ class SecurityResource(Resource):
     ) -> PageIterator[RestSecretScanningRule]:
         """Find repository secret scanning rules"""
         return self._get_paged(
-            SEARCH_3.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_3.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningRule,
             start=start,
@@ -5302,7 +5610,9 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningRule:
         """Create repository secret scanning rule"""
         return self._post(
-            CREATE_RULE_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_RULE_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5310,13 +5620,17 @@ class SecurityResource(Resource):
     def delete_rule_1(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete a repository secret scanning rule"""
         return self._delete(
-            DELETE_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_rule_1(self, project_key: str, id: str, repository_slug: str) -> RestSecretScanningRule:
         """Get a repository secret scanning rule"""
         return self._get(
-            GET_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSecretScanningRule,
         )
 
@@ -5329,7 +5643,9 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningRule:
         """Edit an existing repository secret scanning rule"""
         return self._put(
-            EDIT_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            EDIT_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5345,7 +5661,7 @@ class SecurityResource(Resource):
     ) -> PageIterator[RestSecretScanningAllowlistRule]:
         """Find project secret scanning allowlist rules"""
         return self._get_paged(
-            SEARCH_ALLOWLIST_RULE.path.format(projectKey=project_key),
+            SEARCH_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningAllowlistRule,
             start=start,
@@ -5359,19 +5675,21 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningAllowlistRule:
         """Create project secret scanning allowlist rule"""
         return self._post(
-            CREATE_ALLOWLIST_RULE.path.format(projectKey=project_key),
+            CREATE_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
 
     def delete_allowlist_rule(self, project_key: str, id: str) -> None:
         """Delete a project secret scanning allowlist rule"""
-        return self._delete(DELETE_ALLOWLIST_RULE.path.format(projectKey=project_key, id=id))
+        return self._delete(
+            DELETE_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+        )
 
     def get_allowlist_rule(self, project_key: str, id: str) -> RestSecretScanningAllowlistRule:
         """Get a project secret scanning allowlist rule"""
         return self._get(
-            GET_ALLOWLIST_RULE.path.format(projectKey=project_key, id=id),
+            GET_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             model=RestSecretScanningAllowlistRule,
         )
 
@@ -5383,7 +5701,7 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningAllowlistRule:
         """Edit an existing project secret scanning allowlist rule"""
         return self._put(
-            EDIT_ALLOWLIST_RULE.path.format(projectKey=project_key, id=id),
+            EDIT_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
@@ -5419,7 +5737,7 @@ class SecurityResource(Resource):
     ) -> PageIterator[RestSecretScanningRule]:
         """Find project secret scanning rules"""
         return self._get_paged(
-            SEARCH_1.path.format(projectKey=project_key),
+            SEARCH_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningRule,
             start=start,
@@ -5429,18 +5747,21 @@ class SecurityResource(Resource):
     def create_rule(self, project_key: str, body: RestSecretScanningRuleSetRequest) -> RestSecretScanningRule:
         """Create project secret scanning rule"""
         return self._post(
-            CREATE_RULE.path.format(projectKey=project_key),
+            CREATE_RULE.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
 
     def delete_rule(self, project_key: str, id: str) -> None:
         """Delete a project secret scanning rule"""
-        return self._delete(DELETE_RULE.path.format(projectKey=project_key, id=id))
+        return self._delete(DELETE_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)))
 
     def get_rule(self, project_key: str, id: str) -> RestSecretScanningRule:
         """Get a project secret scanning rule"""
-        return self._get(GET_RULE.path.format(projectKey=project_key, id=id), model=RestSecretScanningRule)
+        return self._get(
+            GET_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+            model=RestSecretScanningRule,
+        )
 
     def edit_rule(
         self,
@@ -5450,7 +5771,7 @@ class SecurityResource(Resource):
     ) -> RestSecretScanningRule:
         """Edit an existing project secret scanning rule"""
         return self._put(
-            EDIT_RULE.path.format(projectKey=project_key, id=id),
+            EDIT_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5502,16 +5823,16 @@ class SecurityResource(Resource):
 
     def delete_rule_2(self, id: str) -> None:
         """Delete a global secret scanning rule"""
-        return self._delete(DELETE_RULE_2.path.format(id=id))
+        return self._delete(DELETE_RULE_2.path.replace("{id}", str(id)))
 
     def get_rule_2(self, id: str) -> RestSecretScanningRule:
         """Get a global secret scanning rule"""
-        return self._get(GET_RULE_2.path.format(id=id), model=RestSecretScanningRule)
+        return self._get(GET_RULE_2.path.replace("{id}", str(id)), model=RestSecretScanningRule)
 
     def edit_rule_2(self, id: str, body: RestSecretScanningRuleSetRequest) -> RestSecretScanningRule:
         """Edit a global secret scanning rule."""
         return self._put(
-            EDIT_RULE_2.path.format(id=id),
+            EDIT_RULE_2.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5530,11 +5851,11 @@ class SecurityResource(Resource):
 
     def update_certificate_revocation_list_entries(self, id: str) -> None:
         """Update X.509 CRL entries"""
-        return self._put(UPDATE_CERTIFICATE_REVOCATION_LIST_ENTRIES.path.format(id=id))
+        return self._put(UPDATE_CERTIFICATE_REVOCATION_LIST_ENTRIES.path.replace("{id}", str(id)))
 
     def delete_certificate(self, id: str) -> None:
         """Delete an X.509 certificate"""
-        return self._delete(DELETE_CERTIFICATE.path.format(id=id))
+        return self._delete(DELETE_CERTIFICATE.path.replace("{id}", str(id)))
 
     def get_system_signing_configuration(self) -> RestSystemSigningConfiguration:
         """Get system signing configuration"""
@@ -5575,7 +5896,7 @@ class SecurityResource(Resource):
 
     def delete_key(self, fingerprint_or_id: str) -> None:
         """Delete a GPG key"""
-        return self._delete(DELETE_KEY.path.format(fingerprintOrId=fingerprint_or_id))
+        return self._delete(DELETE_KEY.path.replace("{fingerprintOrId}", str(fingerprint_or_id)))
 
 
 class AdminResource(Resource):
@@ -5641,16 +5962,16 @@ class AdminResource(Resource):
 
     def delete_2(self, id: int, *, force: bool | None = False) -> None:
         """Delete Mesh node"""
-        return self._delete(DELETE_2.path.format(id=id), params={"force": force})
+        return self._delete(DELETE_2.path.replace("{id}", str(id)), params={"force": force})
 
     def get_registered_mesh_node_by_id(self, id: str) -> RestMeshNode:
         """Get Mesh node"""
-        return self._get(GET_REGISTERED_MESH_NODE_BY_ID.path.format(id=id), model=RestMeshNode)
+        return self._get(GET_REGISTERED_MESH_NODE_BY_ID.path.replace("{id}", str(id)), model=RestMeshNode)
 
     def update_mesh_node(self, id: str, body: RestMeshNode) -> RestMeshNode:
         """Update Mesh node"""
         return self._put(
-            UPDATE_MESH_NODE.path.format(id=id),
+            UPDATE_MESH_NODE.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestMeshNode,
         )
@@ -5661,7 +5982,7 @@ class AdminResource(Resource):
 
     def get_support_zip(self, id: str) -> None:
         """Get support zip for node"""
-        return self._get(GET_SUPPORT_ZIP.path.format(id=id))
+        return self._get(GET_SUPPORT_ZIP.path.replace("{id}", str(id)))
 
     def get_2(self) -> RestBitbucketLicense:
         """Get license details"""
@@ -5753,16 +6074,16 @@ class AdminResource(Resource):
 
     def delete_8(self, user_slug: str) -> None:
         """Delete user specific rate limit settings"""
-        return self._delete(DELETE_8.path.format(userSlug=user_slug))
+        return self._delete(DELETE_8.path.replace("{userSlug}", str(user_slug)))
 
     def get_6(self, user_slug: str) -> RestUserRateLimitSettings:
         """Get user specific rate limit settings"""
-        return self._get(GET_6.path.format(userSlug=user_slug), model=RestUserRateLimitSettings)
+        return self._get(GET_6.path.replace("{userSlug}", str(user_slug)), model=RestUserRateLimitSettings)
 
     def set_3(self, user_slug: str, body: RestUserRateLimitSettingsUpdateRequest) -> RestUserRateLimitSettings:
         """Set rate limit settings for user"""
         return self._put(
-            SET_3.path.format(userSlug=user_slug),
+            SET_3.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestUserRateLimitSettings,
         )
@@ -5781,23 +6102,23 @@ class AdminResource(Resource):
 
     def delete_hook_script(self, script_id: str) -> None:
         """Delete a hook script."""
-        return self._delete(DELETE_HOOK_SCRIPT.path.format(scriptId=script_id))
+        return self._delete(DELETE_HOOK_SCRIPT.path.replace("{scriptId}", str(script_id)))
 
     def get_hook_script(self, script_id: str) -> RestHookScript:
         """Get a hook script"""
-        return self._get(GET_HOOK_SCRIPT.path.format(scriptId=script_id), model=RestHookScript)
+        return self._get(GET_HOOK_SCRIPT.path.replace("{scriptId}", str(script_id)), model=RestHookScript)
 
     def update_hook_script(self, script_id: str, body: ExamplePutMultipartFormData) -> RestHookScript:
         """Update a hook script"""
         return self._put(
-            UPDATE_HOOK_SCRIPT.path.format(scriptId=script_id),
+            UPDATE_HOOK_SCRIPT.path.replace("{scriptId}", str(script_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestHookScript,
         )
 
     def read(self, script_id: str) -> None:
         """Get hook script content"""
-        return self._get(READ.path.format(scriptId=script_id))
+        return self._get(READ.path.replace("{scriptId}", str(script_id)))
 
     def get_labels(self, *, prefix: str | None = None, start: int = 0, limit: int = 25) -> PageIterator[RestLabel]:
         """Get all labels"""
@@ -5805,7 +6126,7 @@ class AdminResource(Resource):
 
     def get_label(self, label_name: str) -> RestLabel:
         """Get label"""
-        return self._get(GET_LABEL.path.format(labelName=label_name), model=RestLabel)
+        return self._get(GET_LABEL.path.replace("{labelName}", str(label_name)), model=RestLabel)
 
     def get_labelables(
         self,
@@ -5817,7 +6138,7 @@ class AdminResource(Resource):
     ) -> PageIterator[RestLabelable]:
         """Get labelables for label"""
         return self._get_paged(
-            GET_LABELABLES.path.format(labelName=label_name),
+            GET_LABELABLES.path.replace("{labelName}", str(label_name)),
             params={"type": type_},
             model=RestLabelable,
             start=start,
@@ -5826,11 +6147,13 @@ class AdminResource(Resource):
 
     def get_level(self, logger_name: str) -> RestLogLevel:
         """Get current log level"""
-        return self._get(GET_LEVEL.path.format(loggerName=logger_name), model=RestLogLevel)
+        return self._get(GET_LEVEL.path.replace("{loggerName}", str(logger_name)), model=RestLogLevel)
 
     def set_level(self, level_name: str, logger_name: str) -> None:
         """Set log level"""
-        return self._put(SET_LEVEL.path.format(levelName=level_name, loggerName=logger_name))
+        return self._put(
+            SET_LEVEL.path.replace("{levelName}", str(level_name)).replace("{loggerName}", str(logger_name)),
+        )
 
     def get_root_level(self) -> RestLogLevel:
         """Get root log level"""
@@ -5838,7 +6161,7 @@ class AdminResource(Resource):
 
     def set_root_level(self, level_name: str) -> None:
         """Set root log level"""
-        return self._put(SET_ROOT_LEVEL.path.format(levelName=level_name))
+        return self._put(SET_ROOT_LEVEL.path.replace("{levelName}", str(level_name)))
 
     def start_export(self, body: RestExportRequest) -> RestJob:
         """Start export job"""
@@ -5858,11 +6181,11 @@ class AdminResource(Resource):
 
     def get_export_job(self, job_id: str) -> RestJob:
         """Get export job details"""
-        return self._get(GET_EXPORT_JOB.path.format(jobId=job_id), model=RestJob)
+        return self._get(GET_EXPORT_JOB.path.replace("{jobId}", str(job_id)), model=RestJob)
 
     def cancel_export_job(self, job_id: str) -> None:
         """Cancel export job"""
-        return self._post(CANCEL_EXPORT_JOB.path.format(jobId=job_id))
+        return self._post(CANCEL_EXPORT_JOB.path.replace("{jobId}", str(job_id)))
 
     def get_export_job_messages(
         self,
@@ -5875,7 +6198,7 @@ class AdminResource(Resource):
     ) -> PageIterator[RestJobMessage]:
         """Get job messages"""
         return self._get_paged(
-            GET_EXPORT_JOB_MESSAGES.path.format(jobId=job_id),
+            GET_EXPORT_JOB_MESSAGES.path.replace("{jobId}", str(job_id)),
             params={"severity": severity, "subject": subject},
             model=RestJobMessage,
             start=start,
@@ -5892,11 +6215,11 @@ class AdminResource(Resource):
 
     def get_import_job(self, job_id: str) -> RestJob:
         """Get import job status"""
-        return self._get(GET_IMPORT_JOB.path.format(jobId=job_id), model=RestJob)
+        return self._get(GET_IMPORT_JOB.path.replace("{jobId}", str(job_id)), model=RestJob)
 
     def cancel_import_job(self, job_id: str) -> None:
         """Cancel import job"""
-        return self._post(CANCEL_IMPORT_JOB.path.format(jobId=job_id))
+        return self._post(CANCEL_IMPORT_JOB.path.replace("{jobId}", str(job_id)))
 
     def get_import_job_messages(
         self,
@@ -5909,7 +6232,7 @@ class AdminResource(Resource):
     ) -> PageIterator[RestJobMessage]:
         """Get import job messages"""
         return self._get_paged(
-            GET_IMPORT_JOB_MESSAGES.path.format(jobId=job_id),
+            GET_IMPORT_JOB_MESSAGES.path.replace("{jobId}", str(job_id)),
             params={"severity": severity, "subject": subject},
             model=RestJobMessage,
             start=start,
@@ -5974,11 +6297,11 @@ class AdminResource(Resource):
 
     def get_mesh_migration_job(self, job_id: str) -> None:
         """Get Mesh migration job details"""
-        return self._get(GET_MESH_MIGRATION_JOB.path.format(jobId=job_id))
+        return self._get(GET_MESH_MIGRATION_JOB.path.replace("{jobId}", str(job_id)))
 
     def cancel_mesh_migration_job(self, job_id: str) -> None:
         """Cancel Mesh migration job"""
-        return self._post(CANCEL_MESH_MIGRATION_JOB.path.format(jobId=job_id))
+        return self._post(CANCEL_MESH_MIGRATION_JOB.path.replace("{jobId}", str(job_id)))
 
     def get_mesh_migration_job_messages(
         self,
@@ -5991,7 +6314,7 @@ class AdminResource(Resource):
     ) -> PageIterator[RestJobMessage]:
         """Get Mesh migration job messages"""
         return self._get_paged(
-            GET_MESH_MIGRATION_JOB_MESSAGES.path.format(jobId=job_id),
+            GET_MESH_MIGRATION_JOB_MESSAGES.path.replace("{jobId}", str(job_id)),
             params={"severity": severity, "subject": subject},
             model=RestJobMessage,
             start=start,
@@ -6000,7 +6323,10 @@ class AdminResource(Resource):
 
     def get_mesh_migration_job_summary(self, job_id: str) -> RestMeshMigrationSummary:
         """Get Mesh migration job summary"""
-        return self._get(GET_MESH_MIGRATION_JOB_SUMMARY.path.format(jobId=job_id), model=RestMeshMigrationSummary)
+        return self._get(
+            GET_MESH_MIGRATION_JOB_SUMMARY.path.replace("{jobId}", str(job_id)),
+            model=RestMeshMigrationSummary,
+        )
 
     def get_users_2(
         self,
@@ -6031,27 +6357,27 @@ class AdminResource(Resource):
 
     def get_user(self, user_slug: str) -> RestApplicationUser:
         """Get user"""
-        return self._get(GET_USER.path.format(userSlug=user_slug), model=RestApplicationUser)
+        return self._get(GET_USER.path.replace("{userSlug}", str(user_slug)), model=RestApplicationUser)
 
     def delete_avatar(self, user_slug: str) -> RestNamedLink:
         """Delete user avatar"""
-        return self._delete(DELETE_AVATAR.path.format(userSlug=user_slug), model=RestNamedLink)
+        return self._delete(DELETE_AVATAR.path.replace("{userSlug}", str(user_slug)), model=RestNamedLink)
 
     def upload_avatar_1(self, user_slug: str, body: ExampleAvatarMultipartFormData) -> None:
         """Update user avatar"""
         return self._post(
-            UPLOAD_AVATAR_1.path.format(userSlug=user_slug),
+            UPLOAD_AVATAR_1.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def get_user_settings(self, user_slug: str) -> ExampleSettingsMap:
         """Get user settings"""
-        return self._get(GET_USER_SETTINGS.path.format(userSlug=user_slug), model=ExampleSettingsMap)
+        return self._get(GET_USER_SETTINGS.path.replace("{userSlug}", str(user_slug)), model=ExampleSettingsMap)
 
     def update_settings(self, user_slug: str, body: ExampleSettingsMap) -> None:
         """Update user settings"""
         return self._post(
-            UPDATE_SETTINGS.path.format(userSlug=user_slug),
+            UPDATE_SETTINGS.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -6176,7 +6502,7 @@ class MirroringResource(Resource):
     def get_mirrored_repository(self, external_repository_id: str) -> RestMirroredRepository:
         """Get clone URLs"""
         return self._get(
-            GET_MIRRORED_REPOSITORY.path.format(externalRepositoryId=external_repository_id),
+            GET_MIRRORED_REPOSITORY.path.replace("{externalRepositoryId}", str(external_repository_id)),
             model=RestMirroredRepository,
         )
 
@@ -6186,16 +6512,16 @@ class MirroringResource(Resource):
 
     def remove(self, mirror_id: str) -> None:
         """Delete mirror by ID"""
-        return self._delete(REMOVE.path.format(mirrorId=mirror_id))
+        return self._delete(REMOVE.path.replace("{mirrorId}", str(mirror_id)))
 
     def get_mirror(self, mirror_id: str) -> RestMirrorServer:
         """Get mirror by ID"""
-        return self._get(GET_MIRROR.path.format(mirrorId=mirror_id), model=RestMirrorServer)
+        return self._get(GET_MIRROR.path.replace("{mirrorId}", str(mirror_id)), model=RestMirrorServer)
 
     def upgrade(self, mirror_id: str, body: RestMirrorUpgradeRequest) -> RestMirrorServer:
         """Upgrade mirror server"""
         return self._put(
-            UPGRADE.path.format(mirrorId=mirror_id),
+            UPGRADE.path.replace("{mirrorId}", str(mirror_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestMirrorServer,
         )
@@ -6203,7 +6529,7 @@ class MirroringResource(Resource):
     def publish_event(self, mirror_id: str, body: RestRepositoryMirrorEvent) -> None:
         """Publish RepositoryMirrorEvent"""
         return self._post(
-            PUBLISH_EVENT.path.format(mirrorId=mirror_id),
+            PUBLISH_EVENT.path.replace("{mirrorId}", str(mirror_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -6213,7 +6539,7 @@ class MirroringResource(Resource):
 
     def get_project_by_id(self, project_id: str) -> RestProject:
         """Get project"""
-        return self._get(GET_PROJECT_BY_ID.path.format(projectId=project_id), model=RestProject)
+        return self._get(GET_PROJECT_BY_ID.path.replace("{projectId}", str(project_id)), model=RestProject)
 
     def get_all_repos_for_project(
         self,
@@ -6225,7 +6551,7 @@ class MirroringResource(Resource):
     ) -> PageIterator[EnrichedRepository]:
         """Get hashes for repositories in project"""
         return self._get_paged(
-            GET_ALL_REPOS_FOR_PROJECT.path.format(projectId=project_id),
+            GET_ALL_REPOS_FOR_PROJECT.path.replace("{projectId}", str(project_id)),
             params={"includeDefaultBranch": include_default_branch},
             model=EnrichedRepository,
             start=start,
@@ -6248,7 +6574,7 @@ class MirroringResource(Resource):
     ) -> EnrichedRepository:
         """Get content hash for a repository"""
         return self._get(
-            GET_CONTENT_HASH_BY_ID.path.format(repoId=repo_id),
+            GET_CONTENT_HASH_BY_ID.path.replace("{repoId}", str(repo_id)),
             params={"includeDefaultBranch": include_default_branch},
             model=EnrichedRepository,
         )
@@ -6261,7 +6587,7 @@ class MirroringResource(Resource):
     ) -> RestMirroredRepositoryDescriptor:
         """Get mirrors for repository"""
         return self._get(
-            GET_REPOSITORY_MIRRORS.path.format(repoId=repo_id),
+            GET_REPOSITORY_MIRRORS.path.replace("{repoId}", str(repo_id)),
             params={"preAuthorized": pre_authorized},
             model=RestMirroredRepositoryDescriptor,
         )
@@ -6292,22 +6618,30 @@ class MirroringResource(Resource):
 
     def delete_mirroring_request(self, mirroring_request_id: str) -> None:
         """Delete a mirroring request"""
-        return self._delete(DELETE_MIRRORING_REQUEST.path.format(mirroringRequestId=mirroring_request_id))
+        return self._delete(
+            DELETE_MIRRORING_REQUEST.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
+        )
 
     def get_mirroring_request(self, mirroring_request_id: str) -> RestMirroringRequest:
         """Get a mirroring request"""
         return self._get(
-            GET_MIRRORING_REQUEST.path.format(mirroringRequestId=mirroring_request_id),
+            GET_MIRRORING_REQUEST.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
             model=RestMirroringRequest,
         )
 
     def accept(self, mirroring_request_id: str) -> RestMirrorServer:
         """Accept a mirroring request"""
-        return self._post(ACCEPT.path.format(mirroringRequestId=mirroring_request_id), model=RestMirrorServer)
+        return self._post(
+            ACCEPT.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
+            model=RestMirrorServer,
+        )
 
     def reject(self, mirroring_request_id: str) -> RestMirrorServer:
         """Reject a mirroring request"""
-        return self._post(REJECT.path.format(mirroringRequestId=mirroring_request_id), model=RestMirrorServer)
+        return self._post(
+            REJECT.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
+            model=RestMirrorServer,
+        )
 
     def get_out_of_sync_repositories(self) -> None:
         """Get out-of-sync repositories"""
@@ -6316,7 +6650,9 @@ class MirroringResource(Resource):
     def get_repository_lock_owner(self, project_key: str, repository_slug: str) -> RestRepositoryLockOwner:
         """Get the repository lock owner for the syncing process"""
         return self._get(
-            GET_REPOSITORY_LOCK_OWNER.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPOSITORY_LOCK_OWNER.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepositoryLockOwner,
         )
 
@@ -6327,7 +6663,9 @@ class MirroringResource(Resource):
     ) -> RestMirrorRepositorySynchronizationStatus:
         """Gets information about the mirrored repository"""
         return self._get(
-            GET_REPO_SYNC_STATUS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPO_SYNC_STATUS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestMirrorRepositorySynchronizationStatus,
         )
 
@@ -6387,11 +6725,11 @@ class MirroringResource(Resource):
 
     def stop_mirroring_project(self, project_id: str) -> None:
         """Stop mirroring project"""
-        return self._delete(STOP_MIRRORING_PROJECT.path.format(projectId=project_id))
+        return self._delete(STOP_MIRRORING_PROJECT.path.replace("{projectId}", str(project_id)))
 
     def start_mirroring_project(self, project_id: str) -> None:
         """Add project to be mirrored"""
-        return self._post(START_MIRRORING_PROJECT.path.format(projectId=project_id))
+        return self._post(START_MIRRORING_PROJECT.path.replace("{projectId}", str(project_id)))
 
     def get_upstream_server(self) -> RestUpstreamServer:
         """Get upstream server"""
@@ -6410,7 +6748,7 @@ class JiraIntegrationResource(Resource):
     def create_issue(self, comment_id: str, *, application_id: str | None = None) -> RestCommentJiraIssue:
         """Create Jira Issue"""
         return self._post(
-            CREATE_ISSUE.path.format(commentId=comment_id),
+            CREATE_ISSUE.path.replace("{commentId}", str(comment_id)),
             params={"applicationId": application_id},
             model=RestCommentJiraIssue,
         )
@@ -6425,7 +6763,7 @@ class JiraIntegrationResource(Resource):
     ) -> PageIterator[RestChangeset]:
         """Get changesets for issue key"""
         return self._get_paged(
-            GET_COMMITS_BY_ISSUE_KEY.path.format(issueKey=issue_key),
+            GET_COMMITS_BY_ISSUE_KEY.path.replace("{issueKey}", str(issue_key)),
             params={"maxChanges": max_changes},
             model=RestChangeset,
             start=start,
@@ -6435,7 +6773,7 @@ class JiraIntegrationResource(Resource):
     def get_enhanced_entity_link_for_project(self, project_key: str) -> RestEnhancedEntityLink:
         """Get entity link"""
         return self._get(
-            GET_ENHANCED_ENTITY_LINK_FOR_PROJECT.path.format(projectKey=project_key),
+            GET_ENHANCED_ENTITY_LINK_FOR_PROJECT.path.replace("{projectKey}", str(project_key)),
             model=RestEnhancedEntityLink,
         )
 
@@ -6447,9 +6785,9 @@ class JiraIntegrationResource(Resource):
     ) -> RestJiraIssue:
         """Get issues for a pull request"""
         return self._get(
-            GET_ISSUE_KEYS_FOR_PULL_REQUEST.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_ISSUE_KEYS_FOR_PULL_REQUEST.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestJiraIssue,
         )
 

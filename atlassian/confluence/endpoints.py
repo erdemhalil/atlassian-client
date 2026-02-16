@@ -68,7 +68,9 @@ UPDATE = Endpoint("PUT", "/rest/api/content/{id}/child/attachment/{attachmentId}
 UPDATE_DATA = Endpoint("POST", "/rest/api/content/{id}/child/attachment/{attachmentId}/data", "Update binary data o...")
 MOVE = Endpoint("POST", "/rest/api/content/{id}/child/attachment/{attachmentId}/move", "Move attachment")
 REMOVE_ATTACHMENT_VERSION = Endpoint(
-    "DELETE", "/rest/api/content/{id}/child/attachment/{attachmentId}/version/{version}", ""
+    "DELETE",
+    "/rest/api/content/{id}/child/attachment/{attachmentId}/version/{version}",
+    "",
 )
 
 # --- Space ---
@@ -184,7 +186,9 @@ CREATE_SITE_RESTORE_JOB = Endpoint("POST", "/rest/api/backup-restore/restore/sit
 CREATE_SITE_RESTORE_JOB_FOR_UPLOADED_BACKUP_FILE = Endpoint("POST", "/rest/api/backup-restore/restore/site/upload", "C")
 CREATE_SPACE_RESTORE_JOB = Endpoint("POST", "/rest/api/backup-restore/restore/space", "Create space restore job")
 CREATE_SPACE_RESTORE_JOB_FOR_UPLOADED_BACKUP_FILE = Endpoint(
-    "POST", "/rest/api/backup-restore/restore/space/upload", ""
+    "POST",
+    "/rest/api/backup-restore/restore/space/upload",
+    "",
 )
 
 # --- Webhooks ---
@@ -241,10 +245,13 @@ INDEX_2 = Endpoint("GET", "/rest/api/server-information", "Get server informatio
 
 CREATE = Endpoint("POST", "/rest/api/admin/group", "Create group")
 DELETE = Endpoint("DELETE", "/rest/api/admin/group/{groupName}", "Delete group")
+CREATE_PERSONAL_SPACE = Endpoint("POST", "/rest/api/admin/space/personal/{username}", "Creates personal Space for a...")
 CREATE_USER = Endpoint("POST", "/rest/api/admin/user", "Create user")
 DELETE_1 = Endpoint("DELETE", "/rest/api/admin/user/{username}", "Delete user")
 UPDATE_USER = Endpoint("PUT", "/rest/api/admin/user/{username}", "Update user")
 DISABLE = Endpoint("PUT", "/rest/api/admin/user/{username}/disable", "Disable user")
 ENABLE = Endpoint("PUT", "/rest/api/admin/user/{username}/enable", "Enable user")
 CHANGE_PASSWORD = Endpoint("POST", "/rest/api/admin/user/{username}/password", "Change password")
+GET_ACTIVE_USERS = Endpoint("GET", "/rest/api/admin/users/list/active", "Get active users")
 GET_AUDIT_RECORDS = Endpoint("GET", "/rest/api/audit", "")
+GET_CLUSTER_NODE_STATUSES = Endpoint("GET", "/rest/api/cluster/nodes", "Get node statuses in a cluster")

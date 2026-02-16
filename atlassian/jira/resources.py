@@ -652,11 +652,11 @@ class AgileResource(JiraResource):
 
     def delete_board(self, board_id: int) -> None:
         """Delete the board"""
-        return self._delete(DELETE_BOARD.path.format(**{"boardId": board_id}))
+        return self._delete(DELETE_BOARD.path.replace("{boardId}", str(board_id)))
 
     def get_board(self, board_id: int) -> BoardBean:
         """Get a single board"""
-        return self._get(GET_BOARD.path.format(**{"boardId": board_id}), model=BoardBean)
+        return self._get(GET_BOARD.path.replace("{boardId}", str(board_id)), model=BoardBean)
 
     def get_issues_for_backlog(
         self,
@@ -671,7 +671,7 @@ class AgileResource(JiraResource):
     ) -> IssueBean:
         """Get all issues from the board's backlog"""
         return self._get(
-            GET_ISSUES_FOR_BACKLOG.path.format(**{"boardId": board_id}),
+            GET_ISSUES_FOR_BACKLOG.path.replace("{boardId}", str(board_id)),
             params={
                 "expand": expand,
                 "jql": jql,
@@ -685,7 +685,7 @@ class AgileResource(JiraResource):
 
     def get_configuration(self, board_id: int) -> BoardConfigBean:
         """Get the board configuration"""
-        return self._get(GET_CONFIGURATION.path.format(**{"boardId": board_id}), model=BoardConfigBean)
+        return self._get(GET_CONFIGURATION.path.replace("{boardId}", str(board_id)), model=BoardConfigBean)
 
     def get_epics(
         self,
@@ -697,7 +697,7 @@ class AgileResource(JiraResource):
     ) -> EpicBean:
         """Get all epics from the board"""
         return self._get(
-            GET_EPICS.path.format(**{"boardId": board_id}),
+            GET_EPICS.path.replace("{boardId}", str(board_id)),
             params={"maxResults": max_results, "done": done, "startAt": start_at},
             model=EpicBean,
         )
@@ -715,7 +715,7 @@ class AgileResource(JiraResource):
     ) -> IssueBean:
         """Get all issues without an epic"""
         return self._get(
-            GET_ISSUES_WITHOUT_EPIC.path.format(**{"boardId": board_id}),
+            GET_ISSUES_WITHOUT_EPIC.path.replace("{boardId}", str(board_id)),
             params={
                 "expand": expand,
                 "jql": jql,
@@ -741,7 +741,7 @@ class AgileResource(JiraResource):
     ) -> IssueBean:
         """Get all issues for a specific epic"""
         return self._get(
-            GET_ISSUES_FOR_EPIC.path.format(**{"epicId": epic_id, "boardId": board_id}),
+            GET_ISSUES_FOR_EPIC.path.replace("{epicId}", str(epic_id)).replace("{boardId}", str(board_id)),
             params={
                 "expand": expand,
                 "jql": jql,
@@ -766,7 +766,7 @@ class AgileResource(JiraResource):
     ) -> IssueBean:
         """Get all issues from a board"""
         return self._get(
-            GET_ISSUES_FOR_BOARD.path.format(**{"boardId": board_id}),
+            GET_ISSUES_FOR_BOARD.path.replace("{boardId}", str(board_id)),
             params={
                 "expand": expand,
                 "jql": jql,
@@ -787,41 +787,46 @@ class AgileResource(JiraResource):
     ) -> ProjectJsonBean:
         """Get all projects associated with the board"""
         return self._get(
-            GET_PROJECTS.path.format(**{"boardId": board_id}),
+            GET_PROJECTS.path.replace("{boardId}", str(board_id)),
             params={"maxResults": max_results, "startAt": start_at},
             model=ProjectJsonBean,
         )
 
     def get_properties_keys(self, board_id: str) -> EntityPropertiesKeysBean:
         """Get all properties keys for a board"""
-        return self._get(GET_PROPERTIES_KEYS.path.format(**{"boardId": board_id}), model=EntityPropertiesKeysBean)
+        return self._get(
+            GET_PROPERTIES_KEYS.path.replace("{boardId}", str(board_id)),
+            model=EntityPropertiesKeysBean,
+        )
 
     def delete_property(self, property_key: str, board_id: str) -> None:
         """Delete a property from a board"""
-        return self._delete(DELETE_PROPERTY.path.format(**{"propertyKey": property_key, "boardId": board_id}))
+        return self._delete(
+            DELETE_PROPERTY.path.replace("{propertyKey}", str(property_key)).replace("{boardId}", str(board_id)),
+        )
 
     def get_property(self, property_key: str, board_id: str) -> EntityPropertiesKeysBean:
         """Get a property from a board"""
         return self._get(
-            GET_PROPERTY.path.format(**{"propertyKey": property_key, "boardId": board_id}),
+            GET_PROPERTY.path.replace("{propertyKey}", str(property_key)).replace("{boardId}", str(board_id)),
             model=EntityPropertiesKeysBean,
         )
 
     def set_property(self, property_key: str, board_id: str) -> EntityPropertiesKeysBean:
         """Update a board's property"""
         return self._put(
-            SET_PROPERTY.path.format(**{"propertyKey": property_key, "boardId": board_id}),
+            SET_PROPERTY.path.replace("{propertyKey}", str(property_key)).replace("{boardId}", str(board_id)),
             model=EntityPropertiesKeysBean,
         )
 
     def get_refined_velocity(self, board_id: int) -> BooleanSettingBean:
         """Get the value of the refined velocity setting"""
-        return self._get(GET_REFINED_VELOCITY.path.format(**{"boardId": board_id}), model=BooleanSettingBean)
+        return self._get(GET_REFINED_VELOCITY.path.replace("{boardId}", str(board_id)), model=BooleanSettingBean)
 
     def set_refined_velocity(self, board_id: int, body: BooleanSettingBean) -> None:
         """Update the board's refined velocity setting"""
         return self._put(
-            SET_REFINED_VELOCITY.path.format(**{"boardId": board_id}),
+            SET_REFINED_VELOCITY.path.replace("{boardId}", str(board_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -835,7 +840,7 @@ class AgileResource(JiraResource):
     ) -> SprintBean:
         """Get all sprints from a board"""
         return self._get(
-            GET_ALL_SPRINTS.path.format(**{"boardId": board_id}),
+            GET_ALL_SPRINTS.path.replace("{boardId}", str(board_id)),
             params={"maxResults": max_results, "state": state, "startAt": start_at},
             model=SprintBean,
         )
@@ -854,7 +859,7 @@ class AgileResource(JiraResource):
     ) -> SprintBean:
         """Get all issues for a sprint"""
         return self._get(
-            GET_ISSUES_FOR_SPRINT.path.format(**{"sprintId": sprint_id, "boardId": board_id}),
+            GET_ISSUES_FOR_SPRINT.path.replace("{sprintId}", str(sprint_id)).replace("{boardId}", str(board_id)),
             params={
                 "expand": expand,
                 "jql": jql,
@@ -876,7 +881,7 @@ class AgileResource(JiraResource):
     ) -> VersionBean:
         """Get all versions from a board"""
         return self._get(
-            GET_ALL_VERSIONS.path.format(**{"boardId": board_id}),
+            GET_ALL_VERSIONS.path.replace("{boardId}", str(board_id)),
             params={"maxResults": max_results, "released": released, "startAt": start_at},
             model=VersionBean,
         )
@@ -907,12 +912,12 @@ class AgileResource(JiraResource):
 
     def get_epic(self, epic_id_or_key: str) -> EpicBean:
         """Get an epic by id or key"""
-        return self._get(GET_EPIC.path.format(**{"epicIdOrKey": epic_id_or_key}), model=EpicBean)
+        return self._get(GET_EPIC.path.replace("{epicIdOrKey}", str(epic_id_or_key)), model=EpicBean)
 
     def partially_update_epic(self, epic_id_or_key: str, body: EpicUpdateBean) -> EpicBean:
         """Update an epic's details"""
         return self._post(
-            PARTIALLY_UPDATE_EPIC.path.format(**{"epicIdOrKey": epic_id_or_key}),
+            PARTIALLY_UPDATE_EPIC.path.replace("{epicIdOrKey}", str(epic_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=EpicBean,
         )
@@ -930,7 +935,7 @@ class AgileResource(JiraResource):
     ) -> PageIterator[IssueBean]:
         """Get issues for a specific epic"""
         return self._get_paged(
-            GET_ISSUES_FOR_EPIC_1.path.format(**{"epicIdOrKey": epic_id_or_key}),
+            GET_ISSUES_FOR_EPIC_1.path.replace("{epicIdOrKey}", str(epic_id_or_key)),
             params={"expand": expand, "jql": jql, "validateQuery": validate_query, "fields": fields},
             model=IssueBean,
             items_field="issues",
@@ -941,14 +946,14 @@ class AgileResource(JiraResource):
     def move_issues_to_epic(self, epic_id_or_key: str, body: IssueAssignRequestBean) -> None:
         """Move issues to a specific epic"""
         return self._post(
-            MOVE_ISSUES_TO_EPIC.path.format(**{"epicIdOrKey": epic_id_or_key}),
+            MOVE_ISSUES_TO_EPIC.path.replace("{epicIdOrKey}", str(epic_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def rank_epics(self, epic_id_or_key: str, body: EpicRankRequestBean) -> None:
         """Rank an epic relative to another"""
         return self._put(
-            RANK_EPICS.path.format(**{"epicIdOrKey": epic_id_or_key}),
+            RANK_EPICS.path.replace("{epicIdOrKey}", str(epic_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -970,16 +975,16 @@ class AgileResource(JiraResource):
 
     def delete_sprint(self, sprint_id: int) -> None:
         """Delete a sprint"""
-        return self._delete(DELETE_SPRINT.path.format(**{"sprintId": sprint_id}))
+        return self._delete(DELETE_SPRINT.path.replace("{sprintId}", str(sprint_id)))
 
     def get_sprint(self, sprint_id: int) -> SprintBean:
         """Get sprint by id"""
-        return self._get(GET_SPRINT.path.format(**{"sprintId": sprint_id}), model=SprintBean)
+        return self._get(GET_SPRINT.path.replace("{sprintId}", str(sprint_id)), model=SprintBean)
 
     def partially_update_sprint(self, sprint_id: int, body: SprintBean) -> SprintBean:
         """Partially update a sprint"""
         return self._post(
-            PARTIALLY_UPDATE_SPRINT.path.format(**{"sprintId": sprint_id}),
+            PARTIALLY_UPDATE_SPRINT.path.replace("{sprintId}", str(sprint_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=SprintBean,
         )
@@ -987,7 +992,7 @@ class AgileResource(JiraResource):
     def update_sprint(self, sprint_id: int, body: SprintBean) -> SprintBean:
         """Update a sprint fully"""
         return self._put(
-            UPDATE_SPRINT.path.format(**{"sprintId": sprint_id}),
+            UPDATE_SPRINT.path.replace("{sprintId}", str(sprint_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=SprintBean,
         )
@@ -1005,7 +1010,7 @@ class AgileResource(JiraResource):
     ) -> PageIterator[IssueBean]:
         """Get all issues in a sprint"""
         return self._get_paged(
-            GET_ISSUES_FOR_SPRINT_1.path.format(**{"sprintId": sprint_id}),
+            GET_ISSUES_FOR_SPRINT_1.path.replace("{sprintId}", str(sprint_id)),
             params={"expand": expand, "jql": jql, "validateQuery": validate_query, "fields": fields},
             model=IssueBean,
             items_field="issues",
@@ -1016,36 +1021,40 @@ class AgileResource(JiraResource):
     def move_issues_to_sprint(self, sprint_id: int, body: IssueAssignRequestBean) -> None:
         """Move issues to a sprint"""
         return self._post(
-            MOVE_ISSUES_TO_SPRINT.path.format(**{"sprintId": sprint_id}),
+            MOVE_ISSUES_TO_SPRINT.path.replace("{sprintId}", str(sprint_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def get_properties_keys_1(self, sprint_id: str) -> EntityPropertiesKeysBean:
         """Get all properties keys for a sprint"""
         return self._get(
-            GET_PROPERTIES_KEYS_1.path.format(**{"sprintId": sprint_id}),
+            GET_PROPERTIES_KEYS_1.path.replace("{sprintId}", str(sprint_id)),
             model=EntityPropertiesKeysBean,
         )
 
     def delete_property_1(self, property_key: str, sprint_id: str) -> None:
         """Delete a sprint's property"""
-        return self._delete(DELETE_PROPERTY_1.path.format(**{"propertyKey": property_key, "sprintId": sprint_id}))
+        return self._delete(
+            DELETE_PROPERTY_1.path.replace("{propertyKey}", str(property_key)).replace("{sprintId}", str(sprint_id)),
+        )
 
     def get_property_1(self, property_key: str, sprint_id: str) -> EntityPropertyBean:
         """Get a property for a sprint"""
         return self._get(
-            GET_PROPERTY_1.path.format(**{"propertyKey": property_key, "sprintId": sprint_id}),
+            GET_PROPERTY_1.path.replace("{propertyKey}", str(property_key)).replace("{sprintId}", str(sprint_id)),
             model=EntityPropertyBean,
         )
 
     def set_property_1(self, property_key: str, sprint_id: str) -> None:
         """Update a sprint's property"""
-        return self._put(SET_PROPERTY_1.path.format(**{"propertyKey": property_key, "sprintId": sprint_id}))
+        return self._put(
+            SET_PROPERTY_1.path.replace("{propertyKey}", str(property_key)).replace("{sprintId}", str(sprint_id)),
+        )
 
     def swap_sprint(self, sprint_id: int, body: SprintSwapBean) -> None:
         """Swap the position of two sprints"""
         return self._post(
-            SWAP_SPRINT.path.format(**{"sprintId": sprint_id}),
+            SWAP_SPRINT.path.replace("{sprintId}", str(sprint_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -1076,23 +1085,26 @@ class ProjectResource(JiraResource):
 
     def delete(self, id: str, *, move_issues_to: str | None = None) -> None:
         """Delete a project component"""
-        return self._delete(DELETE.path.format(**{"id": id}), params={"moveIssuesTo": move_issues_to})
+        return self._delete(DELETE.path.replace("{id}", str(id)), params={"moveIssuesTo": move_issues_to})
 
     def get_component(self, id: str) -> ComponentBean:
         """Get project component"""
-        return self._get(GET_COMPONENT.path.format(**{"id": id}), model=ComponentBean)
+        return self._get(GET_COMPONENT.path.replace("{id}", str(id)), model=ComponentBean)
 
     def update_component(self, id: str, body: ComponentBean) -> ComponentBean:
         """Update a component"""
         return self._put(
-            UPDATE_COMPONENT.path.format(**{"id": id}),
+            UPDATE_COMPONENT.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ComponentBean,
         )
 
     def get_component_related_issues(self, id: str) -> ComponentIssueCountsBean:
         """Get component related issues"""
-        return self._get(GET_COMPONENT_RELATED_ISSUES.path.format(**{"id": id}), model=ComponentIssueCountsBean)
+        return self._get(
+            GET_COMPONENT_RELATED_ISSUES.path.replace("{id}", str(id)),
+            model=ComponentIssueCountsBean,
+        )
 
     def get_all_projects(
         self,
@@ -1129,25 +1141,25 @@ class ProjectResource(JiraResource):
     def get_project_type_by_key(self, project_type_key: str) -> ProjectTypeBean:
         """Get project type by key"""
         return self._get(
-            GET_PROJECT_TYPE_BY_KEY.path.format(**{"projectTypeKey": project_type_key}),
+            GET_PROJECT_TYPE_BY_KEY.path.replace("{projectTypeKey}", str(project_type_key)),
             model=ProjectTypeBean,
         )
 
     def get_accessible_project_type_by_key(self, project_type_key: str) -> ProjectTypeBean:
         """Get project type by key"""
         return self._get(
-            GET_ACCESSIBLE_PROJECT_TYPE_BY_KEY.path.format(**{"projectTypeKey": project_type_key}),
+            GET_ACCESSIBLE_PROJECT_TYPE_BY_KEY.path.replace("{projectTypeKey}", str(project_type_key)),
             model=ProjectTypeBean,
         )
 
     def delete_project(self, project_id_or_key: str) -> None:
         """Delete a project"""
-        return self._delete(DELETE_PROJECT.path.format(**{"projectIdOrKey": project_id_or_key}))
+        return self._delete(DELETE_PROJECT.path.replace("{projectIdOrKey}", str(project_id_or_key)))
 
     def get_project(self, project_id_or_key: str, *, expand: str | None = None) -> ProjectBean:
         """Get a project by ID or key"""
         return self._get(
-            GET_PROJECT.path.format(**{"projectIdOrKey": project_id_or_key}),
+            GET_PROJECT.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             params={"expand": expand},
             model=ProjectBean,
         )
@@ -1161,7 +1173,7 @@ class ProjectResource(JiraResource):
     ) -> ProjectBean:
         """Update a project"""
         return self._put(
-            UPDATE_PROJECT.path.format(**{"projectIdOrKey": project_id_or_key}),
+            UPDATE_PROJECT.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ProjectBean,
@@ -1169,12 +1181,12 @@ class ProjectResource(JiraResource):
 
     def archive_project(self, project_id_or_key: str) -> None:
         """Archive a project"""
-        return self._put(ARCHIVE_PROJECT.path.format(**{"projectIdOrKey": project_id_or_key}))
+        return self._put(ARCHIVE_PROJECT.path.replace("{projectIdOrKey}", str(project_id_or_key)))
 
     def create_avatar_from_temporary_2(self, project_id_or_key: str, body: AvatarCroppingBean) -> AvatarBean:
         """Create avatar from temporary"""
         return self._post(
-            CREATE_AVATAR_FROM_TEMPORARY_2.path.format(**{"projectIdOrKey": project_id_or_key}),
+            CREATE_AVATAR_FROM_TEMPORARY_2.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=AvatarBean,
         )
@@ -1182,7 +1194,7 @@ class ProjectResource(JiraResource):
     def update_project_avatar(self, project_id_or_key: str, body: AvatarBean) -> None:
         """Update project avatar"""
         return self._put(
-            UPDATE_PROJECT_AVATAR.path.format(**{"projectIdOrKey": project_id_or_key}),
+            UPDATE_PROJECT_AVATAR.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -1193,60 +1205,71 @@ class ProjectResource(JiraResource):
     ) -> AvatarCroppingBean:
         """Store temporary avatar using multipart"""
         return self._post(
-            STORE_TEMPORARY_AVATAR_USING_MULTI_PART_1.path.format(**{"projectIdOrKey": project_id_or_key}),
+            STORE_TEMPORARY_AVATAR_USING_MULTI_PART_1.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=AvatarCroppingBean,
         )
 
     def delete_avatar(self, project_id_or_key: str, id: int) -> None:
         """Delete an avatar"""
-        return self._delete(DELETE_AVATAR.path.format(**{"projectIdOrKey": project_id_or_key, "id": id}))
+        return self._delete(
+            DELETE_AVATAR.path.replace("{projectIdOrKey}", str(project_id_or_key)).replace("{id}", str(id)),
+        )
 
     def get_all_avatars(self, project_id_or_key: str) -> AvatarBean:
         """Get all avatars for a project"""
-        return self._get(GET_ALL_AVATARS.path.format(**{"projectIdOrKey": project_id_or_key}), model=AvatarBean)
+        return self._get(
+            GET_ALL_AVATARS.path.replace("{projectIdOrKey}", str(project_id_or_key)),
+            model=AvatarBean,
+        )
 
     def get_project_components(self, project_id_or_key: str) -> ComponentBean:
         """Get project components"""
         return self._get(
-            GET_PROJECT_COMPONENTS.path.format(**{"projectIdOrKey": project_id_or_key}),
+            GET_PROJECT_COMPONENTS.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             model=ComponentBean,
         )
 
     def get_properties_keys_3(self, project_id_or_key: str) -> EntityPropertiesKeysBean:
         """Get keys of all properties for project"""
         return self._get(
-            GET_PROPERTIES_KEYS_3.path.format(**{"projectIdOrKey": project_id_or_key}),
+            GET_PROPERTIES_KEYS_3.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             model=EntityPropertiesKeysBean,
         )
 
     def delete_property_5(self, property_key: str, project_id_or_key: str) -> None:
         """Delete property from project"""
         return self._delete(
-            DELETE_PROPERTY_5.path.format(**{"propertyKey": property_key, "projectIdOrKey": project_id_or_key}),
+            DELETE_PROPERTY_5.path.replace("{propertyKey}", str(property_key)).replace(
+                "{projectIdOrKey}", str(project_id_or_key)
+            ),
         )
 
     def get_property_5(self, property_key: str, project_id_or_key: str) -> EntityPropertyBean:
         """Get value of property from project"""
         return self._get(
-            GET_PROPERTY_5.path.format(**{"propertyKey": property_key, "projectIdOrKey": project_id_or_key}),
+            GET_PROPERTY_5.path.replace("{propertyKey}", str(property_key)).replace(
+                "{projectIdOrKey}", str(project_id_or_key)
+            ),
             model=EntityPropertyBean,
         )
 
     def set_property_4(self, property_key: str, project_id_or_key: str, body: PropertyBean) -> None:
         """Set value of specified project's property"""
         return self._put(
-            SET_PROPERTY_4.path.format(**{"propertyKey": property_key, "projectIdOrKey": project_id_or_key}),
+            SET_PROPERTY_4.path.replace("{propertyKey}", str(property_key)).replace(
+                "{projectIdOrKey}", str(project_id_or_key)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def restore_project(self, project_id_or_key: str) -> None:
         """Restore an archived project"""
-        return self._put(RESTORE_PROJECT.path.format(**{"projectIdOrKey": project_id_or_key}))
+        return self._put(RESTORE_PROJECT.path.replace("{projectIdOrKey}", str(project_id_or_key)))
 
     def get_project_roles(self, project_id_or_key: str) -> None:
         """Get all roles in project"""
-        return self._get(GET_PROJECT_ROLES.path.format(**{"projectIdOrKey": project_id_or_key}))
+        return self._get(GET_PROJECT_ROLES.path.replace("{projectIdOrKey}", str(project_id_or_key)))
 
     def delete_actor(
         self,
@@ -1258,21 +1281,21 @@ class ProjectResource(JiraResource):
     ) -> None:
         """Delete actors from project role"""
         return self._delete(
-            DELETE_ACTOR.path.format(**{"projectIdOrKey": project_id_or_key, "id": id}),
+            DELETE_ACTOR.path.replace("{projectIdOrKey}", str(project_id_or_key)).replace("{id}", str(id)),
             params={"user": user, "group": group},
         )
 
     def get_project_role(self, project_id_or_key: str, id: int) -> ProjectRoleBean:
         """Get details for a project role"""
         return self._get(
-            GET_PROJECT_ROLE.path.format(**{"projectIdOrKey": project_id_or_key, "id": id}),
+            GET_PROJECT_ROLE.path.replace("{projectIdOrKey}", str(project_id_or_key)).replace("{id}", str(id)),
             model=ProjectRoleBean,
         )
 
     def add_actor_users(self, project_id_or_key: str, id: int, body: ActorsMap) -> ProjectRoleBean:
         """Add actor to project role"""
         return self._post(
-            ADD_ACTOR_USERS.path.format(**{"projectIdOrKey": project_id_or_key, "id": id}),
+            ADD_ACTOR_USERS.path.replace("{projectIdOrKey}", str(project_id_or_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ProjectRoleBean,
         )
@@ -1280,7 +1303,7 @@ class ProjectResource(JiraResource):
     def set_actors(self, project_id_or_key: str, id: int, body: ProjectRoleActorsUpdateBean) -> ProjectRoleBean:
         """Update project role with actors"""
         return self._put(
-            SET_ACTORS.path.format(**{"projectIdOrKey": project_id_or_key, "id": id}),
+            SET_ACTORS.path.replace("{projectIdOrKey}", str(project_id_or_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ProjectRoleBean,
         )
@@ -1288,15 +1311,15 @@ class ProjectResource(JiraResource):
     def get_all_statuses(self, project_id_or_key: str) -> IssueTypeWithStatusJsonBean:
         """Get all issue types with statuses for a project"""
         return self._get(
-            GET_ALL_STATUSES.path.format(**{"projectIdOrKey": project_id_or_key}),
+            GET_ALL_STATUSES.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             model=IssueTypeWithStatusJsonBean,
         )
 
     def update_project_type(self, project_id_or_key: str, new_project_type_key: str) -> ProjectBean:
         """Update project type"""
         return self._put(
-            UPDATE_PROJECT_TYPE.path.format(
-                **{"projectIdOrKey": project_id_or_key, "newProjectTypeKey": new_project_type_key}
+            UPDATE_PROJECT_TYPE.path.replace("{projectIdOrKey}", str(project_id_or_key)).replace(
+                "{newProjectTypeKey}", str(new_project_type_key)
             ),
             model=ProjectBean,
         )
@@ -1312,7 +1335,7 @@ class ProjectResource(JiraResource):
     ) -> PageBean:
         """Get paginated project versions"""
         return self._get(
-            GET_PROJECT_VERSIONS_PAGINATED.path.format(**{"projectIdOrKey": project_id_or_key}),
+            GET_PROJECT_VERSIONS_PAGINATED.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             params={"expand": expand, "maxResults": max_results, "orderBy": order_by, "startAt": start_at},
             model=PageBean,
         )
@@ -1320,7 +1343,7 @@ class ProjectResource(JiraResource):
     def get_project_versions(self, project_id_or_key: str, *, expand: str | None = None) -> VersionBean:
         """Get project versions"""
         return self._get(
-            GET_PROJECT_VERSIONS.path.format(**{"projectIdOrKey": project_id_or_key}),
+            GET_PROJECT_VERSIONS.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             params={"expand": expand},
             model=VersionBean,
         )
@@ -1328,7 +1351,7 @@ class ProjectResource(JiraResource):
     def get_issue_security_scheme_1(self, project_key_or_id: str) -> SecuritySchemeJsonBean:
         """Get issue security scheme for project"""
         return self._get(
-            GET_ISSUE_SECURITY_SCHEME_1.path.format(**{"projectKeyOrId": project_key_or_id}),
+            GET_ISSUE_SECURITY_SCHEME_1.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             model=SecuritySchemeJsonBean,
         )
 
@@ -1340,7 +1363,7 @@ class ProjectResource(JiraResource):
     ) -> NotificationSchemeBean:
         """Get notification scheme associated with the project"""
         return self._get(
-            GET_NOTIFICATION_SCHEME_1.path.format(**{"projectKeyOrId": project_key_or_id}),
+            GET_NOTIFICATION_SCHEME_1.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             params={"expand": expand},
             model=NotificationSchemeBean,
         )
@@ -1353,7 +1376,7 @@ class ProjectResource(JiraResource):
     ) -> PermissionSchemeBean:
         """Get assigned permission scheme"""
         return self._get(
-            GET_ASSIGNED_PERMISSION_SCHEME.path.format(**{"projectKeyOrId": project_key_or_id}),
+            GET_ASSIGNED_PERMISSION_SCHEME.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             params={"expand": expand},
             model=PermissionSchemeBean,
         )
@@ -1367,7 +1390,7 @@ class ProjectResource(JiraResource):
     ) -> PermissionSchemeBean:
         """Assign permission scheme to project"""
         return self._put(
-            ASSIGN_PERMISSION_SCHEME.path.format(**{"projectKeyOrId": project_key_or_id}),
+            ASSIGN_PERMISSION_SCHEME.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=PermissionSchemeBean,
@@ -1376,14 +1399,14 @@ class ProjectResource(JiraResource):
     def get_assigned_priority_scheme(self, project_key_or_id: str) -> PrioritySchemeBean:
         """Get assigned priority scheme"""
         return self._get(
-            GET_ASSIGNED_PRIORITY_SCHEME.path.format(**{"projectKeyOrId": project_key_or_id}),
+            GET_ASSIGNED_PRIORITY_SCHEME.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             model=PrioritySchemeBean,
         )
 
     def assign_priority_scheme(self, project_key_or_id: str, body: IdBean) -> PrioritySchemeBean:
         """Assign project with priority scheme"""
         return self._put(
-            ASSIGN_PRIORITY_SCHEME.path.format(**{"projectKeyOrId": project_key_or_id}),
+            ASSIGN_PRIORITY_SCHEME.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=PrioritySchemeBean,
         )
@@ -1391,21 +1414,23 @@ class ProjectResource(JiraResource):
     def unassign_priority_scheme(self, scheme_id: int, project_key_or_id: str) -> PrioritySchemeBean:
         """Unassign project from priority scheme"""
         return self._delete(
-            UNASSIGN_PRIORITY_SCHEME.path.format(**{"schemeId": scheme_id, "projectKeyOrId": project_key_or_id}),
+            UNASSIGN_PRIORITY_SCHEME.path.replace("{schemeId}", str(scheme_id)).replace(
+                "{projectKeyOrId}", str(project_key_or_id)
+            ),
             model=PrioritySchemeBean,
         )
 
     def get_security_levels_for_project(self, project_key_or_id: str) -> SecurityListLevelJsonBean:
         """Get all security levels for project"""
         return self._get(
-            GET_SECURITY_LEVELS_FOR_PROJECT.path.format(**{"projectKeyOrId": project_key_or_id}),
+            GET_SECURITY_LEVELS_FOR_PROJECT.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             model=SecurityListLevelJsonBean,
         )
 
     def get_workflow_scheme_for_project(self, project_key_or_id: str) -> WorkflowSchemeBean:
         """Get workflow scheme for project"""
         return self._get(
-            GET_WORKFLOW_SCHEME_FOR_PROJECT.path.format(**{"projectKeyOrId": project_key_or_id}),
+            GET_WORKFLOW_SCHEME_FOR_PROJECT.path.replace("{projectKeyOrId}", str(project_key_or_id)),
             model=WorkflowSchemeBean,
         )
 
@@ -1423,16 +1448,16 @@ class ProjectResource(JiraResource):
 
     def remove_project_category(self, id: int) -> None:
         """Delete project category"""
-        return self._delete(REMOVE_PROJECT_CATEGORY.path.format(**{"id": id}))
+        return self._delete(REMOVE_PROJECT_CATEGORY.path.replace("{id}", str(id)))
 
     def get_project_category_by_id(self, id: int) -> ProjectCategoryJsonBean:
         """Get project category by ID"""
-        return self._get(GET_PROJECT_CATEGORY_BY_ID.path.format(**{"id": id}), model=ProjectCategoryJsonBean)
+        return self._get(GET_PROJECT_CATEGORY_BY_ID.path.replace("{id}", str(id)), model=ProjectCategoryJsonBean)
 
     def update_project_category(self, id: int, body: ProjectCategoryBean) -> ProjectCategoryJsonBean:
         """Update project category"""
         return self._put(
-            UPDATE_PROJECT_CATEGORY.path.format(**{"id": id}),
+            UPDATE_PROJECT_CATEGORY.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ProjectCategoryJsonBean,
         )
@@ -1469,16 +1494,16 @@ class ProjectResource(JiraResource):
 
     def delete_project_role(self, id: int, *, swap: int | None = None) -> None:
         """Deletes a role"""
-        return self._delete(DELETE_PROJECT_ROLE.path.format(**{"id": id}), params={"swap": swap})
+        return self._delete(DELETE_PROJECT_ROLE.path.replace("{id}", str(id)), params={"swap": swap})
 
     def get_project_roles_by_id(self, id: int) -> ProjectRoleBean:
         """Get a specific project role"""
-        return self._get(GET_PROJECT_ROLES_BY_ID.path.format(**{"id": id}), model=ProjectRoleBean)
+        return self._get(GET_PROJECT_ROLES_BY_ID.path.replace("{id}", str(id)), model=ProjectRoleBean)
 
     def partial_update_project_role(self, id: int, body: CreateUpdateRoleRequestBean) -> ProjectRoleBean:
         """Partially updates a role's name or description"""
         return self._post(
-            PARTIAL_UPDATE_PROJECT_ROLE.path.format(**{"id": id}),
+            PARTIAL_UPDATE_PROJECT_ROLE.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ProjectRoleBean,
         )
@@ -1486,7 +1511,7 @@ class ProjectResource(JiraResource):
     def fully_update_project_role(self, id: int, body: CreateUpdateRoleRequestBean) -> ProjectRoleBean:
         """Fully updates a role's name and description"""
         return self._put(
-            FULLY_UPDATE_PROJECT_ROLE.path.format(**{"id": id}),
+            FULLY_UPDATE_PROJECT_ROLE.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ProjectRoleBean,
         )
@@ -1500,19 +1525,22 @@ class ProjectResource(JiraResource):
     ) -> ProjectRoleActorsBean:
         """Removes default actor from a role"""
         return self._delete(
-            DELETE_PROJECT_ROLE_ACTORS_FROM_ROLE.path.format(**{"id": id}),
+            DELETE_PROJECT_ROLE_ACTORS_FROM_ROLE.path.replace("{id}", str(id)),
             params={"user": user, "group": group},
             model=ProjectRoleActorsBean,
         )
 
     def get_project_role_actors_for_role(self, id: int) -> ProjectRoleActorsBean:
         """Get default actors for a role"""
-        return self._get(GET_PROJECT_ROLE_ACTORS_FOR_ROLE.path.format(**{"id": id}), model=ProjectRoleActorsBean)
+        return self._get(
+            GET_PROJECT_ROLE_ACTORS_FOR_ROLE.path.replace("{id}", str(id)),
+            model=ProjectRoleActorsBean,
+        )
 
     def add_project_role_actors_to_role(self, id: int, body: ActorInputBean) -> ProjectRoleActorsBean:
         """Adds default actors to a role"""
         return self._post(
-            ADD_PROJECT_ROLE_ACTORS_TO_ROLE.path.format(**{"id": id}),
+            ADD_PROJECT_ROLE_ACTORS_TO_ROLE.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ProjectRoleActorsBean,
         )
@@ -1550,73 +1578,77 @@ class ProjectResource(JiraResource):
 
     def get_version(self, id: str, *, expand: str | None = None) -> VersionBean:
         """Get version details"""
-        return self._get(GET_VERSION.path.format(**{"id": id}), params={"expand": expand}, model=VersionBean)
+        return self._get(GET_VERSION.path.replace("{id}", str(id)), params={"expand": expand}, model=VersionBean)
 
     def update_version(self, id: str, body: VersionBean) -> None:
         """Update version details"""
         return self._put(
-            UPDATE_VERSION.path.format(**{"id": id}),
+            UPDATE_VERSION.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def merge(self, move_issues_to: str, id: str) -> None:
         """Merge versions"""
-        return self._put(MERGE.path.format(**{"moveIssuesTo": move_issues_to, "id": id}))
+        return self._put(MERGE.path.replace("{moveIssuesTo}", str(move_issues_to)).replace("{id}", str(id)))
 
     def move_version(self, id: str, body: VersionMoveBean) -> VersionBean:
         """Modify version's sequence"""
         return self._post(
-            MOVE_VERSION.path.format(**{"id": id}),
+            MOVE_VERSION.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=VersionBean,
         )
 
     def get_version_related_issues(self, id: str) -> VersionIssueCountsBean:
         """Get version related issues count"""
-        return self._get(GET_VERSION_RELATED_ISSUES.path.format(**{"id": id}), model=VersionIssueCountsBean)
+        return self._get(GET_VERSION_RELATED_ISSUES.path.replace("{id}", str(id)), model=VersionIssueCountsBean)
 
     def delete_1(self, id: str, body: DeleteAndReplaceVersionBean) -> None:
         """Delete version and replace values"""
         return self._post(
-            DELETE_1.path.format(**{"id": id}),
+            DELETE_1.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def get_version_unresolved_issues(self, id: str) -> VersionUnresolvedIssueCountsBean:
         """Get version unresolved issues count"""
         return self._get(
-            GET_VERSION_UNRESOLVED_ISSUES.path.format(**{"id": id}),
+            GET_VERSION_UNRESOLVED_ISSUES.path.replace("{id}", str(id)),
             model=VersionUnresolvedIssueCountsBean,
         )
 
     def delete_remote_version_links_by_version_id(self, version_id: str) -> None:
         """Delete all remote version links for version"""
-        return self._delete(DELETE_REMOTE_VERSION_LINKS_BY_VERSION_ID.path.format(**{"versionId": version_id}))
+        return self._delete(
+            DELETE_REMOTE_VERSION_LINKS_BY_VERSION_ID.path.replace("{versionId}", str(version_id)),
+        )
 
     def get_remote_version_links_by_version_id(self, version_id: str) -> RemoteEntityLinksJsonBean:
         """Get remote version links by version ID"""
         return self._get(
-            GET_REMOTE_VERSION_LINKS_BY_VERSION_ID.path.format(**{"versionId": version_id}),
+            GET_REMOTE_VERSION_LINKS_BY_VERSION_ID.path.replace("{versionId}", str(version_id)),
             model=RemoteEntityLinksJsonBean,
         )
 
     def create_or_update_remote_version_link(self, version_id: str, body: RemoteEntityLinkJsonBean) -> None:
         """Create or update remote version link without global ID"""
         return self._post(
-            CREATE_OR_UPDATE_REMOTE_VERSION_LINK.path.format(**{"versionId": version_id}),
+            CREATE_OR_UPDATE_REMOTE_VERSION_LINK.path.replace("{versionId}", str(version_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def delete_remote_version_link(self, version_id: str, global_id: str) -> None:
         """Delete specific remote version link"""
         return self._delete(
-            DELETE_REMOTE_VERSION_LINK.path.format(**{"versionId": version_id, "globalId": global_id}),
+            DELETE_REMOTE_VERSION_LINK.path.replace("{versionId}", str(version_id)).replace(
+                "{globalId}", str(global_id)
+            ),
         )
 
     def get_remote_version_link(self, version_id: str, global_id: str) -> RemoteEntityLinkJsonBean:
         """Get specific remote version link"""
         return self._get(
-            GET_REMOTE_VERSION_LINK.path.format(**{"versionId": version_id, "globalId": global_id}),
+            GET_REMOTE_VERSION_LINK.path.replace("{versionId}", str(version_id)).replace("{globalId}", str(global_id)),
             model=RemoteEntityLinkJsonBean,
         )
 
@@ -1628,7 +1660,9 @@ class ProjectResource(JiraResource):
     ) -> None:
         """Create or update remote version link with global ID"""
         return self._post(
-            CREATE_OR_UPDATE_REMOTE_VERSION_LINK_1.path.format(**{"versionId": version_id, "globalId": global_id}),
+            CREATE_OR_UPDATE_REMOTE_VERSION_LINK_1.path.replace("{versionId}", str(version_id)).replace(
+                "{globalId}", str(global_id)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -1648,7 +1682,7 @@ class IssueResource(JiraResource):
     ) -> IssueBean:
         """Get a single issue with Agile fields"""
         return self._get(
-            GET_ISSUE_1_0_ISSUE.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_ISSUE_1_0_ISSUE.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"expand": expand, "fields": fields, "updateHistory": update_history},
             model=IssueBean,
         )
@@ -1661,7 +1695,7 @@ class IssueResource(JiraResource):
     ) -> FieldValueBean:
         """Get the estimation of an issue for a board"""
         return self._get(
-            GET_ISSUE_ESTIMATION_FOR_BOARD.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_ISSUE_ESTIMATION_FOR_BOARD.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"boardId": board_id},
             model=FieldValueBean,
         )
@@ -1675,7 +1709,7 @@ class IssueResource(JiraResource):
     ) -> FieldValueBean:
         """Update the estimation of an issue for a board"""
         return self._put(
-            ESTIMATE_ISSUE_FOR_BOARD.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            ESTIMATE_ISSUE_FOR_BOARD.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"boardId": board_id},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=FieldValueBean,
@@ -1687,44 +1721,46 @@ class IssueResource(JiraResource):
 
     def remove_attachment(self, id: str) -> None:
         """Delete an attachment from an issue"""
-        return self._delete(REMOVE_ATTACHMENT.path.format(**{"id": id}))
+        return self._delete(REMOVE_ATTACHMENT.path.replace("{id}", str(id)))
 
     def get_attachment(self, id: str) -> AttachmentBean:
         """Get the meta-data for an attachment, including the URI of the actual attached file"""
-        return self._get(GET_ATTACHMENT.path.format(**{"id": id}), model=AttachmentBean)
+        return self._get(GET_ATTACHMENT.path.replace("{id}", str(id)), model=AttachmentBean)
 
     def expand_for_humans(self, id: str) -> HumanReadableArchive:
         """Get human-readable attachment expansion"""
-        return self._get(EXPAND_FOR_HUMANS.path.format(**{"id": id}), model=HumanReadableArchive)
+        return self._get(EXPAND_FOR_HUMANS.path.replace("{id}", str(id)), model=HumanReadableArchive)
 
     def expand_for_machines(self, id: str) -> AttachmentArchiveImpl:
         """Get raw attachment expansion"""
-        return self._get(EXPAND_FOR_MACHINES.path.format(**{"id": id}), model=AttachmentArchiveImpl)
+        return self._get(EXPAND_FOR_MACHINES.path.replace("{id}", str(id)), model=AttachmentArchiveImpl)
 
     def get_properties_keys_1(self, comment_id: str) -> EntityPropertiesKeysBean:
         """Get properties keys of a comment"""
         return self._get(
-            GET_PROPERTIES_KEYS_1_COMMENT_PROPERTIES.path.format(**{"commentId": comment_id}),
+            GET_PROPERTIES_KEYS_1_COMMENT_PROPERTIES.path.replace("{commentId}", str(comment_id)),
             model=EntityPropertiesKeysBean,
         )
 
     def delete_property_2(self, property_key: str, comment_id: str) -> None:
         """Delete a property from a comment"""
         return self._delete(
-            DELETE_PROPERTY_2.path.format(**{"propertyKey": property_key, "commentId": comment_id}),
+            DELETE_PROPERTY_2.path.replace("{propertyKey}", str(property_key)).replace("{commentId}", str(comment_id)),
         )
 
     def get_property_2(self, property_key: str, comment_id: str) -> EntityPropertyBean:
         """Get a property from a comment"""
         return self._get(
-            GET_PROPERTY_2.path.format(**{"propertyKey": property_key, "commentId": comment_id}),
+            GET_PROPERTY_2.path.replace("{propertyKey}", str(property_key)).replace("{commentId}", str(comment_id)),
             model=EntityPropertyBean,
         )
 
     def set_property_1(self, property_key: str, comment_id: str) -> None:
         """Set a property on a comment"""
         return self._put(
-            SET_PROPERTY_1_COMMENT_PROPERTIES.path.format(**{"propertyKey": property_key, "commentId": comment_id}),
+            SET_PROPERTY_1_COMMENT_PROPERTIES.path.replace("{propertyKey}", str(property_key)).replace(
+                "{commentId}", str(comment_id)
+            ),
         )
 
     def create_issue(self, body: IssueUpdateBean, *, update_history: bool | None = False) -> IssueCreateResponse:
@@ -1757,7 +1793,7 @@ class IssueResource(JiraResource):
     ) -> CreateMetaIssueTypeBean:
         """Get metadata for project issue types"""
         return self._get(
-            GET_CREATE_ISSUE_META_PROJECT_ISSUE_TYPES.path.format(**{"projectIdOrKey": project_id_or_key}),
+            GET_CREATE_ISSUE_META_PROJECT_ISSUE_TYPES.path.replace("{projectIdOrKey}", str(project_id_or_key)),
             params={"maxResults": max_results, "startAt": start_at},
             model=CreateMetaIssueTypeBean,
         )
@@ -1772,8 +1808,8 @@ class IssueResource(JiraResource):
     ) -> FieldMetaBean:
         """Get metadata for issue types used for creating issues"""
         return self._get(
-            GET_CREATE_ISSUE_META_FIELDS.path.format(
-                **{"issueTypeId": issue_type_id, "projectIdOrKey": project_id_or_key}
+            GET_CREATE_ISSUE_META_FIELDS.path.replace("{issueTypeId}", str(issue_type_id)).replace(
+                "{projectIdOrKey}", str(project_id_or_key)
             ),
             params={"maxResults": max_results, "startAt": start_at},
             model=FieldMetaBean,
@@ -1806,7 +1842,7 @@ class IssueResource(JiraResource):
     def delete_issue(self, issue_id_or_key: str, *, delete_subtasks: str | None = None) -> None:
         """Delete an issue"""
         return self._delete(
-            DELETE_ISSUE.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            DELETE_ISSUE.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"deleteSubtasks": delete_subtasks},
         )
 
@@ -1821,7 +1857,7 @@ class IssueResource(JiraResource):
     ) -> IssueBean:
         """Get issue for key"""
         return self._get(
-            GET_ISSUE_2_ISSUE.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_ISSUE_2_ISSUE.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"expand": expand, "fields": fields, "updateHistory": update_history, "properties": properties},
             model=IssueBean,
         )
@@ -1829,7 +1865,7 @@ class IssueResource(JiraResource):
     def edit_issue(self, issue_id_or_key: str, body: IssueUpdateBean, *, notify_users: str | None = None) -> None:
         """Edit an issue from a JSON representation"""
         return self._put(
-            EDIT_ISSUE.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            EDIT_ISSUE.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"notifyUsers": notify_users},
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
@@ -1837,21 +1873,21 @@ class IssueResource(JiraResource):
     def archive_issue(self, issue_id_or_key: str, *, notify_users: str | None = None) -> None:
         """Archive an issue"""
         return self._put(
-            ARCHIVE_ISSUE.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            ARCHIVE_ISSUE.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"notifyUsers": notify_users},
         )
 
     def assign(self, issue_id_or_key: str, body: UserBean) -> None:
         """Assign an issue to a user"""
         return self._put(
-            ASSIGN.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            ASSIGN.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def add_attachment(self, issue_id_or_key: str) -> AttachmentJsonBean:
         """Add one or more attachments to an issue"""
         return self._post(
-            ADD_ATTACHMENT.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            ADD_ATTACHMENT.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             model=AttachmentJsonBean,
         )
 
@@ -1866,7 +1902,7 @@ class IssueResource(JiraResource):
     ) -> PageIterator[CommentJsonBean]:
         """Get comments for an issue"""
         return self._get_paged(
-            GET_COMMENTS.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_COMMENTS.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"expand": expand, "orderBy": order_by},
             model=CommentJsonBean,
             items_field="comments",
@@ -1883,7 +1919,7 @@ class IssueResource(JiraResource):
     ) -> CommentJsonBean:
         """Add a comment"""
         return self._post(
-            ADD_COMMENT.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            ADD_COMMENT.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=CommentJsonBean,
@@ -1891,12 +1927,14 @@ class IssueResource(JiraResource):
 
     def delete_comment(self, issue_id_or_key: str, id: str) -> None:
         """Delete a comment"""
-        return self._delete(DELETE_COMMENT.path.format(**{"issueIdOrKey": issue_id_or_key, "id": id}))
+        return self._delete(
+            DELETE_COMMENT.path.replace("{issueIdOrKey}", str(issue_id_or_key)).replace("{id}", str(id)),
+        )
 
     def get_comment(self, issue_id_or_key: str, id: str, *, expand: str | None = None) -> CommentJsonBean:
         """Get a comment by id"""
         return self._get(
-            GET_COMMENT.path.format(**{"issueIdOrKey": issue_id_or_key, "id": id}),
+            GET_COMMENT.path.replace("{issueIdOrKey}", str(issue_id_or_key)).replace("{id}", str(id)),
             params={"expand": expand},
             model=CommentJsonBean,
         )
@@ -1911,7 +1949,7 @@ class IssueResource(JiraResource):
     ) -> CommentJsonBean:
         """Update a comment"""
         return self._put(
-            UPDATE_COMMENT.path.format(**{"issueIdOrKey": issue_id_or_key, "id": id}),
+            UPDATE_COMMENT.path.replace("{issueIdOrKey}", str(issue_id_or_key)).replace("{id}", str(id)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=CommentJsonBean,
@@ -1919,56 +1957,67 @@ class IssueResource(JiraResource):
 
     def set_pin_comment(self, issue_id_or_key: str, id: str) -> None:
         """Pin a comment"""
-        return self._put(SET_PIN_COMMENT.path.format(**{"issueIdOrKey": issue_id_or_key, "id": id}))
+        return self._put(
+            SET_PIN_COMMENT.path.replace("{issueIdOrKey}", str(issue_id_or_key)).replace("{id}", str(id)),
+        )
 
     def get_edit_issue_meta(self, issue_id_or_key: str) -> EditMetaBean:
         """Get metadata for issue types used for editing issues"""
-        return self._get(GET_EDIT_ISSUE_META.path.format(**{"issueIdOrKey": issue_id_or_key}), model=EditMetaBean)
+        return self._get(
+            GET_EDIT_ISSUE_META.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
+            model=EditMetaBean,
+        )
 
     def notify(self, issue_id_or_key: str, body: NotificationJsonBean) -> None:
         """Send notification to recipients"""
         return self._post(
-            NOTIFY.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            NOTIFY.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def get_pinned_comments(self, issue_id_or_key: str) -> PinnedCommentJsonBean:
         """Get pinned comments for an issue"""
         return self._get(
-            GET_PINNED_COMMENTS.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_PINNED_COMMENTS.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             model=PinnedCommentJsonBean,
         )
 
     def get_properties_keys_2(self, issue_id_or_key: str) -> EntityPropertiesKeysBean:
         """Get keys of all properties for an issue"""
         return self._get(
-            GET_PROPERTIES_KEYS_2.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_PROPERTIES_KEYS_2.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             model=EntityPropertiesKeysBean,
         )
 
     def delete_property_3(self, property_key: str, issue_id_or_key: str) -> None:
         """Delete a property from an issue"""
         return self._delete(
-            DELETE_PROPERTY_3.path.format(**{"propertyKey": property_key, "issueIdOrKey": issue_id_or_key}),
+            DELETE_PROPERTY_3.path.replace("{propertyKey}", str(property_key)).replace(
+                "{issueIdOrKey}", str(issue_id_or_key)
+            ),
         )
 
     def get_property_3(self, property_key: str, issue_id_or_key: str) -> EntityPropertyBean:
         """Get the value of a specific property from an issue"""
         return self._get(
-            GET_PROPERTY_3.path.format(**{"propertyKey": property_key, "issueIdOrKey": issue_id_or_key}),
+            GET_PROPERTY_3.path.replace("{propertyKey}", str(property_key)).replace(
+                "{issueIdOrKey}", str(issue_id_or_key)
+            ),
             model=EntityPropertyBean,
         )
 
     def set_property_2(self, property_key: str, issue_id_or_key: str) -> None:
         """Update the value of a specific issue's property"""
         return self._put(
-            SET_PROPERTY_2.path.format(**{"propertyKey": property_key, "issueIdOrKey": issue_id_or_key}),
+            SET_PROPERTY_2.path.replace("{propertyKey}", str(property_key)).replace(
+                "{issueIdOrKey}", str(issue_id_or_key)
+            ),
         )
 
     def delete_remote_issue_link_by_global_id(self, issue_id_or_key: str, *, global_id: str) -> None:
         """Delete remote issue link"""
         return self._delete(
-            DELETE_REMOTE_ISSUE_LINK_BY_GLOBAL_ID.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            DELETE_REMOTE_ISSUE_LINK_BY_GLOBAL_ID.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"globalId": global_id},
         )
 
@@ -1980,7 +2029,7 @@ class IssueResource(JiraResource):
     ) -> RemoteIssueLinkBean:
         """Get remote issue links for an issue"""
         return self._get(
-            GET_REMOTE_ISSUE_LINKS.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_REMOTE_ISSUE_LINKS.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"globalId": global_id},
             model=RemoteIssueLinkBean,
         )
@@ -1992,7 +2041,7 @@ class IssueResource(JiraResource):
     ) -> RemoteIssueLinkBean:
         """Create or update remote issue link"""
         return self._post(
-            CREATE_OR_UPDATE_REMOTE_ISSUE_LINK.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            CREATE_OR_UPDATE_REMOTE_ISSUE_LINK.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RemoteIssueLinkBean,
         )
@@ -2000,13 +2049,17 @@ class IssueResource(JiraResource):
     def delete_remote_issue_link_by_id(self, link_id: str, issue_id_or_key: str) -> None:
         """Delete remote issue link by id"""
         return self._delete(
-            DELETE_REMOTE_ISSUE_LINK_BY_ID.path.format(**{"linkId": link_id, "issueIdOrKey": issue_id_or_key}),
+            DELETE_REMOTE_ISSUE_LINK_BY_ID.path.replace("{linkId}", str(link_id)).replace(
+                "{issueIdOrKey}", str(issue_id_or_key)
+            ),
         )
 
     def get_remote_issue_link_by_id(self, link_id: str, issue_id_or_key: str) -> RemoteIssueLinkBean:
         """Get a remote issue link by its id"""
         return self._get(
-            GET_REMOTE_ISSUE_LINK_BY_ID.path.format(**{"linkId": link_id, "issueIdOrKey": issue_id_or_key}),
+            GET_REMOTE_ISSUE_LINK_BY_ID.path.replace("{linkId}", str(link_id)).replace(
+                "{issueIdOrKey}", str(issue_id_or_key)
+            ),
             model=RemoteIssueLinkBean,
         )
 
@@ -2018,36 +2071,41 @@ class IssueResource(JiraResource):
     ) -> None:
         """Update remote issue link"""
         return self._put(
-            UPDATE_REMOTE_ISSUE_LINK.path.format(**{"linkId": link_id, "issueIdOrKey": issue_id_or_key}),
+            UPDATE_REMOTE_ISSUE_LINK.path.replace("{linkId}", str(link_id)).replace(
+                "{issueIdOrKey}", str(issue_id_or_key)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def restore_issue(self, issue_id_or_key: str, *, notify_users: str | None = None) -> None:
         """Restore an archived issue"""
         return self._put(
-            RESTORE_ISSUE.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            RESTORE_ISSUE.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"notifyUsers": notify_users},
         )
 
     def get_sub_tasks(self, issue_id_or_key: str) -> IssueRefJsonBean:
         """Get an issue's subtask list"""
-        return self._get(GET_SUB_TASKS.path.format(**{"issueIdOrKey": issue_id_or_key}), model=IssueRefJsonBean)
+        return self._get(
+            GET_SUB_TASKS.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
+            model=IssueRefJsonBean,
+        )
 
     def can_move_sub_task(self, issue_id_or_key: str) -> None:
         """Check if a subtask can be moved"""
-        return self._get(CAN_MOVE_SUB_TASK.path.format(**{"issueIdOrKey": issue_id_or_key}))
+        return self._get(CAN_MOVE_SUB_TASK.path.replace("{issueIdOrKey}", str(issue_id_or_key)))
 
     def move_sub_tasks(self, issue_id_or_key: str, body: IssueSubTaskMovePositionBean) -> None:
         """Reorder an issue's subtasks"""
         return self._post(
-            MOVE_SUB_TASKS.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            MOVE_SUB_TASKS.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def get_transitions(self, issue_id_or_key: str, *, transition_id: str | None = None) -> TransitionsMetaBean:
         """Get list of transitions possible for an issue"""
         return self._get(
-            GET_TRANSITIONS.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_TRANSITIONS.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"transitionId": transition_id},
             model=TransitionsMetaBean,
         )
@@ -2055,21 +2113,21 @@ class IssueResource(JiraResource):
     def do_transition(self, issue_id_or_key: str, body: IssueUpdateBean) -> None:
         """Perform a transition on an issue"""
         return self._post(
-            DO_TRANSITION.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            DO_TRANSITION.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def remove_vote(self, issue_id_or_key: str) -> None:
         """Remove vote from issue"""
-        return self._delete(REMOVE_VOTE.path.format(**{"issueIdOrKey": issue_id_or_key}))
+        return self._delete(REMOVE_VOTE.path.replace("{issueIdOrKey}", str(issue_id_or_key)))
 
     def get_votes(self, issue_id_or_key: str) -> VoteBean:
         """Get votes for issue"""
-        return self._get(GET_VOTES.path.format(**{"issueIdOrKey": issue_id_or_key}), model=VoteBean)
+        return self._get(GET_VOTES.path.replace("{issueIdOrKey}", str(issue_id_or_key)), model=VoteBean)
 
     def add_vote(self, issue_id_or_key: str) -> None:
         """Add vote to issue"""
-        return self._post(ADD_VOTE.path.format(**{"issueIdOrKey": issue_id_or_key}))
+        return self._post(ADD_VOTE.path.replace("{issueIdOrKey}", str(issue_id_or_key)))
 
     def remove_watcher_1(
         self,
@@ -2080,18 +2138,21 @@ class IssueResource(JiraResource):
     ) -> None:
         """Delete watcher from issue"""
         return self._delete(
-            REMOVE_WATCHER_1.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            REMOVE_WATCHER_1.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"userName": user_name, "username": username},
         )
 
     def get_issue_watchers(self, issue_id_or_key: str) -> WatchersBean:
         """Get list of watchers of issue"""
-        return self._get(GET_ISSUE_WATCHERS.path.format(**{"issueIdOrKey": issue_id_or_key}), model=WatchersBean)
+        return self._get(
+            GET_ISSUE_WATCHERS.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
+            model=WatchersBean,
+        )
 
     def add_watcher_1(self, issue_id_or_key: str, *, user_name: str | None = None) -> None:
         """Add a user as watcher"""
         return self._post(
-            ADD_WATCHER_1.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            ADD_WATCHER_1.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"userName": user_name},
         )
 
@@ -2104,7 +2165,7 @@ class IssueResource(JiraResource):
     ) -> PageIterator[Worklog]:
         """Get worklogs for an issue"""
         return self._get_paged(
-            GET_ISSUE_WORKLOG.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            GET_ISSUE_WORKLOG.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             model=Worklog,
             items_field="worklogs",
             start_at=start_at,
@@ -2122,7 +2183,7 @@ class IssueResource(JiraResource):
     ) -> Worklog:
         """Add a worklog entry"""
         return self._post(
-            ADD_WORKLOG.path.format(**{"issueIdOrKey": issue_id_or_key}),
+            ADD_WORKLOG.path.replace("{issueIdOrKey}", str(issue_id_or_key)),
             params={"newEstimate": new_estimate, "adjustEstimate": adjust_estimate, "reduceBy": reduce_by},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Worklog,
@@ -2139,13 +2200,16 @@ class IssueResource(JiraResource):
     ) -> None:
         """Delete a worklog entry"""
         return self._delete(
-            DELETE_WORKLOG.path.format(**{"issueIdOrKey": issue_id_or_key, "id": id}),
+            DELETE_WORKLOG.path.replace("{issueIdOrKey}", str(issue_id_or_key)).replace("{id}", str(id)),
             params={"newEstimate": new_estimate, "adjustEstimate": adjust_estimate, "increaseBy": increase_by},
         )
 
     def get_worklog(self, issue_id_or_key: str, id: str) -> Worklog:
         """Get a worklog by id"""
-        return self._get(GET_WORKLOG.path.format(**{"issueIdOrKey": issue_id_or_key, "id": id}), model=Worklog)
+        return self._get(
+            GET_WORKLOG.path.replace("{issueIdOrKey}", str(issue_id_or_key)).replace("{id}", str(id)),
+            model=Worklog,
+        )
 
     def update_worklog(
         self,
@@ -2158,7 +2222,7 @@ class IssueResource(JiraResource):
     ) -> Worklog:
         """Update a worklog entry"""
         return self._put(
-            UPDATE_WORKLOG.path.format(**{"issueIdOrKey": issue_id_or_key, "id": id}),
+            UPDATE_WORKLOG.path.replace("{issueIdOrKey}", str(issue_id_or_key)).replace("{id}", str(id)),
             params={"newEstimate": new_estimate, "adjustEstimate": adjust_estimate},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Worklog,
@@ -2170,11 +2234,11 @@ class IssueResource(JiraResource):
 
     def delete_issue_link(self, link_id: str) -> None:
         """Delete an issue link with the specified id"""
-        return self._delete(DELETE_ISSUE_LINK.path.format(**{"linkId": link_id}))
+        return self._delete(DELETE_ISSUE_LINK.path.replace("{linkId}", str(link_id)))
 
     def get_issue_link(self, link_id: str) -> IssueLinks:
         """Get an issue link with the specified id"""
-        return self._get(GET_ISSUE_LINK.path.format(**{"linkId": link_id}), model=IssueLinks)
+        return self._get(GET_ISSUE_LINK.path.replace("{linkId}", str(link_id)), model=IssueLinks)
 
     def get_issue_link_types(self) -> IssueLinkTypesBean:
         """Get list of available issue link types"""
@@ -2186,19 +2250,19 @@ class IssueResource(JiraResource):
 
     def delete_issue_link_type(self, issue_link_type_id: str) -> None:
         """Delete the specified issue link type"""
-        return self._delete(DELETE_ISSUE_LINK_TYPE.path.format(**{"issueLinkTypeId": issue_link_type_id}))
+        return self._delete(DELETE_ISSUE_LINK_TYPE.path.replace("{issueLinkTypeId}", str(issue_link_type_id)))
 
     def get_issue_link_type(self, issue_link_type_id: str) -> IssueLinkTypeJsonBean:
         """Get information about an issue link type"""
         return self._get(
-            GET_ISSUE_LINK_TYPE.path.format(**{"issueLinkTypeId": issue_link_type_id}),
+            GET_ISSUE_LINK_TYPE.path.replace("{issueLinkTypeId}", str(issue_link_type_id)),
             model=IssueLinkTypeJsonBean,
         )
 
     def update_issue_link_type(self, issue_link_type_id: str, body: IssueLinkTypeJsonBean) -> None:
         """Update the specified issue link type"""
         return self._put(
-            UPDATE_ISSUE_LINK_TYPE.path.format(**{"issueLinkTypeId": issue_link_type_id}),
+            UPDATE_ISSUE_LINK_TYPE.path.replace("{issueLinkTypeId}", str(issue_link_type_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -2310,7 +2374,7 @@ class IssueResource(JiraResource):
 class IssueMetaResource(JiraResource):
     def get_custom_field_option(self, id: str) -> CustomFieldOptionBean:
         """Get custom field option by ID"""
-        return self._get(GET_CUSTOM_FIELD_OPTION.path.format(**{"id": id}), model=CustomFieldOptionBean)
+        return self._get(GET_CUSTOM_FIELD_OPTION.path.replace("{id}", str(id)), model=CustomFieldOptionBean)
 
     def bulk_delete_custom_fields(self, *, ids: str) -> BulkDeleteResponseBean:
         """Delete custom fields in bulk"""
@@ -2358,7 +2422,7 @@ class IssueMetaResource(JiraResource):
     ) -> CustomFieldOptionsBean:
         """Get custom field options"""
         return self._get(
-            GET_CUSTOM_FIELD_OPTIONS.path.format(**{"customFieldId": custom_field_id}),
+            GET_CUSTOM_FIELD_OPTIONS.path.replace("{customFieldId}", str(custom_field_id)),
             params={
                 "maxResults": max_results,
                 "issueTypeIds": issue_type_ids,
@@ -2407,28 +2471,30 @@ class IssueMetaResource(JiraResource):
     def delete_issue_type_1(self, id: str, alternative_issue_type_id: str) -> None:
         """Delete specified issue type and migrate associated issues"""
         return self._delete(
-            DELETE_ISSUE_TYPE_1.path.format(**{"id": id, "alternativeIssueTypeId": alternative_issue_type_id}),
+            DELETE_ISSUE_TYPE_1.path.replace("{id}", str(id)).replace(
+                "{alternativeIssueTypeId}", str(alternative_issue_type_id)
+            ),
         )
 
     def get_issue_type_1(self, id: str) -> IssueTypeJsonBean:
         """Get full representation of issue type by id"""
-        return self._get(GET_ISSUE_TYPE_1.path.format(**{"id": id}), model=IssueTypeJsonBean)
+        return self._get(GET_ISSUE_TYPE_1.path.replace("{id}", str(id)), model=IssueTypeJsonBean)
 
     def update_issue_type(self, id: str, body: IssueTypeUpdateBean) -> None:
         """Update specified issue type from JSON representation"""
         return self._put(
-            UPDATE_ISSUE_TYPE.path.format(**{"id": id}),
+            UPDATE_ISSUE_TYPE.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def get_alternative_issue_types(self, id: str) -> IssueTypeJsonBean:
         """Get list of alternative issue types for given id"""
-        return self._get(GET_ALTERNATIVE_ISSUE_TYPES.path.format(**{"id": id}), model=IssueTypeJsonBean)
+        return self._get(GET_ALTERNATIVE_ISSUE_TYPES.path.replace("{id}", str(id)), model=IssueTypeJsonBean)
 
     def create_avatar_from_temporary_1(self, id: str, body: AvatarCroppingBean) -> AvatarBean:
         """Convert temporary avatar into a real avatar"""
         return self._post(
-            CREATE_AVATAR_FROM_TEMPORARY_1.path.format(**{"id": id}),
+            CREATE_AVATAR_FROM_TEMPORARY_1.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=AvatarBean,
         )
@@ -2436,7 +2502,7 @@ class IssueMetaResource(JiraResource):
     def store_temporary_avatar_using_multi_part(self, id: str, body: FilePart) -> AvatarCroppingBean:
         """Create temporary avatar using multipart for issue type"""
         return self._post(
-            STORE_TEMPORARY_AVATAR_USING_MULTI_PART.path.format(**{"id": id}),
+            STORE_TEMPORARY_AVATAR_USING_MULTI_PART.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=AvatarCroppingBean,
         )
@@ -2444,27 +2510,33 @@ class IssueMetaResource(JiraResource):
     def get_property_keys(self, issue_type_id: str) -> EntityPropertiesKeysBean:
         """Get all properties keys for issue type"""
         return self._get(
-            GET_PROPERTY_KEYS.path.format(**{"issueTypeId": issue_type_id}),
+            GET_PROPERTY_KEYS.path.replace("{issueTypeId}", str(issue_type_id)),
             model=EntityPropertiesKeysBean,
         )
 
     def delete_property_4(self, property_key: str, issue_type_id: str) -> None:
         """Delete specified issue type's property"""
         return self._delete(
-            DELETE_PROPERTY_4.path.format(**{"propertyKey": property_key, "issueTypeId": issue_type_id}),
+            DELETE_PROPERTY_4.path.replace("{propertyKey}", str(property_key)).replace(
+                "{issueTypeId}", str(issue_type_id)
+            ),
         )
 
     def get_property_4(self, property_key: str, issue_type_id: str) -> EntityPropertyBean:
         """Get value of specified issue type's property"""
         return self._get(
-            GET_PROPERTY_4.path.format(**{"propertyKey": property_key, "issueTypeId": issue_type_id}),
+            GET_PROPERTY_4.path.replace("{propertyKey}", str(property_key)).replace(
+                "{issueTypeId}", str(issue_type_id)
+            ),
             model=EntityPropertyBean,
         )
 
     def set_property_3(self, property_key: str, issue_type_id: str, body: PropertyBean) -> None:
         """Update specified issue type's property"""
         return self._put(
-            SET_PROPERTY_3.path.format(**{"propertyKey": property_key, "issueTypeId": issue_type_id}),
+            SET_PROPERTY_3.path.replace("{propertyKey}", str(property_key)).replace(
+                "{issueTypeId}", str(issue_type_id)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -2482,11 +2554,14 @@ class IssueMetaResource(JiraResource):
 
     def delete_issue_type_scheme(self, scheme_id: str) -> None:
         """Delete specified issue type scheme"""
-        return self._delete(DELETE_ISSUE_TYPE_SCHEME.path.format(**{"schemeId": scheme_id}))
+        return self._delete(DELETE_ISSUE_TYPE_SCHEME.path.replace("{schemeId}", str(scheme_id)))
 
     def get_issue_type_scheme(self, scheme_id: str) -> IssueTypeSchemeBean:
         """Get full representation of issue type scheme by id"""
-        return self._get(GET_ISSUE_TYPE_SCHEME.path.format(**{"schemeId": scheme_id}), model=IssueTypeSchemeBean)
+        return self._get(
+            GET_ISSUE_TYPE_SCHEME.path.replace("{schemeId}", str(scheme_id)),
+            model=IssueTypeSchemeBean,
+        )
 
     def update_issue_type_scheme(
         self,
@@ -2495,19 +2570,19 @@ class IssueMetaResource(JiraResource):
     ) -> IssueTypeSchemeBean:
         """Update specified issue type scheme from JSON representation"""
         return self._put(
-            UPDATE_ISSUE_TYPE_SCHEME.path.format(**{"schemeId": scheme_id}),
+            UPDATE_ISSUE_TYPE_SCHEME.path.replace("{schemeId}", str(scheme_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=IssueTypeSchemeBean,
         )
 
     def remove_all_project_associations(self, scheme_id: str) -> None:
         """Remove all project associations for specified scheme"""
-        return self._delete(REMOVE_ALL_PROJECT_ASSOCIATIONS.path.format(**{"schemeId": scheme_id}))
+        return self._delete(REMOVE_ALL_PROJECT_ASSOCIATIONS.path.replace("{schemeId}", str(scheme_id)))
 
     def get_associated_projects(self, scheme_id: str, *, expand: str | None = None) -> ProjectBean:
         """Get all of the associated projects for specified scheme"""
         return self._get(
-            GET_ASSOCIATED_PROJECTS.path.format(**{"schemeId": scheme_id}),
+            GET_ASSOCIATED_PROJECTS.path.replace("{schemeId}", str(scheme_id)),
             params={"expand": expand},
             model=ProjectBean,
         )
@@ -2515,21 +2590,23 @@ class IssueMetaResource(JiraResource):
     def add_project_associations_to_scheme(self, scheme_id: str, body: AssociateProjectsBean) -> None:
         """Add project associations to scheme"""
         return self._post(
-            ADD_PROJECT_ASSOCIATIONS_TO_SCHEME.path.format(**{"schemeId": scheme_id}),
+            ADD_PROJECT_ASSOCIATIONS_TO_SCHEME.path.replace("{schemeId}", str(scheme_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def set_project_associations_for_scheme(self, scheme_id: str, body: AssociateProjectsBean) -> None:
         """Set project associations for scheme"""
         return self._put(
-            SET_PROJECT_ASSOCIATIONS_FOR_SCHEME.path.format(**{"schemeId": scheme_id}),
+            SET_PROJECT_ASSOCIATIONS_FOR_SCHEME.path.replace("{schemeId}", str(scheme_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def remove_project_association(self, proj_id_or_key: str, scheme_id: str) -> None:
         """Remove given project association for specified scheme"""
         return self._delete(
-            REMOVE_PROJECT_ASSOCIATION.path.format(**{"projIdOrKey": proj_id_or_key, "schemeId": scheme_id}),
+            REMOVE_PROJECT_ASSOCIATION.path.replace("{projIdOrKey}", str(proj_id_or_key)).replace(
+                "{schemeId}", str(scheme_id)
+            ),
         )
 
     def get_priorities(self) -> PriorityJsonBean:
@@ -2553,7 +2630,7 @@ class IssueMetaResource(JiraResource):
 
     def get_priority(self, id: str) -> PriorityJsonBean:
         """Get an issue priority by ID"""
-        return self._get(GET_PRIORITY.path.format(**{"id": id}), model=PriorityJsonBean)
+        return self._get(GET_PRIORITY.path.replace("{id}", str(id)), model=PriorityJsonBean)
 
     def get_priority_schemes(
         self,
@@ -2580,16 +2657,16 @@ class IssueMetaResource(JiraResource):
 
     def delete_priority_scheme(self, scheme_id: int) -> None:
         """Delete a priority scheme"""
-        return self._delete(DELETE_PRIORITY_SCHEME.path.format(**{"schemeId": scheme_id}))
+        return self._delete(DELETE_PRIORITY_SCHEME.path.replace("{schemeId}", str(scheme_id)))
 
     def get_priority_scheme(self, scheme_id: int) -> PrioritySchemeBean:
         """Get a priority scheme by ID"""
-        return self._get(GET_PRIORITY_SCHEME.path.format(**{"schemeId": scheme_id}), model=PrioritySchemeBean)
+        return self._get(GET_PRIORITY_SCHEME.path.replace("{schemeId}", str(scheme_id)), model=PrioritySchemeBean)
 
     def update_priority_scheme(self, scheme_id: int, body: PrioritySchemeUpdateBean) -> PrioritySchemeBean:
         """Update a priority scheme"""
         return self._put(
-            UPDATE_PRIORITY_SCHEME.path.format(**{"schemeId": scheme_id}),
+            UPDATE_PRIORITY_SCHEME.path.replace("{schemeId}", str(scheme_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=PrioritySchemeBean,
         )
@@ -2614,7 +2691,7 @@ class IssueMetaResource(JiraResource):
 
     def get_resolution(self, id: str) -> ResolutionJsonBean:
         """Get a resolution by ID"""
-        return self._get(GET_RESOLUTION.path.format(**{"id": id}), model=ResolutionJsonBean)
+        return self._get(GET_RESOLUTION.path.replace("{id}", str(id)), model=ResolutionJsonBean)
 
     def get_all_screens(
         self,
@@ -2632,16 +2709,16 @@ class IssueMetaResource(JiraResource):
 
     def add_field_to_default_screen(self, field_id: str) -> None:
         """Add field to default screen"""
-        return self._post(ADD_FIELD_TO_DEFAULT_SCREEN.path.format(**{"fieldId": field_id}))
+        return self._post(ADD_FIELD_TO_DEFAULT_SCREEN.path.replace("{fieldId}", str(field_id)))
 
     def get_fields_to_add(self, screen_id: int) -> ScreenableFieldBean:
         """Get available fields for screen"""
-        return self._get(GET_FIELDS_TO_ADD.path.format(**{"screenId": screen_id}), model=ScreenableFieldBean)
+        return self._get(GET_FIELDS_TO_ADD.path.replace("{screenId}", str(screen_id)), model=ScreenableFieldBean)
 
     def get_all_tabs(self, screen_id: int, *, project_key: str | None = None) -> ScreenableTabBean:
         """Get all tabs for a screen"""
         return self._get(
-            GET_ALL_TABS.path.format(**{"screenId": screen_id}),
+            GET_ALL_TABS.path.replace("{screenId}", str(screen_id)),
             params={"projectKey": project_key},
             model=ScreenableTabBean,
         )
@@ -2649,19 +2726,19 @@ class IssueMetaResource(JiraResource):
     def add_tab(self, screen_id: int, body: ScreenableTabBean) -> ScreenableTabBean:
         """Create tab for a screen"""
         return self._post(
-            ADD_TAB.path.format(**{"screenId": screen_id}),
+            ADD_TAB.path.replace("{screenId}", str(screen_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ScreenableTabBean,
         )
 
     def delete_tab(self, tab_id: int, screen_id: int) -> None:
         """Delete a tab from a screen"""
-        return self._delete(DELETE_TAB.path.format(**{"tabId": tab_id, "screenId": screen_id}))
+        return self._delete(DELETE_TAB.path.replace("{tabId}", str(tab_id)).replace("{screenId}", str(screen_id)))
 
     def rename_tab(self, tab_id: int, screen_id: int, body: ScreenableTabBean) -> ScreenableTabBean:
         """Rename a tab on a screen"""
         return self._put(
-            RENAME_TAB.path.format(**{"tabId": tab_id, "screenId": screen_id}),
+            RENAME_TAB.path.replace("{tabId}", str(tab_id)).replace("{screenId}", str(screen_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ScreenableTabBean,
         )
@@ -2675,7 +2752,7 @@ class IssueMetaResource(JiraResource):
     ) -> ScreenableFieldBean:
         """Get all fields for a tab"""
         return self._get(
-            GET_ALL_FIELDS.path.format(**{"tabId": tab_id, "screenId": screen_id}),
+            GET_ALL_FIELDS.path.replace("{tabId}", str(tab_id)).replace("{screenId}", str(screen_id)),
             params={"projectKey": project_key},
             model=ScreenableFieldBean,
         )
@@ -2683,33 +2760,44 @@ class IssueMetaResource(JiraResource):
     def add_field(self, tab_id: int, screen_id: int, body: AddFieldBean) -> ScreenableFieldBean:
         """Add field to a tab"""
         return self._post(
-            ADD_FIELD.path.format(**{"tabId": tab_id, "screenId": screen_id}),
+            ADD_FIELD.path.replace("{tabId}", str(tab_id)).replace("{screenId}", str(screen_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ScreenableFieldBean,
         )
 
     def remove_field(self, tab_id: int, screen_id: int, id: str) -> None:
         """Remove field from tab"""
-        return self._delete(REMOVE_FIELD.path.format(**{"tabId": tab_id, "screenId": screen_id, "id": id}))
+        return self._delete(
+            REMOVE_FIELD.path.replace("{tabId}", str(tab_id))
+            .replace("{screenId}", str(screen_id))
+            .replace("{id}", str(id)),
+        )
 
     def move_field(self, tab_id: int, screen_id: int, id: str, body: MoveFieldBean) -> None:
         """Move field on a tab"""
         return self._post(
-            MOVE_FIELD.path.format(**{"tabId": tab_id, "screenId": screen_id, "id": id}),
+            MOVE_FIELD.path.replace("{tabId}", str(tab_id))
+            .replace("{screenId}", str(screen_id))
+            .replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def update_show_when_empty_indicator(self, tab_id: int, screen_id: int, new_value: bool, id: str) -> None:
         """Update 'showWhenEmptyIndicator' for a field"""
         return self._put(
-            UPDATE_SHOW_WHEN_EMPTY_INDICATOR.path.format(
-                **{"tabId": tab_id, "screenId": screen_id, "newValue": new_value, "id": id}
-            ),
+            UPDATE_SHOW_WHEN_EMPTY_INDICATOR.path.replace("{tabId}", str(tab_id))
+            .replace("{screenId}", str(screen_id))
+            .replace("{newValue}", str(new_value))
+            .replace("{id}", str(id)),
         )
 
     def move_tab(self, tab_id: int, screen_id: int, pos: int) -> None:
         """Move tab position"""
-        return self._post(MOVE_TAB.path.format(**{"tabId": tab_id, "screenId": screen_id, "pos": pos}))
+        return self._post(
+            MOVE_TAB.path.replace("{tabId}", str(tab_id))
+            .replace("{screenId}", str(screen_id))
+            .replace("{pos}", str(pos)),
+        )
 
     def get_statuses(self) -> StatusJsonBean:
         """Get all statuses"""
@@ -2739,7 +2827,7 @@ class IssueMetaResource(JiraResource):
 
     def get_status(self, id_or_name: str) -> StatusJsonBean:
         """Get status by ID or name"""
-        return self._get(GET_STATUS.path.format(**{"idOrName": id_or_name}), model=StatusJsonBean)
+        return self._get(GET_STATUS.path.replace("{idOrName}", str(id_or_name)), model=StatusJsonBean)
 
     def get_status_categories(
         self,
@@ -2756,7 +2844,10 @@ class IssueMetaResource(JiraResource):
 
     def get_status_category(self, id_or_key: str) -> StatusCategoryJsonBean:
         """Get status category by ID or key"""
-        return self._get(GET_STATUS_CATEGORY.path.format(**{"idOrKey": id_or_key}), model=StatusCategoryJsonBean)
+        return self._get(
+            GET_STATUS_CATEGORY.path.replace("{idOrKey}", str(id_or_key)),
+            model=StatusCategoryJsonBean,
+        )
 
     def get_all_workflows(self, *, workflow_name: str | None = None) -> None:
         """Get all workflows"""
@@ -2768,12 +2859,12 @@ class IssueMetaResource(JiraResource):
 
     def delete_scheme(self, id: int) -> None:
         """Delete the specified workflow scheme"""
-        return self._delete(DELETE_SCHEME.path.format(**{"id": id}))
+        return self._delete(DELETE_SCHEME.path.replace("{id}", str(id)))
 
     def get_by_id(self, id: int, *, return_draft_if_exists: bool | None = False) -> WorkflowSchemeBean:
         """Get requested workflow scheme by ID"""
         return self._get(
-            GET_BY_ID.path.format(**{"id": id}),
+            GET_BY_ID.path.replace("{id}", str(id)),
             params={"returnDraftIfExists": return_draft_if_exists},
             model=WorkflowSchemeBean,
         )
@@ -2781,19 +2872,19 @@ class IssueMetaResource(JiraResource):
     def update(self, id: int, body: WorkflowSchemeBean) -> WorkflowSchemeBean:
         """Update a specified workflow scheme"""
         return self._put(
-            UPDATE.path.format(**{"id": id}),
+            UPDATE.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
         )
 
     def create_draft_for_parent(self, id: int) -> WorkflowSchemeBean:
         """Create a draft for a workflow scheme"""
-        return self._post(CREATE_DRAFT_FOR_PARENT.path.format(**{"id": id}), model=WorkflowSchemeBean)
+        return self._post(CREATE_DRAFT_FOR_PARENT.path.replace("{id}", str(id)), model=WorkflowSchemeBean)
 
     def delete_default(self, id: int, *, update_draft_if_needed: bool | None = None) -> WorkflowSchemeBean:
         """Remove default workflow from a scheme"""
         return self._delete(
-            DELETE_DEFAULT.path.format(**{"id": id}),
+            DELETE_DEFAULT.path.replace("{id}", str(id)),
             params={"updateDraftIfNeeded": update_draft_if_needed},
             model=WorkflowSchemeBean,
         )
@@ -2801,7 +2892,7 @@ class IssueMetaResource(JiraResource):
     def get_default(self, id: int, *, return_draft_if_exists: bool | None = False) -> WorkflowSchemeBean:
         """Get default workflow for a scheme"""
         return self._get(
-            GET_DEFAULT.path.format(**{"id": id}),
+            GET_DEFAULT.path.replace("{id}", str(id)),
             params={"returnDraftIfExists": return_draft_if_exists},
             model=WorkflowSchemeBean,
         )
@@ -2809,39 +2900,39 @@ class IssueMetaResource(JiraResource):
     def update_default(self, id: int, body: DefaultBean) -> WorkflowSchemeBean:
         """Update default workflow for a scheme"""
         return self._put(
-            UPDATE_DEFAULT.path.format(**{"id": id}),
+            UPDATE_DEFAULT.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
         )
 
     def delete_draft_by_id(self, id: int) -> None:
         """Delete the specified draft workflow scheme"""
-        return self._delete(DELETE_DRAFT_BY_ID.path.format(**{"id": id}))
+        return self._delete(DELETE_DRAFT_BY_ID.path.replace("{id}", str(id)))
 
     def get_draft_by_id(self, id: int) -> WorkflowSchemeBean:
         """Get requested draft workflow scheme by ID"""
-        return self._get(GET_DRAFT_BY_ID.path.format(**{"id": id}), model=WorkflowSchemeBean)
+        return self._get(GET_DRAFT_BY_ID.path.replace("{id}", str(id)), model=WorkflowSchemeBean)
 
     def update_draft(self, id: int, body: WorkflowSchemeBean) -> WorkflowSchemeBean:
         """Update a draft workflow scheme"""
         return self._put(
-            UPDATE_DRAFT.path.format(**{"id": id}),
+            UPDATE_DRAFT.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
         )
 
     def delete_draft_default(self, id: int) -> WorkflowSchemeBean:
         """Remove default workflow from a draft scheme"""
-        return self._delete(DELETE_DRAFT_DEFAULT.path.format(**{"id": id}), model=WorkflowSchemeBean)
+        return self._delete(DELETE_DRAFT_DEFAULT.path.replace("{id}", str(id)), model=WorkflowSchemeBean)
 
     def get_draft_default(self, id: int) -> WorkflowSchemeBean:
         """Get default workflow for a draft scheme"""
-        return self._get(GET_DRAFT_DEFAULT.path.format(**{"id": id}), model=WorkflowSchemeBean)
+        return self._get(GET_DRAFT_DEFAULT.path.replace("{id}", str(id)), model=WorkflowSchemeBean)
 
     def update_draft_default(self, id: int, body: DefaultBean) -> WorkflowSchemeBean:
         """Update default workflow for a draft scheme"""
         return self._put(
-            UPDATE_DRAFT_DEFAULT.path.format(**{"id": id}),
+            UPDATE_DRAFT_DEFAULT.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
         )
@@ -2849,21 +2940,21 @@ class IssueMetaResource(JiraResource):
     def delete_draft_issue_type(self, issue_type: str, id: int) -> WorkflowSchemeBean:
         """Delete an issue type mapping from a draft scheme"""
         return self._delete(
-            DELETE_DRAFT_ISSUE_TYPE.path.format(**{"issueType": issue_type, "id": id}),
+            DELETE_DRAFT_ISSUE_TYPE.path.replace("{issueType}", str(issue_type)).replace("{id}", str(id)),
             model=WorkflowSchemeBean,
         )
 
     def get_draft_issue_type(self, issue_type: str, id: int) -> IssueTypeMappingBean:
         """Get issue type mapping for a draft scheme"""
         return self._get(
-            GET_DRAFT_ISSUE_TYPE.path.format(**{"issueType": issue_type, "id": id}),
+            GET_DRAFT_ISSUE_TYPE.path.replace("{issueType}", str(issue_type)).replace("{id}", str(id)),
             model=IssueTypeMappingBean,
         )
 
     def set_draft_issue_type(self, issue_type: str, id: int, body: IssueTypeMappingBean) -> WorkflowSchemeBean:
         """Set an issue type mapping for a draft scheme"""
         return self._put(
-            SET_DRAFT_ISSUE_TYPE.path.format(**{"issueType": issue_type, "id": id}),
+            SET_DRAFT_ISSUE_TYPE.path.replace("{issueType}", str(issue_type)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
         )
@@ -2871,7 +2962,7 @@ class IssueMetaResource(JiraResource):
     def delete_draft_workflow_mapping(self, id: int, *, workflow_name: str | None = None) -> WorkflowSchemeBean:
         """Delete a workflow mapping from a draft scheme"""
         return self._delete(
-            DELETE_DRAFT_WORKFLOW_MAPPING.path.format(**{"id": id}),
+            DELETE_DRAFT_WORKFLOW_MAPPING.path.replace("{id}", str(id)),
             params={"workflowName": workflow_name},
             model=WorkflowSchemeBean,
         )
@@ -2879,7 +2970,7 @@ class IssueMetaResource(JiraResource):
     def get_draft_workflow(self, id: int, *, workflow_name: str | None = None) -> WorkflowSchemeBean:
         """Get draft workflow mappings"""
         return self._get(
-            GET_DRAFT_WORKFLOW.path.format(**{"id": id}),
+            GET_DRAFT_WORKFLOW.path.replace("{id}", str(id)),
             params={"workflowName": workflow_name},
             model=WorkflowSchemeBean,
         )
@@ -2893,7 +2984,7 @@ class IssueMetaResource(JiraResource):
     ) -> WorkflowSchemeBean:
         """Update a workflow mapping in a draft scheme"""
         return self._put(
-            UPDATE_DRAFT_WORKFLOW_MAPPING.path.format(**{"id": id}),
+            UPDATE_DRAFT_WORKFLOW_MAPPING.path.replace("{id}", str(id)),
             params={"workflowName": workflow_name},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
@@ -2908,7 +2999,7 @@ class IssueMetaResource(JiraResource):
     ) -> WorkflowSchemeBean:
         """Delete an issue type mapping from a scheme"""
         return self._delete(
-            DELETE_ISSUE_TYPE.path.format(**{"issueType": issue_type, "id": id}),
+            DELETE_ISSUE_TYPE.path.replace("{issueType}", str(issue_type)).replace("{id}", str(id)),
             params={"updateDraftIfNeeded": update_draft_if_needed},
             model=WorkflowSchemeBean,
         )
@@ -2922,7 +3013,7 @@ class IssueMetaResource(JiraResource):
     ) -> IssueTypeMappingBean:
         """Get issue type mapping for a scheme"""
         return self._get(
-            GET_ISSUE_TYPE.path.format(**{"issueType": issue_type, "id": id}),
+            GET_ISSUE_TYPE.path.replace("{issueType}", str(issue_type)).replace("{id}", str(id)),
             params={"returnDraftIfExists": return_draft_if_exists},
             model=IssueTypeMappingBean,
         )
@@ -2930,7 +3021,7 @@ class IssueMetaResource(JiraResource):
     def set_issue_type(self, issue_type: str, id: int, body: IssueTypeMappingBean) -> WorkflowSchemeBean:
         """Set an issue type mapping for a scheme"""
         return self._put(
-            SET_ISSUE_TYPE.path.format(**{"issueType": issue_type, "id": id}),
+            SET_ISSUE_TYPE.path.replace("{issueType}", str(issue_type)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
         )
@@ -2944,7 +3035,7 @@ class IssueMetaResource(JiraResource):
     ) -> WorkflowSchemeBean:
         """Delete a workflow mapping from a scheme"""
         return self._delete(
-            DELETE_WORKFLOW_MAPPING.path.format(**{"id": id}),
+            DELETE_WORKFLOW_MAPPING.path.replace("{id}", str(id)),
             params={"updateDraftIfNeeded": update_draft_if_needed, "workflowName": workflow_name},
             model=WorkflowSchemeBean,
         )
@@ -2958,7 +3049,7 @@ class IssueMetaResource(JiraResource):
     ) -> WorkflowSchemeBean:
         """Get workflow mappings for a scheme"""
         return self._get(
-            GET_WORKFLOW.path.format(**{"id": id}),
+            GET_WORKFLOW.path.replace("{id}", str(id)),
             params={"workflowName": workflow_name, "returnDraftIfExists": return_draft_if_exists},
             model=WorkflowSchemeBean,
         )
@@ -2972,7 +3063,7 @@ class IssueMetaResource(JiraResource):
     ) -> WorkflowSchemeBean:
         """Update a workflow mapping in a scheme"""
         return self._put(
-            UPDATE_WORKFLOW_MAPPING.path.format(**{"id": id}),
+            UPDATE_WORKFLOW_MAPPING.path.replace("{id}", str(id)),
             params={"workflowName": workflow_name},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=WorkflowSchemeBean,
@@ -2986,7 +3077,7 @@ class PermissionSecurityResource(JiraResource):
 
     def get_issue_security_scheme(self, id: str) -> SecuritySchemeJsonBean:
         """Get specific issue security scheme by id"""
-        return self._get(GET_ISSUE_SECURITY_SCHEME.path.format(**{"id": id}), model=SecuritySchemeJsonBean)
+        return self._get(GET_ISSUE_SECURITY_SCHEME.path.replace("{id}", str(id)), model=SecuritySchemeJsonBean)
 
     def get_permissions(
         self,
@@ -3020,7 +3111,7 @@ class PermissionSecurityResource(JiraResource):
     def get_notification_scheme(self, id: int, *, expand: str | None = None) -> NotificationSchemeBean:
         """Get full notification scheme details"""
         return self._get(
-            GET_NOTIFICATION_SCHEME.path.format(**{"id": id}),
+            GET_NOTIFICATION_SCHEME.path.replace("{id}", str(id)),
             params={"expand": expand},
             model=NotificationSchemeBean,
         )
@@ -3054,8 +3145,8 @@ class PermissionSecurityResource(JiraResource):
     ) -> PermissionSchemeAttributeBean:
         """Get scheme attribute by key"""
         return self._get(
-            GET_SCHEME_ATTRIBUTE.path.format(
-                **{"permissionSchemeId": permission_scheme_id, "attributeKey": attribute_key}
+            GET_SCHEME_ATTRIBUTE.path.replace("{permissionSchemeId}", str(permission_scheme_id)).replace(
+                "{attributeKey}", str(attribute_key)
             ),
             model=PermissionSchemeAttributeBean,
         )
@@ -3063,17 +3154,19 @@ class PermissionSecurityResource(JiraResource):
     def set_scheme_attribute(self, permission_scheme_id: int, key: str) -> None:
         """Update or insert a scheme attribute"""
         return self._put(
-            SET_SCHEME_ATTRIBUTE.path.format(**{"permissionSchemeId": permission_scheme_id, "key": key}),
+            SET_SCHEME_ATTRIBUTE.path.replace("{permissionSchemeId}", str(permission_scheme_id)).replace(
+                "{key}", str(key)
+            ),
         )
 
     def delete_permission_scheme(self, scheme_id: int) -> None:
         """Delete a permission scheme by ID"""
-        return self._delete(DELETE_PERMISSION_SCHEME.path.format(**{"schemeId": scheme_id}))
+        return self._delete(DELETE_PERMISSION_SCHEME.path.replace("{schemeId}", str(scheme_id)))
 
     def get_permission_scheme(self, scheme_id: int, *, expand: str | None = None) -> PermissionSchemeBean:
         """Get a permission scheme by ID"""
         return self._get(
-            GET_PERMISSION_SCHEME.path.format(**{"schemeId": scheme_id}),
+            GET_PERMISSION_SCHEME.path.replace("{schemeId}", str(scheme_id)),
             params={"expand": expand},
             model=PermissionSchemeBean,
         )
@@ -3087,7 +3180,7 @@ class PermissionSecurityResource(JiraResource):
     ) -> PermissionSchemeBean:
         """Update a permission scheme"""
         return self._put(
-            UPDATE_PERMISSION_SCHEME.path.format(**{"schemeId": scheme_id}),
+            UPDATE_PERMISSION_SCHEME.path.replace("{schemeId}", str(scheme_id)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=PermissionSchemeBean,
@@ -3096,7 +3189,7 @@ class PermissionSecurityResource(JiraResource):
     def get_permission_scheme_grants(self, scheme_id: int, *, expand: str | None = None) -> PermissionGrantsBean:
         """Get all permission grants of a scheme"""
         return self._get(
-            GET_PERMISSION_SCHEME_GRANTS.path.format(**{"schemeId": scheme_id}),
+            GET_PERMISSION_SCHEME_GRANTS.path.replace("{schemeId}", str(scheme_id)),
             params={"expand": expand},
             model=PermissionGrantsBean,
         )
@@ -3110,7 +3203,7 @@ class PermissionSecurityResource(JiraResource):
     ) -> PermissionGrantBean:
         """Create a permission grant in a scheme"""
         return self._post(
-            CREATE_PERMISSION_GRANT.path.format(**{"schemeId": scheme_id}),
+            CREATE_PERMISSION_GRANT.path.replace("{schemeId}", str(scheme_id)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=PermissionGrantBean,
@@ -3119,7 +3212,9 @@ class PermissionSecurityResource(JiraResource):
     def delete_permission_scheme_entity(self, permission_id: int, scheme_id: int) -> None:
         """Delete a permission grant from a scheme"""
         return self._delete(
-            DELETE_PERMISSION_SCHEME_ENTITY.path.format(**{"permissionId": permission_id, "schemeId": scheme_id}),
+            DELETE_PERMISSION_SCHEME_ENTITY.path.replace("{permissionId}", str(permission_id)).replace(
+                "{schemeId}", str(scheme_id)
+            ),
         )
 
     def get_permission_scheme_grant(
@@ -3131,14 +3226,16 @@ class PermissionSecurityResource(JiraResource):
     ) -> PermissionGrantBean:
         """Get a permission grant by ID"""
         return self._get(
-            GET_PERMISSION_SCHEME_GRANT.path.format(**{"permissionId": permission_id, "schemeId": scheme_id}),
+            GET_PERMISSION_SCHEME_GRANT.path.replace("{permissionId}", str(permission_id)).replace(
+                "{schemeId}", str(scheme_id)
+            ),
             params={"expand": expand},
             model=PermissionGrantBean,
         )
 
     def get_issuesecuritylevel(self, id: str) -> SecurityLevelJsonBean:
         """Get a security level by ID"""
-        return self._get(GET_ISSUESECURITYLEVEL.path.format(**{"id": id}), model=SecurityLevelJsonBean)
+        return self._get(GET_ISSUESECURITYLEVEL.path.replace("{id}", str(id)), model=SecurityLevelJsonBean)
 
 
 class UserResource(JiraResource):
@@ -3156,12 +3253,12 @@ class UserResource(JiraResource):
 
     def get_4(self, key: str) -> ApplicationRoleBean:
         """Get application role by key"""
-        return self._get(GET_4.path.format(**{"key": key}), model=ApplicationRoleBean)
+        return self._get(GET_4.path.replace("{key}", str(key)), model=ApplicationRoleBean)
 
     def put_2(self, key: str, body: ApplicationRoleBean) -> ApplicationRoleBean:
         """Update application role"""
         return self._put(
-            PUT_2.path.format(**{"key": key}),
+            PUT_2.path.replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ApplicationRoleBean,
         )
@@ -3397,7 +3494,7 @@ class UserResource(JiraResource):
 
     def delete_avatar_2(self, id: int, *, username: str | None = None) -> None:
         """Delete avatar"""
-        return self._delete(DELETE_AVATAR_2.path.format(**{"id": id}), params={"username": username})
+        return self._delete(DELETE_AVATAR_2.path.replace("{id}", str(id)), params={"username": username})
 
     def get_all_avatars_1(self, *, username: str | None = None) -> AvatarBean:
         """Get all avatars for user"""
@@ -3497,7 +3594,7 @@ class UserResource(JiraResource):
     ) -> None:
         """Delete a specified user's property"""
         return self._delete(
-            DELETE_PROPERTY_6.path.format(**{"propertyKey": property_key}),
+            DELETE_PROPERTY_6.path.replace("{propertyKey}", str(property_key)),
             params={"userKey": user_key, "username": username},
         )
 
@@ -3510,7 +3607,7 @@ class UserResource(JiraResource):
     ) -> None:
         """Get the value of a specified user's property"""
         return self._get(
-            GET_PROPERTY_6.path.format(**{"propertyKey": property_key}),
+            GET_PROPERTY_6.path.replace("{propertyKey}", str(property_key)),
             params={"userKey": user_key, "username": username},
         )
 
@@ -3523,7 +3620,7 @@ class UserResource(JiraResource):
     ) -> None:
         """Set the value of a specified user's property"""
         return self._put(
-            SET_PROPERTY_5.path.format(**{"propertyKey": property_key}),
+            SET_PROPERTY_5.path.replace("{propertyKey}", str(property_key)),
             params={"userKey": user_key, "username": username},
         )
 
@@ -3551,7 +3648,7 @@ class UserResource(JiraResource):
 
     def delete_session(self, username: str) -> None:
         """Delete user session"""
-        return self._delete(DELETE_SESSION.path.format(**{"username": username}))
+        return self._delete(DELETE_SESSION.path.replace("{username}", str(username)))
 
     def find_users_with_browse_permission(
         self,
@@ -3592,7 +3689,7 @@ class GroupResource(JiraResource):
     ) -> UserJsonBean:
         """Get users from a specified group"""
         return self._get(
-            GET_USERS_FROM_GROUP.path.format(**{"groupname": groupname}),
+            GET_USERS_FROM_GROUP.path.replace("{groupname}", str(groupname)),
             params={"includeInactiveUsers": include_inactive_users, "maxResults": max_results, "startAt": start_at},
             model=UserJsonBean,
         )
@@ -3629,7 +3726,7 @@ class GroupResource(JiraResource):
 class AvatarResource(JiraResource):
     def get_all_system_avatars(self, type_: str) -> AvatarBean:
         """Get all system avatars"""
-        return self._get(GET_ALL_SYSTEM_AVATARS.path.format(**{"type": type_}), model=AvatarBean)
+        return self._get(GET_ALL_SYSTEM_AVATARS.path.replace("{type}", str(type_)), model=AvatarBean)
 
     def store_temporary_avatar(
         self,
@@ -3640,7 +3737,7 @@ class AvatarResource(JiraResource):
     ) -> AvatarCroppingBean:
         """Create temporary avatar"""
         return self._post(
-            STORE_TEMPORARY_AVATAR.path.format(**{"type": type_}),
+            STORE_TEMPORARY_AVATAR.path.replace("{type}", str(type_)),
             params={"filename": filename, "size": size},
             model=AvatarCroppingBean,
         )
@@ -3648,14 +3745,14 @@ class AvatarResource(JiraResource):
     def create_avatar_from_temporary(self, type_: str, body: AvatarCroppingBean) -> None:
         """Update avatar cropping"""
         return self._post(
-            CREATE_AVATAR_FROM_TEMPORARY.path.format(**{"type": type_}),
+            CREATE_AVATAR_FROM_TEMPORARY.path.replace("{type}", str(type_)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def get_avatars(self, type_: str, owning_object_id: str) -> AvatarBean:
         """Get all avatars for a type and owner"""
         return self._get(
-            GET_AVATARS.path.format(**{"type": type_, "owningObjectId": owning_object_id}),
+            GET_AVATARS.path.replace("{type}", str(type_)).replace("{owningObjectId}", str(owning_object_id)),
             model=AvatarBean,
         )
 
@@ -3667,7 +3764,9 @@ class AvatarResource(JiraResource):
     ) -> AvatarBean:
         """Create avatar from temporary"""
         return self._post(
-            CREATE_AVATAR_FROM_TEMPORARY_3.path.format(**{"type": type_, "owningObjectId": owning_object_id}),
+            CREATE_AVATAR_FROM_TEMPORARY_3.path.replace("{type}", str(type_)).replace(
+                "{owningObjectId}", str(owning_object_id)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=AvatarBean,
         )
@@ -3675,7 +3774,9 @@ class AvatarResource(JiraResource):
     def delete_avatar_1(self, id: int, type_: str, owning_object_id: str) -> None:
         """Delete avatar by ID"""
         return self._delete(
-            DELETE_AVATAR_1.path.format(**{"id": id, "type": type_, "owningObjectId": owning_object_id}),
+            DELETE_AVATAR_1.path.replace("{id}", str(id))
+            .replace("{type}", str(type_))
+            .replace("{owningObjectId}", str(owning_object_id)),
         )
 
     def store_temporary_avatar_using_multi_part_2(
@@ -3686,8 +3787,8 @@ class AvatarResource(JiraResource):
     ) -> AvatarCroppingBean:
         """Create temporary avatar using multipart upload"""
         return self._post(
-            STORE_TEMPORARY_AVATAR_USING_MULTI_PART_2.path.format(
-                **{"type": type_, "owningObjectId": owning_object_id}
+            STORE_TEMPORARY_AVATAR_USING_MULTI_PART_2.path.replace("{type}", str(type_)).replace(
+                "{owningObjectId}", str(owning_object_id)
             ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=AvatarCroppingBean,
@@ -3715,38 +3816,40 @@ class DashboardFilterResource(JiraResource):
     def get_properties_keys(self, item_id: str, dashboard_id: str) -> EntityPropertiesKeysBean:
         """Get all properties keys for a dashboard item"""
         return self._get(
-            GET_PROPERTIES_KEYS_ITEMS_PROPERTIES.path.format(**{"itemId": item_id, "dashboardId": dashboard_id}),
+            GET_PROPERTIES_KEYS_ITEMS_PROPERTIES.path.replace("{itemId}", str(item_id)).replace(
+                "{dashboardId}", str(dashboard_id)
+            ),
             model=EntityPropertiesKeysBean,
         )
 
     def delete_property_1(self, property_key: str, item_id: str, dashboard_id: str) -> None:
         """Delete a property from a dashboard item"""
         return self._delete(
-            DELETE_PROPERTY_1_ITEMS_PROPERTIES.path.format(
-                **{"propertyKey": property_key, "itemId": item_id, "dashboardId": dashboard_id}
-            ),
+            DELETE_PROPERTY_1_ITEMS_PROPERTIES.path.replace("{propertyKey}", str(property_key))
+            .replace("{itemId}", str(item_id))
+            .replace("{dashboardId}", str(dashboard_id)),
         )
 
     def get_property_1(self, property_key: str, item_id: str, dashboard_id: str) -> EntityPropertyBean:
         """Get a property from a dashboard item"""
         return self._get(
-            GET_PROPERTY_1_ITEMS_PROPERTIES.path.format(
-                **{"propertyKey": property_key, "itemId": item_id, "dashboardId": dashboard_id}
-            ),
+            GET_PROPERTY_1_ITEMS_PROPERTIES.path.replace("{propertyKey}", str(property_key))
+            .replace("{itemId}", str(item_id))
+            .replace("{dashboardId}", str(dashboard_id)),
             model=EntityPropertyBean,
         )
 
     def set_property(self, property_key: str, item_id: str, dashboard_id: str) -> None:
         """Set a property on a dashboard item"""
         return self._put(
-            SET_PROPERTY_ITEMS_PROPERTIES.path.format(
-                **{"propertyKey": property_key, "itemId": item_id, "dashboardId": dashboard_id}
-            ),
+            SET_PROPERTY_ITEMS_PROPERTIES.path.replace("{propertyKey}", str(property_key))
+            .replace("{itemId}", str(item_id))
+            .replace("{dashboardId}", str(dashboard_id)),
         )
 
     def get_dashboard(self, id: str) -> DashboardBean:
         """Get a single dashboard by ID"""
-        return self._get(GET_DASHBOARD.path.format(**{"id": id}), model=DashboardBean)
+        return self._get(GET_DASHBOARD.path.replace("{id}", str(id)), model=DashboardBean)
 
     def create_filter(self, body: FilterBean, *, expand: StringList | None = None) -> FilterBean:
         """Create a new filter"""
@@ -3775,16 +3878,16 @@ class DashboardFilterResource(JiraResource):
 
     def delete_filter(self, id: str) -> None:
         """Delete a filter"""
-        return self._delete(DELETE_FILTER.path.format(**{"id": id}))
+        return self._delete(DELETE_FILTER.path.replace("{id}", str(id)))
 
     def get_filter(self, id: str, *, expand: StringList | None = None) -> FilterBean:
         """Get a filter by ID"""
-        return self._get(GET_FILTER.path.format(**{"id": id}), params={"expand": expand}, model=FilterBean)
+        return self._get(GET_FILTER.path.replace("{id}", str(id)), params={"expand": expand}, model=FilterBean)
 
     def edit_filter(self, id: str, body: FilterBean, *, expand: StringList | None = None) -> FilterBean:
         """Update an existing filter"""
         return self._put(
-            EDIT_FILTER.path.format(**{"id": id}),
+            EDIT_FILTER.path.replace("{id}", str(id)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=FilterBean,
@@ -3792,24 +3895,24 @@ class DashboardFilterResource(JiraResource):
 
     def reset_columns_1(self, id: str) -> None:
         """Reset columns for filter"""
-        return self._delete(RESET_COLUMNS_1.path.format(**{"id": id}))
+        return self._delete(RESET_COLUMNS_1.path.replace("{id}", str(id)))
 
     def default_columns_1(self, id: str) -> ColumnLayout:
         """Get default columns for filter"""
-        return self._get(DEFAULT_COLUMNS_1.path.format(**{"id": id}), model=ColumnLayout)
+        return self._get(DEFAULT_COLUMNS_1.path.replace("{id}", str(id)), model=ColumnLayout)
 
     def set_columns_1(self, id: str) -> None:
         """Set default columns for filter"""
-        return self._put(SET_COLUMNS_1.path.format(**{"id": id}))
+        return self._put(SET_COLUMNS_1.path.replace("{id}", str(id)))
 
     def get_share_permissions(self, id: str) -> FilterPermissionBean:
         """Get all share permissions of filter"""
-        return self._get(GET_SHARE_PERMISSIONS.path.format(**{"id": id}), model=FilterPermissionBean)
+        return self._get(GET_SHARE_PERMISSIONS.path.replace("{id}", str(id)), model=FilterPermissionBean)
 
     def add_share_permission(self, id: str, body: SharePermissionInputBean) -> FilterPermissionBean:
         """Add share permissions to filter"""
         return self._post(
-            ADD_SHARE_PERMISSION.path.format(**{"id": id}),
+            ADD_SHARE_PERMISSION.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=FilterPermissionBean,
         )
@@ -3817,15 +3920,15 @@ class DashboardFilterResource(JiraResource):
     def delete_share_permission(self, permission_id: str, id: str, permission_id_2: int) -> None:
         """Remove share permissions from filter"""
         return self._delete(
-            DELETE_SHARE_PERMISSION.path.format(
-                **{"permissionId": permission_id, "id": id, "permission-id": permission_id_2}
-            ),
+            DELETE_SHARE_PERMISSION.path.replace("{permissionId}", str(permission_id))
+            .replace("{id}", str(id))
+            .replace("{permission-id}", str(permission_id_2)),
         )
 
     def get_share_permission(self, permission_id: str, id: str) -> FilterPermissionBean:
         """Get a single share permission of filter"""
         return self._get(
-            GET_SHARE_PERMISSION.path.format(**{"permissionId": permission_id, "id": id}),
+            GET_SHARE_PERMISSION.path.replace("{permissionId}", str(permission_id)).replace("{id}", str(id)),
             model=FilterPermissionBean,
         )
 
@@ -3845,7 +3948,7 @@ class SystemResource(JiraResource):
 
     def set_property_via_restful_table(self, id: str) -> Property:
         """Update an application property"""
-        return self._put(SET_PROPERTY_VIA_RESTFUL_TABLE.path.format(**{"id": id}), model=Property)
+        return self._put(SET_PROPERTY_VIA_RESTFUL_TABLE.path.replace("{id}", str(id)), model=Property)
 
     def get_configuration_1(self) -> ConfigurationBean:
         """Get Jira configuration details"""
@@ -3902,7 +4005,7 @@ class SystemResource(JiraResource):
     def get_terminology_entry(self, original_name: str) -> TerminologyResponseBean:
         """Get epic or sprint name by original name"""
         return self._get(
-            GET_TERMINOLOGY_ENTRY.path.format(**{"originalName": original_name}),
+            GET_TERMINOLOGY_ENTRY.path.replace("{originalName}", str(original_name)),
             model=TerminologyResponseBean,
         )
 
@@ -3910,15 +4013,15 @@ class SystemResource(JiraResource):
 class OperationsResource(JiraResource):
     def request_current_index_from_node(self, node_id: str) -> None:
         """Request node index snapshot"""
-        return self._put(REQUEST_CURRENT_INDEX_FROM_NODE.path.format(**{"nodeId": node_id}))
+        return self._put(REQUEST_CURRENT_INDEX_FROM_NODE.path.replace("{nodeId}", str(node_id)))
 
     def delete_node(self, node_id: str) -> None:
         """Delete a cluster node"""
-        return self._delete(DELETE_NODE.path.format(**{"nodeId": node_id}))
+        return self._delete(DELETE_NODE.path.replace("{nodeId}", str(node_id)))
 
     def change_node_state_to_offline(self, node_id: str) -> None:
         """Update node state to offline"""
-        return self._put(CHANGE_NODE_STATE_TO_OFFLINE.path.format(**{"nodeId": node_id}))
+        return self._put(CHANGE_NODE_STATE_TO_OFFLINE.path.replace("{nodeId}", str(node_id)))
 
     def get_all_nodes(self) -> NodeBean:
         """Get all cluster nodes"""
@@ -4053,7 +4156,7 @@ class OperationsResource(JiraResource):
 
     def get_progress(self, request_id: int) -> ReindexRequestBean:
         """Get progress of a single reindex request"""
-        return self._get(GET_PROGRESS.path.format(**{"requestId": request_id}), model=ReindexRequestBean)
+        return self._get(GET_PROGRESS.path.replace("{requestId}", str(request_id)), model=ReindexRequestBean)
 
     def get_upgrade_result(self) -> UpgradeResultBean:
         """Get result of the last upgrade task"""

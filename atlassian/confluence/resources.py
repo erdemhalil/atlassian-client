@@ -35,6 +35,7 @@ from .endpoints import (
     CREATE_4,
     CREATE_ATTACHMENTS,
     CREATE_CONTENT,
+    CREATE_PERSONAL_SPACE,
     CREATE_PERSONAL_SPACE_1,
     CREATE_PRIVATE_SPACE,
     CREATE_SITE_BACKUP_JOB,
@@ -70,11 +71,13 @@ from .endpoints import (
     GET,
     GET_1,
     GET_ACCESS_MODE_STATUS,
+    GET_ACTIVE_USERS,
     GET_ALL_GLOBAL_PERMISSIONS,
     GET_ALL_SPACE_PERMISSIONS,
     GET_ANONYMOUS,
     GET_ATTACHMENTS,
     GET_AUDIT_RECORDS,
+    GET_CLUSTER_NODE_STATUSES,
     GET_COLOR_SCHEME_TYPE,
     GET_CONTENT,
     GET_CONTENT_BY_ID,
@@ -194,6 +197,7 @@ from .models import (
     MacroInstance,
     MockAttachmentRequest,
     MockRestrictionsResponse,
+    NodeStatus,
     OperationRestriction,
     PasswordChangeDetails,
     Person,
@@ -272,7 +276,7 @@ class ContentResource(ConfluenceResource):
     ) -> Content:
         """Publish legacy draft"""
         return self._post(
-            PUBLISH_LEGACY_DRAFT.path.format(draftId=draft_id),
+            PUBLISH_LEGACY_DRAFT.path.replace("{draftId}", str(draft_id)),
             params={"expand": expand, "status": status},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Content,
@@ -288,7 +292,7 @@ class ContentResource(ConfluenceResource):
     ) -> Content:
         """Publish shared draft"""
         return self._put(
-            PUBLISH_SHARED_DRAFT.path.format(draftId=draft_id),
+            PUBLISH_SHARED_DRAFT.path.replace("{draftId}", str(draft_id)),
             params={"expand": expand, "status": status},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Content,
@@ -346,7 +350,7 @@ class ContentResource(ConfluenceResource):
     ) -> Content:
         """Update content"""
         return self._put(
-            UPDATE_2.path.format(contentId=content_id),
+            UPDATE_2.path.replace("{contentId}", str(content_id)),
             params={"asyncReconciliation": async_reconciliation, "conflictPolicy": conflict_policy, "status": status},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Content,
@@ -354,11 +358,11 @@ class ContentResource(ConfluenceResource):
 
     def index(self, content_id: str, *, start: int = 0, limit: int = 25) -> PageIterator[User]:
         """Fetch users watching a given content"""
-        return self._get_paged(INDEX.path.format(contentId=content_id), model=User, start=start, limit=limit)
+        return self._get_paged(INDEX.path.replace("{contentId}", str(content_id)), model=User, start=start, limit=limit)
 
     def delete_3(self, id: str, *, status: str | None = None) -> None:
         """Delete content"""
-        return self._delete(DELETE_3.path.format(id=id), params={"status": status})
+        return self._delete(DELETE_3.path.replace("{id}", str(id)), params={"status": status})
 
     def get_content_by_id(
         self,
@@ -370,37 +374,43 @@ class ContentResource(ConfluenceResource):
     ) -> Content:
         """Get content by ID"""
         return self._get(
-            GET_CONTENT_BY_ID.path.format(id=id),
+            GET_CONTENT_BY_ID.path.replace("{id}", str(id)),
             params={"expand": expand, "version": version, "status": status},
             model=Content,
         )
 
     def get_history(self, id: str, *, expand: str | None = None) -> History:
         """Get history of content"""
-        return self._get(GET_HISTORY.path.format(id=id), params={"expand": expand}, model=History)
+        return self._get(GET_HISTORY.path.replace("{id}", str(id)), params={"expand": expand}, model=History)
 
     def get_macro_body_by_hash(self, id: str, version: str, hash: str) -> MacroInstance:
         """Get macro body by hash"""
         return self._get(
-            GET_MACRO_BODY_BY_HASH.path.format(id=id, version=version, hash=hash),
+            GET_MACRO_BODY_BY_HASH.path.replace("{id}", str(id))
+            .replace("{version}", str(version))
+            .replace("{hash}", str(hash)),
             model=MacroInstance,
         )
 
     def get_macro_body_by_macro_id(self, macro_id: str, id: str, version: str) -> MacroInstance:
         """Get macro body by macro ID"""
         return self._get(
-            GET_MACRO_BODY_BY_MACRO_ID.path.format(macroId=macro_id, id=id, version=version),
+            GET_MACRO_BODY_BY_MACRO_ID.path.replace("{macroId}", str(macro_id))
+            .replace("{id}", str(id))
+            .replace("{version}", str(version)),
             model=MacroInstance,
         )
 
     def delete_content_history(self, id: str, version_number: str) -> None:
         """Delete content history"""
-        return self._delete(DELETE_CONTENT_HISTORY.path.format(id=id, versionNumber=version_number))
+        return self._delete(
+            DELETE_CONTENT_HISTORY.path.replace("{id}", str(id)).replace("{versionNumber}", str(version_number)),
+        )
 
     def convert(self, to: str, body: ContentBody, *, expand: str | None = None) -> ContentBody:
         """Convert body representation"""
         return self._post(
-            CONVERT.path.format(to=to),
+            CONVERT.path.replace("{to}", str(to)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ContentBody,
@@ -410,7 +420,7 @@ class ContentResource(ConfluenceResource):
 class ContentLabelsResource(ConfluenceResource):
     def delete_label_with_query_param(self, id: str, *, name: str | None = None) -> None:
         """Delete label with query param"""
-        return self._delete(DELETE_LABEL_WITH_QUERY_PARAM.path.format(id=id), params={"name": name})
+        return self._delete(DELETE_LABEL_WITH_QUERY_PARAM.path.replace("{id}", str(id)), params={"name": name})
 
     def labels(
         self,
@@ -422,7 +432,7 @@ class ContentLabelsResource(ConfluenceResource):
     ) -> PageIterator[Label]:
         """Get labels"""
         return self._get_paged(
-            LABELS.path.format(id=id),
+            LABELS.path.replace("{id}", str(id)),
             params={"prefix": prefix},
             model=Label,
             start=start,
@@ -433,7 +443,7 @@ class ContentLabelsResource(ConfluenceResource):
         """Add Labels"""
         return self._request_paged(
             "POST",
-            ADD_LABELS.path.format(id=id),
+            ADD_LABELS.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Label,
             start=start,
@@ -442,7 +452,7 @@ class ContentLabelsResource(ConfluenceResource):
 
     def delete_label(self, id: str, label: str) -> None:
         """Delete label"""
-        return self._delete(DELETE_LABEL.path.format(id=id, label=label))
+        return self._delete(DELETE_LABEL.path.replace("{id}", str(id)).replace("{label}", str(label)))
 
 
 class ContentPropertyResource(ConfluenceResource):
@@ -456,7 +466,7 @@ class ContentPropertyResource(ConfluenceResource):
     ) -> PageIterator[JsonContentProperty]:
         """Find all content properties"""
         return self._get_paged(
-            FIND_ALL.path.format(id=id),
+            FIND_ALL.path.replace("{id}", str(id)),
             params={"expand": expand},
             model=JsonContentProperty,
             start=start,
@@ -466,14 +476,14 @@ class ContentPropertyResource(ConfluenceResource):
     def create_1(self, id: str, body: JsonContentProperty) -> JsonContentProperty:
         """Create a content property"""
         return self._post(
-            CREATE_1.path.format(id=id),
+            CREATE_1.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=JsonContentProperty,
         )
 
     def delete_2(self, id: str, key: str) -> None:
         """Delete content property"""
-        return self._delete(DELETE_2.path.format(id=id, key=key))
+        return self._delete(DELETE_2.path.replace("{id}", str(id)).replace("{key}", str(key)))
 
     def find_by_key(
         self,
@@ -485,7 +495,7 @@ class ContentPropertyResource(ConfluenceResource):
     ) -> JsonContentProperty:
         """Find content property by key"""
         return self._get(
-            FIND_BY_KEY.path.format(id=id, key=key),
+            FIND_BY_KEY.path.replace("{id}", str(id)).replace("{key}", str(key)),
             params={"expand": expand, "limit": limit},
             model=JsonContentProperty,
         )
@@ -493,7 +503,7 @@ class ContentPropertyResource(ConfluenceResource):
     def create_2(self, id: str, key: str, body: JsonContentProperty) -> None:
         """POST /rest/api/content/{id}/property/{key}"""
         return self._post(
-            CREATE_2.path.format(id=id, key=key),
+            CREATE_2.path.replace("{id}", str(id)).replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -507,7 +517,7 @@ class ContentPropertyResource(ConfluenceResource):
     ) -> JsonContentProperty:
         """Update content property"""
         return self._put(
-            UPDATE_1.path.format(id=id, key=key),
+            UPDATE_1.path.replace("{id}", str(id)).replace("{key}", str(key)),
             params={"expand": expand},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=JsonContentProperty,
@@ -526,7 +536,7 @@ class ContentRestrictionsResource(ConfluenceResource):
         """Update restrictions"""
         return self._request_paged(
             "PUT",
-            UPDATE_RESTRICTIONS.path.format(id=id),
+            UPDATE_RESTRICTIONS.path.replace("{id}", str(id)),
             params={"expand": expand},
             model=OperationRestriction,
             start=start,
@@ -536,7 +546,7 @@ class ContentRestrictionsResource(ConfluenceResource):
     def by_operation(self, id: str, *, expand: str | None = None) -> MockRestrictionsResponse:
         """Get all restrictions by Operation"""
         return self._get(
-            BY_OPERATION.path.format(id=id),
+            BY_OPERATION.path.replace("{id}", str(id)),
             params={"expand": expand},
             model=MockRestrictionsResponse,
         )
@@ -552,7 +562,7 @@ class ContentRestrictionsResource(ConfluenceResource):
     ) -> OperationRestriction:
         """Get all restrictions for given operation"""
         return self._get(
-            FOR_OPERATION.path.format(operationKey=operation_key, id=id),
+            FOR_OPERATION.path.replace("{operationKey}", str(operation_key)).replace("{id}", str(id)),
             params={"expand": expand, "limit": limit, "start": start},
             model=OperationRestriction,
         )
@@ -567,7 +577,7 @@ class ContentRestrictionsResource(ConfluenceResource):
     ) -> MockRestrictionsResponse:
         """Get all view restriction both direct and inherited."""
         return self._get(
-            RELEVANT_VIEW_RESTRICTIONS.path.format(id=id),
+            RELEVANT_VIEW_RESTRICTIONS.path.replace("{id}", str(id)),
             params={"expand": expand, "limit": limit, "start": start},
             model=MockRestrictionsResponse,
         )
@@ -584,7 +594,7 @@ class ContentDescendantResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get Descendants"""
         return self._get_paged(
-            DESCENDANTS.path.format(id=id),
+            DESCENDANTS.path.replace("{id}", str(id)),
             params={"expand": expand},
             model=Content,
             start=start,
@@ -602,7 +612,7 @@ class ContentDescendantResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get descendants of type"""
         return self._get_paged(
-            DESCENDANTS_OF_TYPE.path.format(id=id, type=type_),
+            DESCENDANTS_OF_TYPE.path.replace("{id}", str(id)).replace("{type}", str(type_)),
             params={"expand": expand},
             model=Content,
             start=start,
@@ -622,7 +632,7 @@ class ChildContentResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get children of content"""
         return self._get_paged(
-            CHILDREN.path.format(id=id),
+            CHILDREN.path.replace("{id}", str(id)),
             params={"expand": expand, "parentVersion": parent_version},
             model=Content,
             start=start,
@@ -642,7 +652,7 @@ class ChildContentResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get comments of content"""
         return self._get_paged(
-            COMMENTS_OF_CONTENT.path.format(id=id),
+            COMMENTS_OF_CONTENT.path.replace("{id}", str(id)),
             params={"expand": expand, "depth": depth, "location": location, "parentVersion": parent_version},
             model=Content,
             start=start,
@@ -661,7 +671,7 @@ class ChildContentResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get children of content by type"""
         return self._get_paged(
-            CHILDREN_OF_TYPE.path.format(id=id, type=type_),
+            CHILDREN_OF_TYPE.path.replace("{id}", str(id)).replace("{type}", str(type_)),
             params={"expand": expand, "parentVersion": parent_version},
             model=Content,
             start=start,
@@ -682,7 +692,7 @@ class AttachmentsResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get attachment"""
         return self._get_paged(
-            GET_ATTACHMENTS.path.format(id=id),
+            GET_ATTACHMENTS.path.replace("{id}", str(id)),
             params={"expand": expand, "filename": filename, "mediaType": media_type},
             model=Content,
             start=start,
@@ -700,7 +710,7 @@ class AttachmentsResource(ConfluenceResource):
     ) -> Content:
         """Create attachments"""
         return self._post(
-            CREATE_ATTACHMENTS.path.format(id=id),
+            CREATE_ATTACHMENTS.path.replace("{id}", str(id)),
             params={"expand": expand, "allowDuplicated": allow_duplicated, "status": status},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Content,
@@ -708,12 +718,14 @@ class AttachmentsResource(ConfluenceResource):
 
     def remove_attachment(self, attachment_id: str, id: str) -> None:
         """Remove attachment"""
-        return self._delete(REMOVE_ATTACHMENT.path.format(attachmentId=attachment_id, id=id))
+        return self._delete(
+            REMOVE_ATTACHMENT.path.replace("{attachmentId}", str(attachment_id)).replace("{id}", str(id)),
+        )
 
     def update(self, attachment_id: str, id: str, body: Content) -> Content:
         """Update non-binary data of an Attachment"""
         return self._put(
-            UPDATE.path.format(attachmentId=attachment_id, id=id),
+            UPDATE.path.replace("{attachmentId}", str(attachment_id)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Content,
         )
@@ -721,7 +733,7 @@ class AttachmentsResource(ConfluenceResource):
     def update_data(self, attachment_id: str, id: str, body: MockAttachmentRequest) -> Content:
         """Update binary data of an attachment"""
         return self._post(
-            UPDATE_DATA.path.format(attachmentId=attachment_id, id=id),
+            UPDATE_DATA.path.replace("{attachmentId}", str(attachment_id)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Content,
         )
@@ -736,14 +748,16 @@ class AttachmentsResource(ConfluenceResource):
     ) -> None:
         """Move attachment"""
         return self._post(
-            MOVE.path.format(attachmentId=attachment_id, id=id),
+            MOVE.path.replace("{attachmentId}", str(attachment_id)).replace("{id}", str(id)),
             params={"newName": new_name, "newContentId": new_content_id},
         )
 
     def remove_attachment_version(self, attachment_id: str, id: str, version: int) -> None:
         """Remove attachment version"""
         return self._delete(
-            REMOVE_ATTACHMENT_VERSION.path.format(attachmentId=attachment_id, id=id, version=version),
+            REMOVE_ATTACHMENT_VERSION.path.replace("{attachmentId}", str(attachment_id))
+            .replace("{id}", str(id))
+            .replace("{version}", str(version)),
         )
 
 
@@ -810,23 +824,23 @@ class SpaceResource(ConfluenceResource):
 
     def delete_5(self, space_key: str) -> LongTaskSubmission:
         """Delete Space"""
-        return self._delete(DELETE_5.path.format(spaceKey=space_key), model=LongTaskSubmission)
+        return self._delete(DELETE_5.path.replace("{spaceKey}", str(space_key)), model=LongTaskSubmission)
 
     def space(self, space_key: str, *, expand: str | None = None) -> Space:
         """Get space"""
-        return self._get(SPACE.path.format(spaceKey=space_key), params={"expand": expand}, model=Space)
+        return self._get(SPACE.path.replace("{spaceKey}", str(space_key)), params={"expand": expand}, model=Space)
 
     def update_4(self, space_key: str, body: Space) -> Space:
         """Update Space"""
         return self._put(
-            UPDATE_4.path.format(spaceKey=space_key),
+            UPDATE_4.path.replace("{spaceKey}", str(space_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=Space,
         )
 
     def archive(self, space_key: str) -> None:
         """Archive space"""
-        return self._put(ARCHIVE.path.format(spaceKey=space_key))
+        return self._put(ARCHIVE.path.replace("{spaceKey}", str(space_key)))
 
     def contents(
         self,
@@ -839,7 +853,7 @@ class SpaceResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get contents in space"""
         return self._get_paged(
-            CONTENTS.path.format(spaceKey=space_key),
+            CONTENTS.path.replace("{spaceKey}", str(space_key)),
             params={"expand": expand, "depth": depth},
             model=Content,
             start=start,
@@ -858,7 +872,7 @@ class SpaceResource(ConfluenceResource):
     ) -> PageIterator[Content]:
         """Get contents by type"""
         return self._get_paged(
-            CONTENTS_WITH_TYPE_1.path.format(spaceKey=space_key, type=type_),
+            CONTENTS_WITH_TYPE_1.path.replace("{spaceKey}", str(space_key)).replace("{type}", str(type_)),
             params={"expand": expand, "depth": depth},
             model=Content,
             start=start,
@@ -867,11 +881,11 @@ class SpaceResource(ConfluenceResource):
 
     def restore(self, space_key: str) -> None:
         """Restore space"""
-        return self._put(RESTORE.path.format(spaceKey=space_key))
+        return self._put(RESTORE.path.replace("{spaceKey}", str(space_key)))
 
     def trash(self, space_key: str) -> None:
         """Remove all trash contents"""
-        return self._delete(TRASH.path.format(spaceKey=space_key))
+        return self._delete(TRASH.path.replace("{spaceKey}", str(space_key)))
 
     def contents_with_type(
         self,
@@ -883,27 +897,42 @@ class SpaceResource(ConfluenceResource):
     ) -> None:
         """Get trash contents of space"""
         return self._get(
-            CONTENTS_WITH_TYPE.path.format(spaceKey=space_key),
+            CONTENTS_WITH_TYPE.path.replace("{spaceKey}", str(space_key)),
             params={"cursor": cursor, "expand": expand, "limit": limit},
         )
 
     def index_4(self, space_key: str, *, start: int = 0, limit: int = 25) -> PageIterator[User]:
         """Fetch users watching space"""
-        return self._get_paged(INDEX_4.path.format(spaceKey=space_key), model=User, start=start, limit=limit)
+        return self._get_paged(INDEX_4.path.replace("{spaceKey}", str(space_key)), model=User, start=start, limit=limit)
 
 
 class SpaceLabelResource(ConfluenceResource):
     def index_3(self, space_key: str, *, start: int = 0, limit: int = 25) -> PageIterator[Label]:
         """Fetch all labels"""
-        return self._get_paged(INDEX_3.path.format(spaceKey=space_key), model=Label, start=start, limit=limit)
+        return self._get_paged(
+            INDEX_3.path.replace("{spaceKey}", str(space_key)),
+            model=Label,
+            start=start,
+            limit=limit,
+        )
 
     def popular_1(self, space_key: str, *, start: int = 0, limit: int = 25) -> PageIterator[Label]:
         """Get popular labels"""
-        return self._get_paged(POPULAR_1.path.format(spaceKey=space_key), model=Label, start=start, limit=limit)
+        return self._get_paged(
+            POPULAR_1.path.replace("{spaceKey}", str(space_key)),
+            model=Label,
+            start=start,
+            limit=limit,
+        )
 
     def recent_1(self, space_key: str, *, start: int = 0, limit: int = 25) -> PageIterator[Label]:
         """Get recent labels"""
-        return self._get_paged(RECENT_1.path.format(spaceKey=space_key), model=Label, start=start, limit=limit)
+        return self._get_paged(
+            RECENT_1.path.replace("{spaceKey}", str(space_key)),
+            model=Label,
+            start=start,
+            limit=limit,
+        )
 
     def related_1(
         self,
@@ -915,7 +944,7 @@ class SpaceLabelResource(ConfluenceResource):
     ) -> PageIterator[Label]:
         """Get related labels"""
         return self._get_paged(
-            RELATED_1.path.format(spaceKey=space_key, labelName=label_name),
+            RELATED_1.path.replace("{spaceKey}", str(space_key)).replace("{labelName}", str(label_name)),
             model=Label,
             start=start,
             limit=limit,
@@ -925,56 +954,77 @@ class SpaceLabelResource(ConfluenceResource):
 class SpacePermissionsResource(ConfluenceResource):
     def get_all_space_permissions(self, space_key: str) -> SpacePermission:
         """Get all space permissions"""
-        return self._get(GET_ALL_SPACE_PERMISSIONS.path.format(spaceKey=space_key), model=SpacePermission)
+        return self._get(
+            GET_ALL_SPACE_PERMISSIONS.path.replace("{spaceKey}", str(space_key)),
+            model=SpacePermission,
+        )
 
     def set_permissions_1(self, space_key: str) -> None:
         """Set permissions to multiple users/groups/anonymous user in the given space"""
-        return self._post(SET_PERMISSIONS_1.path.format(spaceKey=space_key))
+        return self._post(SET_PERMISSIONS_1.path.replace("{spaceKey}", str(space_key)))
 
     def get_permissions_granted_to_anonymous_users_1(self, space_key: str) -> SpacePermission:
         """Gets the permissions granted to an anonymous user in a space"""
         return self._get(
-            GET_PERMISSIONS_GRANTED_TO_ANONYMOUS_USERS_1.path.format(spaceKey=space_key),
+            GET_PERMISSIONS_GRANTED_TO_ANONYMOUS_USERS_1.path.replace("{spaceKey}", str(space_key)),
             model=SpacePermission,
         )
 
     def grant_permissions_to_anonymous_users_1(self, space_key: str) -> None:
         """Grants space permissions to anonymous user"""
-        return self._put(GRANT_PERMISSIONS_TO_ANONYMOUS_USERS_1.path.format(spaceKey=space_key))
+        return self._put(GRANT_PERMISSIONS_TO_ANONYMOUS_USERS_1.path.replace("{spaceKey}", str(space_key)))
 
     def revoke_permissions_from_anonymous_user(self, space_key: str) -> None:
         """Revoke space permissions from anonymous user"""
-        return self._put(REVOKE_PERMISSIONS_FROM_ANONYMOUS_USER.path.format(spaceKey=space_key))
+        return self._put(REVOKE_PERMISSIONS_FROM_ANONYMOUS_USER.path.replace("{spaceKey}", str(space_key)))
 
     def get_permissions_granted_to_group_1(self, space_key: str, group_name: str) -> SpacePermission:
         """Gets the permissions granted to a group in a space"""
         return self._get(
-            GET_PERMISSIONS_GRANTED_TO_GROUP_1.path.format(spaceKey=space_key, groupName=group_name),
+            GET_PERMISSIONS_GRANTED_TO_GROUP_1.path.replace("{spaceKey}", str(space_key)).replace(
+                "{groupName}", str(group_name)
+            ),
             model=SpacePermission,
         )
 
     def grant_permissions_to_group_1(self, space_key: str, group_name: str) -> None:
         """Grants space permissions to a group"""
-        return self._put(GRANT_PERMISSIONS_TO_GROUP_1.path.format(spaceKey=space_key, groupName=group_name))
+        return self._put(
+            GRANT_PERMISSIONS_TO_GROUP_1.path.replace("{spaceKey}", str(space_key)).replace(
+                "{groupName}", str(group_name)
+            ),
+        )
 
     def revoke_permissions_from_group_1(self, space_key: str, group_name: str) -> None:
         """Revoke space permissions from a group"""
-        return self._put(REVOKE_PERMISSIONS_FROM_GROUP_1.path.format(spaceKey=space_key, groupName=group_name))
+        return self._put(
+            REVOKE_PERMISSIONS_FROM_GROUP_1.path.replace("{spaceKey}", str(space_key)).replace(
+                "{groupName}", str(group_name)
+            ),
+        )
 
     def get_permissions_granted_to_user_1(self, space_key: str, user_key: str) -> SpacePermission:
         """Gets the permissions granted to a user in a space"""
         return self._get(
-            GET_PERMISSIONS_GRANTED_TO_USER_1.path.format(spaceKey=space_key, userKey=user_key),
+            GET_PERMISSIONS_GRANTED_TO_USER_1.path.replace("{spaceKey}", str(space_key)).replace(
+                "{userKey}", str(user_key)
+            ),
             model=SpacePermission,
         )
 
     def grant_permissions_to_user_1(self, space_key: str, user_key: str) -> None:
         """Grants space permissions to a user"""
-        return self._put(GRANT_PERMISSIONS_TO_USER_1.path.format(spaceKey=space_key, userKey=user_key))
+        return self._put(
+            GRANT_PERMISSIONS_TO_USER_1.path.replace("{spaceKey}", str(space_key)).replace("{userKey}", str(user_key)),
+        )
 
     def revoke_permissions_from_user_1(self, space_key: str, user_key: str) -> None:
         """Revoke space permissions from a user"""
-        return self._put(REVOKE_PERMISSIONS_FROM_USER_1.path.format(spaceKey=space_key, userKey=user_key))
+        return self._put(
+            REVOKE_PERMISSIONS_FROM_USER_1.path.replace("{spaceKey}", str(space_key)).replace(
+                "{userKey}", str(user_key)
+            ),
+        )
 
 
 class SpacePropertyResource(ConfluenceResource):
@@ -988,7 +1038,7 @@ class SpacePropertyResource(ConfluenceResource):
     ) -> PageIterator[JsonSpaceProperty]:
         """Get space properties"""
         return self._get_paged(
-            GET_1.path.format(spaceKey=space_key),
+            GET_1.path.replace("{spaceKey}", str(space_key)),
             params={"expand": expand},
             model=JsonSpaceProperty,
             start=start,
@@ -998,14 +1048,14 @@ class SpacePropertyResource(ConfluenceResource):
     def create_3(self, space_key: str, body: JsonSpaceProperty) -> JsonSpaceProperty:
         """Create a space property"""
         return self._post(
-            CREATE_3.path.format(spaceKey=space_key),
+            CREATE_3.path.replace("{spaceKey}", str(space_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=JsonSpaceProperty,
         )
 
     def delete_4(self, space_key: str, key: str) -> None:
         """Delete space property"""
-        return self._delete(DELETE_4.path.format(spaceKey=space_key, key=key))
+        return self._delete(DELETE_4.path.replace("{spaceKey}", str(space_key)).replace("{key}", str(key)))
 
     def get(
         self,
@@ -1018,7 +1068,7 @@ class SpacePropertyResource(ConfluenceResource):
     ) -> JsonSpaceProperty:
         """Get space property by key"""
         return self._get(
-            GET.path.format(spaceKey=space_key, key=key),
+            GET.path.replace("{spaceKey}", str(space_key)).replace("{key}", str(key)),
             params={"expand": expand, "limit": limit, "start": start},
             model=JsonSpaceProperty,
         )
@@ -1026,7 +1076,7 @@ class SpacePropertyResource(ConfluenceResource):
     def create_4(self, space_key: str, key: str, body: JsonSpaceProperty) -> JsonSpaceProperty:
         """Create a space property with a specific key"""
         return self._post(
-            CREATE_4.path.format(spaceKey=space_key, key=key),
+            CREATE_4.path.replace("{spaceKey}", str(space_key)).replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=JsonSpaceProperty,
         )
@@ -1034,7 +1084,7 @@ class SpacePropertyResource(ConfluenceResource):
     def update_3(self, space_key: str, key: str, body: JsonSpaceProperty) -> JsonSpaceProperty:
         """Update space property"""
         return self._put(
-            UPDATE_3.path.format(spaceKey=space_key, key=key),
+            UPDATE_3.path.replace("{spaceKey}", str(space_key)).replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=JsonSpaceProperty,
         )
@@ -1043,7 +1093,10 @@ class SpacePropertyResource(ConfluenceResource):
 class SpaceColorSchemeResource(ConfluenceResource):
     def get_space_color_scheme(self, space_key: str) -> ColorSchemeThemeBasedModel:
         """Get Space color scheme"""
-        return self._get(GET_SPACE_COLOR_SCHEME.path.format(spaceKey=space_key), model=ColorSchemeThemeBasedModel)
+        return self._get(
+            GET_SPACE_COLOR_SCHEME.path.replace("{spaceKey}", str(space_key)),
+            model=ColorSchemeThemeBasedModel,
+        )
 
     def update_space_color_scheme(
         self,
@@ -1052,7 +1105,7 @@ class SpaceColorSchemeResource(ConfluenceResource):
     ) -> ColorSchemeThemeBasedModel:
         """Update Space color scheme"""
         return self._put(
-            UPDATE_SPACE_COLOR_SCHEME.path.format(spaceKey=space_key),
+            UPDATE_SPACE_COLOR_SCHEME.path.replace("{spaceKey}", str(space_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ColorSchemeThemeBasedModel,
         )
@@ -1060,13 +1113,16 @@ class SpaceColorSchemeResource(ConfluenceResource):
     def reset_space_color_scheme(self, space_key: str) -> ColorSchemeThemeBasedModel:
         """Reset Space color scheme"""
         return self._put(
-            RESET_SPACE_COLOR_SCHEME.path.format(spaceKey=space_key),
+            RESET_SPACE_COLOR_SCHEME.path.replace("{spaceKey}", str(space_key)),
             model=ColorSchemeThemeBasedModel,
         )
 
     def get_color_scheme_type(self, space_key: str) -> SpaceColorSchemeTypeModel:
         """Get Space color scheme type"""
-        return self._get(GET_COLOR_SCHEME_TYPE.path.format(spaceKey=space_key), model=SpaceColorSchemeTypeModel)
+        return self._get(
+            GET_COLOR_SCHEME_TYPE.path.replace("{spaceKey}", str(space_key)),
+            model=SpaceColorSchemeTypeModel,
+        )
 
     def update_color_scheme_type(
         self,
@@ -1075,7 +1131,7 @@ class SpaceColorSchemeResource(ConfluenceResource):
     ) -> SpaceColorSchemeTypeModel:
         """Update Space color scheme type"""
         return self._put(
-            UPDATE_COLOR_SCHEME_TYPE.path.format(spaceKey=space_key),
+            UPDATE_COLOR_SCHEME_TYPE.path.replace("{spaceKey}", str(space_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=SpaceColorSchemeTypeModel,
         )
@@ -1088,7 +1144,11 @@ class GroupResource(ConfluenceResource):
 
     def get_group(self, group_name: str, *, expand: str | None = None) -> Group:
         """Get group by name"""
-        return self._get(GET_GROUP.path.format(groupName=group_name), params={"expand": expand}, model=Group)
+        return self._get(
+            GET_GROUP.path.replace("{groupName}", str(group_name)),
+            params={"expand": expand},
+            model=Group,
+        )
 
     def get_nested_group_members(
         self,
@@ -1100,7 +1160,7 @@ class GroupResource(ConfluenceResource):
     ) -> PageIterator[Group]:
         """Get group members of group"""
         return self._get_paged(
-            GET_NESTED_GROUP_MEMBERS.path.format(groupName=group_name),
+            GET_NESTED_GROUP_MEMBERS.path.replace("{groupName}", str(group_name)),
             params={"expand": expand},
             model=Group,
             start=start,
@@ -1117,7 +1177,7 @@ class GroupResource(ConfluenceResource):
     ) -> PageIterator[Person]:
         """Get members of group"""
         return self._get_paged(
-            GET_MEMBERS.path.format(groupName=group_name),
+            GET_MEMBERS.path.replace("{groupName}", str(group_name)),
             params={"expand": expand},
             model=Person,
             start=start,
@@ -1126,11 +1186,15 @@ class GroupResource(ConfluenceResource):
 
     def delete_6(self, group_name: str, username: str) -> None:
         """Delete user group"""
-        return self._delete(DELETE_6.path.format(groupName=group_name, username=username))
+        return self._delete(
+            DELETE_6.path.replace("{groupName}", str(group_name)).replace("{username}", str(username)),
+        )
 
     def update_5(self, group_name: str, username: str) -> None:
         """Update user group"""
-        return self._put(UPDATE_5.path.format(groupName=group_name, username=username))
+        return self._put(
+            UPDATE_5.path.replace("{groupName}", str(group_name)).replace("{username}", str(username)),
+        )
 
 
 class UserResource(ConfluenceResource):
@@ -1193,7 +1257,7 @@ class UserWatchResource(ConfluenceResource):
     ) -> None:
         """Remove content watcher"""
         return self._delete(
-            REMOVE_CONTENT_WATCHER.path.format(contentId=content_id),
+            REMOVE_CONTENT_WATCHER.path.replace("{contentId}", str(content_id)),
             params={"key": key, "username": username},
         )
 
@@ -1206,7 +1270,7 @@ class UserWatchResource(ConfluenceResource):
     ) -> None:
         """Get information about content watcher"""
         return self._get(
-            IS_WATCHING_CONTENT.path.format(contentId=content_id),
+            IS_WATCHING_CONTENT.path.replace("{contentId}", str(content_id)),
             params={"key": key, "username": username},
         )
 
@@ -1219,7 +1283,7 @@ class UserWatchResource(ConfluenceResource):
     ) -> ContentWatch:
         """Add content watcher"""
         return self._post(
-            ADD_CONTENT_WATCHER.path.format(contentId=content_id),
+            ADD_CONTENT_WATCHER.path.replace("{contentId}", str(content_id)),
             params={"key": key, "username": username},
             model=ContentWatch,
         )
@@ -1234,7 +1298,7 @@ class UserWatchResource(ConfluenceResource):
     ) -> None:
         """Remove space watcher"""
         return self._delete(
-            REMOVE_SPACE_WATCH.path.format(spaceKey=space_key),
+            REMOVE_SPACE_WATCH.path.replace("{spaceKey}", str(space_key)),
             params={"contentType": content_type, "key": key, "username": username},
         )
 
@@ -1248,7 +1312,7 @@ class UserWatchResource(ConfluenceResource):
     ) -> None:
         """Get information about space watcher"""
         return self._get(
-            IS_WATCHING_SPACE.path.format(spaceKey=space_key),
+            IS_WATCHING_SPACE.path.replace("{spaceKey}", str(space_key)),
             params={"contentType": content_type, "key": key, "username": username},
         )
 
@@ -1262,7 +1326,7 @@ class UserWatchResource(ConfluenceResource):
     ) -> SpaceWatch:
         """Add space watcher"""
         return self._post(
-            ADD_SPACE_WATCH.path.format(spaceKey=space_key),
+            ADD_SPACE_WATCH.path.replace("{spaceKey}", str(space_key)),
             params={"contentType": content_type, "key": key, "username": username},
             model=SpaceWatch,
         )
@@ -1326,7 +1390,12 @@ class LabelResource(ConfluenceResource):
 
     def related(self, label_name: str, *, start: int = 0, limit: int = 25) -> PageIterator[Label]:
         """Get related labels."""
-        return self._get_paged(RELATED.path.format(labelName=label_name), model=Label, start=start, limit=limit)
+        return self._get_paged(
+            RELATED.path.replace("{labelName}", str(label_name)),
+            model=Label,
+            start=start,
+            limit=limit,
+        )
 
 
 class LongTaskResource(ConfluenceResource):
@@ -1348,7 +1417,7 @@ class LongTaskResource(ConfluenceResource):
 
     def get_task(self, id: str, *, expand: str | None = None) -> LongTaskStatus:
         """Get task by ID"""
-        return self._get(GET_TASK.path.format(id=id), params={"expand": expand}, model=LongTaskStatus)
+        return self._get(GET_TASK.path.replace("{id}", str(id)), params={"expand": expand}, model=LongTaskStatus)
 
 
 class BackupRestoreResource(ConfluenceResource):
@@ -1402,15 +1471,15 @@ class BackupRestoreResource(ConfluenceResource):
 
     def get_job(self, job_id: str) -> JobDetails:
         """Get job by ID"""
-        return self._get(GET_JOB.path.format(jobId=job_id), model=JobDetails)
+        return self._get(GET_JOB.path.replace("{jobId}", str(job_id)), model=JobDetails)
 
     def cancel_job(self, job_id: str) -> JobDetails:
         """Cancel job"""
-        return self._put(CANCEL_JOB.path.format(jobId=job_id), model=JobDetails)
+        return self._put(CANCEL_JOB.path.replace("{jobId}", str(job_id)), model=JobDetails)
 
     def download_backup_file(self, job_id: str) -> JobDetails:
         """Download backup file"""
-        return self._get(DOWNLOAD_BACKUP_FILE.path.format(jobId=job_id), model=JobDetails)
+        return self._get(DOWNLOAD_BACKUP_FILE.path.replace("{jobId}", str(job_id)), model=JobDetails)
 
     def get_files(self, *, job_scope: str | None = None) -> FileInfo:
         """Get files in restore directory"""
@@ -1487,12 +1556,12 @@ class WebhooksResource(ConfluenceResource):
 
     def delete_webhook(self, webhook_id: str) -> None:
         """Delete webhook"""
-        return self._delete(DELETE_WEBHOOK.path.format(webhookId=webhook_id))
+        return self._delete(DELETE_WEBHOOK.path.replace("{webhookId}", str(webhook_id)))
 
     def get_webhook(self, webhook_id: str, *, statistics: bool | None = False) -> RestWebhook:
         """Get webhook"""
         return self._get(
-            GET_WEBHOOK.path.format(webhookId=webhook_id),
+            GET_WEBHOOK.path.replace("{webhookId}", str(webhook_id)),
             params={"statistics": statistics},
             model=RestWebhook,
         )
@@ -1500,7 +1569,7 @@ class WebhooksResource(ConfluenceResource):
     def update_webhook(self, webhook_id: str, body: RestWebhook) -> RestWebhook:
         """Update webhook"""
         return self._put(
-            UPDATE_WEBHOOK.path.format(webhookId=webhook_id),
+            UPDATE_WEBHOOK.path.replace("{webhookId}", str(webhook_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -1515,7 +1584,7 @@ class WebhooksResource(ConfluenceResource):
     ) -> DetailedInvocation:
         """Get latest invocations"""
         return self._get(
-            GET_LATEST_INVOCATION.path.format(webhookId=webhook_id),
+            GET_LATEST_INVOCATION.path.replace("{webhookId}", str(webhook_id)),
             params={"outcomes": outcomes, "event": event, "outcome": outcome},
             model=DetailedInvocation,
         )
@@ -1523,14 +1592,17 @@ class WebhooksResource(ConfluenceResource):
     def get_statistics(self, webhook_id: str, *, event: str | None = None) -> RestInvocationHistory:
         """Get statistic"""
         return self._get(
-            GET_STATISTICS.path.format(webhookId=webhook_id),
+            GET_STATISTICS.path.replace("{webhookId}", str(webhook_id)),
             params={"event": event},
             model=RestInvocationHistory,
         )
 
     def get_statistics_summary(self, webhook_id: str) -> RestInvocationHistory:
         """Get statistics summary"""
-        return self._get(GET_STATISTICS_SUMMARY.path.format(webhookId=webhook_id), model=RestInvocationHistory)
+        return self._get(
+            GET_STATISTICS_SUMMARY.path.replace("{webhookId}", str(webhook_id)),
+            model=RestInvocationHistory,
+        )
 
 
 class GlobalPermissionsResource(ConfluenceResource):
@@ -1557,17 +1629,17 @@ class GlobalPermissionsResource(ConfluenceResource):
     def get_permissions_granted_to_group(self, group_name: str) -> GlobalPermission:
         """Gets global permissions granted to a group"""
         return self._get(
-            GET_PERMISSIONS_GRANTED_TO_GROUP.path.format(groupName=group_name),
+            GET_PERMISSIONS_GRANTED_TO_GROUP.path.replace("{groupName}", str(group_name)),
             model=GlobalPermission,
         )
 
     def grant_permissions_to_group(self, group_name: str) -> None:
         """Grants global permissions to a group"""
-        return self._put(GRANT_PERMISSIONS_TO_GROUP.path.format(groupName=group_name))
+        return self._put(GRANT_PERMISSIONS_TO_GROUP.path.replace("{groupName}", str(group_name)))
 
     def revoke_permissions_from_group(self, group_name: str) -> None:
         """Revoke global permissions from a group"""
-        return self._put(REVOKE_PERMISSIONS_FROM_GROUP.path.format(groupName=group_name))
+        return self._put(REVOKE_PERMISSIONS_FROM_GROUP.path.replace("{groupName}", str(group_name)))
 
     def get_permissions_granted_to_unlicensed_users(self) -> GlobalPermission:
         """Gets the permissions granted to an unlicensed users"""
@@ -1583,15 +1655,18 @@ class GlobalPermissionsResource(ConfluenceResource):
 
     def get_permissions_granted_to_user(self, user: str) -> GlobalPermission:
         """Gets global permissions granted to a user"""
-        return self._get(GET_PERMISSIONS_GRANTED_TO_USER.path.format(user=user), model=GlobalPermission)
+        return self._get(
+            GET_PERMISSIONS_GRANTED_TO_USER.path.replace("{user}", str(user)),
+            model=GlobalPermission,
+        )
 
     def grant_permissions_to_user(self, user: str) -> None:
         """Grants global permissions to a user"""
-        return self._put(GRANT_PERMISSIONS_TO_USER.path.format(user=user))
+        return self._put(GRANT_PERMISSIONS_TO_USER.path.replace("{user}", str(user)))
 
     def revoke_permissions_from_user(self, user: str) -> None:
         """Revoke global permissions from a user"""
-        return self._put(REVOKE_PERMISSIONS_FROM_USER.path.format(user=user))
+        return self._put(REVOKE_PERMISSIONS_FROM_USER.path.replace("{user}", str(user)))
 
 
 class GlobalColorSchemeResource(ConfluenceResource):
@@ -1619,11 +1694,13 @@ class GlobalColorSchemeResource(ConfluenceResource):
 class CategoryResource(ConfluenceResource):
     def remove_category(self, space_key: str, category_name: str) -> None:
         """Remove a category from a space"""
-        return self._delete(REMOVE_CATEGORY.path.format(spaceKey=space_key, categoryName=category_name))
+        return self._delete(
+            REMOVE_CATEGORY.path.replace("{spaceKey}", str(space_key)).replace("{categoryName}", str(category_name)),
+        )
 
     def add(self, space_key: str, label_name: str) -> None:
         """Add a category to a space"""
-        return self._post(ADD.path.format(spaceKey=space_key, labelName=label_name))
+        return self._post(ADD.path.replace("{spaceKey}", str(space_key)).replace("{labelName}", str(label_name)))
 
 
 class AccessModeResource(ConfluenceResource):
@@ -1649,7 +1726,15 @@ class AdminResource(ConfluenceResource):
 
     def delete(self, group_name: str) -> None:
         """Delete group"""
-        return self._delete(DELETE.path.format(groupName=group_name))
+        return self._delete(DELETE.path.replace("{groupName}", str(group_name)))
+
+    def create_personal_space(self, username: str, body: PersonalSpaceDetailsForCreation) -> Space:
+        """Creates personal Space for a User."""
+        return self._post(
+            CREATE_PERSONAL_SPACE.path.replace("{username}", str(username)),
+            json=body.model_dump(by_alias=True, exclude_none=True),
+            model=Space,
+        )
 
     def create_user(self, body: UserDetailsForCreation) -> UserKey:
         """Create user"""
@@ -1657,30 +1742,44 @@ class AdminResource(ConfluenceResource):
 
     def delete_1(self, username: str) -> LongTaskSubmission:
         """Delete user"""
-        return self._delete(DELETE_1.path.format(username=username), model=LongTaskSubmission)
+        return self._delete(DELETE_1.path.replace("{username}", str(username)), model=LongTaskSubmission)
 
     def update_user(self, username: str, body: UserDetailsForUpdate) -> None:
         """Update user"""
         return self._put(
-            UPDATE_USER.path.format(username=username),
+            UPDATE_USER.path.replace("{username}", str(username)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     def disable(self, username: str) -> None:
         """Disable user"""
-        return self._put(DISABLE.path.format(username=username))
+        return self._put(DISABLE.path.replace("{username}", str(username)))
 
     def enable(self, username: str) -> None:
         """Enable user"""
-        return self._put(ENABLE.path.format(username=username))
+        return self._put(ENABLE.path.replace("{username}", str(username)))
 
     def change_password(self, username: str, body: Credentials) -> None:
         """Change password"""
         return self._post(
-            CHANGE_PASSWORD.path.format(username=username),
+            CHANGE_PASSWORD.path.replace("{username}", str(username)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
+
+    def get_active_users(
+        self,
+        *,
+        expand: str | None = None,
+        start: int = 0,
+        limit: int = 25,
+    ) -> PageIterator[Person]:
+        """Get active users"""
+        return self._get_paged(GET_ACTIVE_USERS.path, params={"expand": expand}, model=Person, start=start, limit=limit)
 
     def get_audit_records(self) -> None:
         """GET /rest/api/audit"""
         return self._get(GET_AUDIT_RECORDS.path)
+
+    def get_cluster_node_statuses(self, *, start: int = 0, limit: int = 25) -> PageIterator[NodeStatus]:
+        """Get node statuses in a cluster"""
+        return self._get_paged(GET_CLUSTER_NODE_STATUSES.path, model=NodeStatus, start=start, limit=limit)
