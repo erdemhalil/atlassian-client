@@ -138,3 +138,42 @@ async def test_jira_post_pagination_uses_method_and_request_body() -> None:
     assert json.loads(requests[0].content.decode("utf-8"))["jql"] == "project = DEMO"
 
     await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_jira_pagination_follows_next_page_for_non_offset_shape() -> None:
+    requests: list[httpx.Request] = []
+
+    payloads = [
+        {
+            "values": [
+                {"worklogId": 101, "updatedTime": 1},
+                {"worklogId": 102, "updatedTime": 2},
+            ],
+            "isLastPage": False,
+            "nextPage": "https://jira.example.com/rest/api/2/worklog/updated?since=200",
+        },
+        {
+            "values": [{"worklogId": 103, "updatedTime": 3}],
+            "isLastPage": True,
+        },
+    ]
+    call_index = {"value": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        payload = payloads[call_index["value"]]
+        call_index["value"] += 1
+        return httpx.Response(200, json=payload)
+
+    client = AsyncJiraClient(url="https://jira.example.com", transport=httpx.MockTransport(handler))
+
+    iterator = client.issue.get_ids_of_worklogs_modified_since(since=100, max_results=2)
+    values = [item async for item in iterator]
+
+    assert [item.worklog_id for item in values] == [101, 102, 103]
+    assert len(requests) == 2
+    assert str(requests[0].url) == "https://jira.example.com/rest/api/2/worklog/updated?since=100&startAt=0&maxResults=2"
+    assert str(requests[1].url) == "https://jira.example.com/rest/api/2/worklog/updated?since=200"
+
+    await client.aclose()
