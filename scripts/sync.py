@@ -26,8 +26,8 @@ class Product(str, Enum):
 
 
 BITBUCKET_OPENAPI_URL = "https://dac-static.atlassian.com/server/bitbucket/9.4.swagger.v3.json"
-CONFLUENCE_OPENAPI_URL = "https://dac-static.atlassian.com/server/confluence/9.2.15.swagger.v3.json"
-JIRA_OPENAPI_URL = ""
+CONFLUENCE_OPENAPI_URL = "https://dac-static.atlassian.com/server/confluence/9.3.1.swagger.v3.json"
+JIRA_OPENAPI_URL = "https://dac-static.atlassian.com/server/jira/platform/jira_software_dc_10003_swagger.v3.json"
 
 SPEC_MAP = {
     Product.BITBUCKET: BITBUCKET_OPENAPI_URL,

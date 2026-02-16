@@ -1,3 +1,6 @@
 """Confluence client package."""
 
-__all__: list[str] = []
+from .async_client import AsyncConfluenceClient
+from .client import ConfluenceClient
+
+__all__ = ["AsyncConfluenceClient", "ConfluenceClient"]
