@@ -7,7 +7,7 @@ Guidance for coding agents working in this repository.
 - Language: Python 3.10+
 - Package: `atlassian-client`
 - Core libs: `httpx`, `pydantic` v2
-- Products currently implemented: Bitbucket, Confluence
+- Products currently implemented: Bitbucket, Confluence, Jira
 - Tooling: `uv`, `pytest`, `ruff`, `ty`, `unasyncd`
 
 Always run tools through `uv`.
@@ -45,6 +45,7 @@ Always run tools through `uv`.
 
 - `uv run python scripts/generate_resources.py bitbucket`
 - `uv run python scripts/generate_resources.py confluence`
+- `uv run python scripts/generate_resources.py jira`
 
 ### C) Regenerate sync (non-async) files
 
@@ -76,6 +77,7 @@ Run this after large code generation changes or before final verification.
 
 - Bitbucket: `values/isLastPage/nextPageStart`
 - Confluence: `results/_links.next`
+- Jira: offset-style `startAt/maxResults/total` and non-offset link-style `nextPage`/`next` with `isLastPage`
 - Confluence cursor endpoints (e.g., scan-style) are intentionally treated differently than offset paging.
 
 ## 6) Generator Expectations
@@ -104,10 +106,12 @@ If generated output looks wrong, fix generator logic first, then regenerate.
 - For pagination fixes, verify both:
 	- multi-page continuation
 	- stop condition when no next page
+	- for Jira non-offset shapes, continuation by following server `nextPage`/`next` query params
 
 ## 9) Known Pitfalls
 
 - Paged non-GET endpoints (notably in Confluence) must preserve HTTP verb and request body.
+- Jira `nextPage` may be absolute (often includes `/rest/...`); normalize against client base path to avoid `/rest/rest/...` requests.
 - Do not route product-specific behavior into `core` unless truly generic.
 - Avoid stale `unasyncd` mappings pointing to non-existent files.
 
