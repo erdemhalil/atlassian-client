@@ -41,6 +41,8 @@ add_editors_note = true
 "atlassian/bitbucket/async_resources.py" = "atlassian/bitbucket/resources.py"
 "atlassian/confluence/async_client.py" = "atlassian/confluence/client.py"
 "atlassian/confluence/async_resources.py" = "atlassian/confluence/resources.py"
+"atlassian/jira/async_client.py" = "atlassian/jira/client.py"
+"atlassian/jira/async_resources.py" = "atlassian/jira/resources.py"
 
 
 [tool.unasyncd.add_replacements]
@@ -50,7 +52,9 @@ add_editors_note = true
 "ConfluenceAsyncResource" = "ConfluenceResource"
 "AsyncBitBucketClient" = "BitBucketClient"
 "AsyncConfluenceClient" = "ConfluenceClient"
+"AsyncJiraClient" = "JiraClient"
 "AsyncPageIterator" = "PageIterator"
+"AsyncJiraResource" = "JiraResource"
 "httpx.AsyncBaseTransport" = "httpx.BaseTransport"
 "AsyncProjectsResource" = "ProjectsResource"
 "AsyncRepositoriesResource" = "RepositoriesResource"
@@ -89,6 +93,17 @@ add_editors_note = true
 "AsyncCategoryResource" = "CategoryResource"
 "AsyncAccessModeResource" = "AccessModeResource"
 "AsyncServerInfoResource" = "ServerInfoResource"
+"AsyncAgileResource" = "AgileResource"
+"AsyncIssueResource" = "IssueResource"
+"AsyncProjectResource" = "ProjectResource"
+"AsyncIssueMetaResource" = "IssueMetaResource"
+"AsyncPermissionSecurityResource" = "PermissionSecurityResource"
+"AsyncAvatarResource" = "AvatarResource"
+"AsyncDashboardFilterResource" = "DashboardFilterResource"
+"AsyncSystemResource" = "SystemResource"
+"AsyncOperationsResource" = "OperationsResource"
+"AsyncAuthResource" = "AuthResource"
+"AsyncJiraMiscResource" = "JiraMiscResource"
 
 [tool.deptry.per_rule_ignores]
 DEP004 = ["datamodel_code_generator"]

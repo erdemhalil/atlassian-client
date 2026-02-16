@@ -1,3 +1,6 @@
 """Jira client package."""
 
-__all__: list[str] = []
+from .async_client import AsyncJiraClient
+from .client import JiraClient
+
+__all__ = ["AsyncJiraClient", "JiraClient"]
