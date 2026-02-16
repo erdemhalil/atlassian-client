@@ -23,19 +23,72 @@ testpaths = ["tests"]
 
 [tool.ruff]
 target-version = "py310"
-line-length = 100
+line-length = 120
 extend-exclude = ["atlassian/*/models.py"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM"]
+select = ["E", "F", "I", "UP", "B", "SIM", "I", "N"]
 
 [tool.unasyncd]
-files = { "atlassian/core/async_client.py" = "atlassian/core/client.py", "atlassian/bitbucket/async_client.py" = "atlassian/bitbucket/client.py", "atlassian/bitbucket/async_resources.py" = "atlassian/bitbucket/resources.py" }
-add_replacements = { "httpx.AsyncClient" = "httpx.Client", "AsyncBaseClient" = "BaseClient", "AsyncResource" = "Resource", "AsyncBitBucketClient" = "BitBucketClient", "AsyncPageIterator" = "PageIterator", "httpx.AsyncBaseTransport" = "httpx.BaseTransport", "AsyncProjectsResource" = "ProjectsResource", "AsyncRepositoriesResource" = "RepositoriesResource", "AsyncPullRequestsResource" = "PullRequestsResource", "AsyncAuthenticationResource" = "AuthenticationResource", "AsyncBuildsResource" = "BuildsResource", "AsyncPermissionsResource" = "PermissionsResource", "AsyncSecurityResource" = "SecurityResource", "AsyncAdminResource" = "AdminResource", "AsyncDashboardResource" = "DashboardResource", "AsyncMirroringResource" = "MirroringResource", "AsyncJiraIntegrationResource" = "JiraIntegrationResource", "AsyncMarkupResource" = "MarkupResource" }
 transform_docstrings = true
 ruff_fix = false
-ruff_format = false
+ruff_format = true
 add_editors_note = true
+
+[tool.unasyncd.files]
+"atlassian/core/async_client.py" = "atlassian/core/client.py"
+"atlassian/bitbucket/async_client.py" = "atlassian/bitbucket/client.py"
+"atlassian/bitbucket/async_resources.py" = "atlassian/bitbucket/resources.py"
+"atlassian/confluence/async_client.py" = "atlassian/confluence/client.py"
+"atlassian/confluence/async_resources.py" = "atlassian/confluence/resources.py"
+
+
+[tool.unasyncd.add_replacements]
+"httpx.AsyncClient" = "httpx.Client"
+"AsyncBaseClient" = "BaseClient"
+"AsyncResource" = "Resource"
+"ConfluenceAsyncResource" = "ConfluenceResource"
+"AsyncBitBucketClient" = "BitBucketClient"
+"AsyncConfluenceClient" = "ConfluenceClient"
+"AsyncPageIterator" = "PageIterator"
+"httpx.AsyncBaseTransport" = "httpx.BaseTransport"
+"AsyncProjectsResource" = "ProjectsResource"
+"AsyncRepositoriesResource" = "RepositoriesResource"
+"AsyncPullRequestsResource" = "PullRequestsResource"
+"AsyncAuthenticationResource" = "AuthenticationResource"
+"AsyncBuildsResource" = "BuildsResource"
+"AsyncPermissionsResource" = "PermissionsResource"
+"AsyncSecurityResource" = "SecurityResource"
+"AsyncAdminResource" = "AdminResource"
+"AsyncDashboardResource" = "DashboardResource"
+"AsyncMirroringResource" = "MirroringResource"
+"AsyncJiraIntegrationResource" = "JiraIntegrationResource"
+"AsyncMarkupResource" = "MarkupResource"
+"AsyncContentResource" = "ContentResource"
+"AsyncContentLabelsResource" = "ContentLabelsResource"
+"AsyncContentPropertyResource" = "ContentPropertyResource"
+"AsyncContentRestrictionsResource" = "ContentRestrictionsResource"
+"AsyncContentDescendantResource" = "ContentDescendantResource"
+"AsyncChildContentResource" = "ChildContentResource"
+"AsyncAttachmentsResource" = "AttachmentsResource"
+"AsyncSpaceResource" = "SpaceResource"
+"AsyncSpaceLabelResource" = "SpaceLabelResource"
+"AsyncSpacePermissionsResource" = "SpacePermissionsResource"
+"AsyncSpacePropertyResource" = "SpacePropertyResource"
+"AsyncSpaceColorSchemeResource" = "SpaceColorSchemeResource"
+"AsyncGroupResource" = "GroupResource"
+"AsyncUserResource" = "UserResource"
+"AsyncUserWatchResource" = "UserWatchResource"
+"AsyncSearchResource" = "SearchResource"
+"AsyncLabelResource" = "LabelResource"
+"AsyncLongTaskResource" = "LongTaskResource"
+"AsyncBackupRestoreResource" = "BackupRestoreResource"
+"AsyncWebhooksResource" = "WebhooksResource"
+"AsyncGlobalPermissionsResource" = "GlobalPermissionsResource"
+"AsyncGlobalColorSchemeResource" = "GlobalColorSchemeResource"
+"AsyncCategoryResource" = "CategoryResource"
+"AsyncAccessModeResource" = "AccessModeResource"
+"AsyncServerInfoResource" = "ServerInfoResource"
 
 [tool.deptry.per_rule_ignores]
 DEP004 = ["datamodel_code_generator"]

@@ -41,11 +41,19 @@ class AsyncResource:
         """Return an async iterator that auto-paginates through all results."""
         page_model = Page[model]  # type: ignore[valid-type]
 
-        async def fetch_page(page_start: int) -> Page[T]:
+        async def fetch_page(page_start: int) -> tuple[list[T], int | None]:
             merged: dict[str, Any] = {**(params or {}), "start": page_start, "limit": limit}
             merged = {k: v for k, v in merged.items() if v is not None}
             response = await self._client._request("GET", path, params=merged)
-            return page_model.model_validate(response.json())
+            page = page_model.model_validate(response.json())
+            if page.is_last_page:
+                return page.values, None
+            next_start = (
+                page.next_page_start
+                if page.next_page_start is not None
+                else page.start + page.limit
+            )
+            return page.values, next_start
 
         return AsyncPageIterator(fetch_page, start=start)
 
@@ -158,11 +166,19 @@ class Resource:
         """Return a sync iterator that auto-paginates through all results."""
         page_model = Page[model]  # type: ignore[valid-type]
 
-        def fetch_page(page_start: int) -> Page[T]:
+        def fetch_page(page_start: int) -> tuple[list[T], int | None]:
             merged: dict[str, Any] = {**(params or {}), "start": page_start, "limit": limit}
             merged = {k: v for k, v in merged.items() if v is not None}
             response = self._client._request("GET", path, params=merged)
-            return page_model.model_validate(response.json())
+            page = page_model.model_validate(response.json())
+            if page.is_last_page:
+                return page.values, None
+            next_start = (
+                page.next_page_start
+                if page.next_page_start is not None
+                else page.start + page.limit
+            )
+            return page.values, next_start
 
         return PageIterator(fetch_page, start=start)
 

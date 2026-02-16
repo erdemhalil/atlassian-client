@@ -2,24 +2,17 @@ from __future__ import annotations
 
 import pytest
 
-from atlassian.core.pagination import AsyncPageIterator, Page
+from atlassian.core.pagination import AsyncPageIterator
 
 
 @pytest.mark.asyncio
 async def test_async_page_iterator_iterates_all_values() -> None:
-    pages = {
-        0: Page[int](
-            values=[1, 2],
-            start=0,
-            limit=2,
-            size=2,
-            is_last_page=False,
-            next_page_start=2,
-        ),
-        2: Page[int](values=[3], start=2, limit=2, size=1, is_last_page=True),
+    pages: dict[int, tuple[list[int], int | None]] = {
+        0: ([1, 2], 2),
+        2: ([3], None),
     }
 
-    async def fetch_page(start: int) -> Page[int]:
+    async def fetch_page(start: int) -> tuple[list[int], int | None]:
         return pages[start]
 
     iterator = AsyncPageIterator(fetch_page)
@@ -33,8 +26,8 @@ async def test_async_page_iterator_iterates_all_values() -> None:
 
 @pytest.mark.asyncio
 async def test_async_page_iterator_handles_empty_last_page() -> None:
-    async def fetch_page(_: int) -> Page[int]:
-        return Page[int](values=[], start=0, limit=25, size=0, is_last_page=True)
+    async def fetch_page(_: int) -> tuple[list[int], int | None]:
+        return [], None
 
     iterator = AsyncPageIterator(fetch_page)
 

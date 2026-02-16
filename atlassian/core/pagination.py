@@ -22,36 +22,29 @@ class Page(BaseModel, Generic[T]):
 class AsyncPageIterator(Generic[T]):
     def __init__(
         self,
-        fetch_page: Callable[[int], Awaitable[Page[T]]],
+        fetch_page: Callable[[int], Awaitable[tuple[list[T], int | None]]],
         *,
         start: int = 0,
     ) -> None:
         self._fetch_page = fetch_page
-        self._next_start = start
+        self._next_start: int | None = start
         self._current_items: list[T] = []
         self._index = 0
-        self._exhausted = False
 
     def __aiter__(self) -> AsyncPageIterator[T]:
         return self
 
     async def __anext__(self) -> T:
         while self._index >= len(self._current_items):
-            if self._exhausted:
+            if self._next_start is None:
                 raise StopAsyncIteration
 
-            page = await self._fetch_page(self._next_start)
-            self._current_items = page.values
+            items, next_start = await self._fetch_page(self._next_start)
+            self._current_items = items
             self._index = 0
+            self._next_start = next_start
 
-            if page.is_last_page:
-                self._exhausted = True
-            elif page.next_page_start is not None:
-                self._next_start = page.next_page_start
-            else:
-                self._next_start = page.start + page.limit
-
-            if not self._current_items and self._exhausted:
+            if not self._current_items and self._next_start is None:
                 raise StopAsyncIteration
             if not self._current_items:
                 continue
@@ -66,36 +59,29 @@ class PageIterator(Generic[T]):
 
     def __init__(
         self,
-        fetch_page: Callable[[int], Page[T]],
+        fetch_page: Callable[[int], tuple[list[T], int | None]],
         *,
         start: int = 0,
     ) -> None:
         self._fetch_page = fetch_page
-        self._next_start = start
+        self._next_start: int | None = start
         self._current_items: list[T] = []
         self._index = 0
-        self._exhausted = False
 
     def __iter__(self) -> Iterator[T]:
         return self
 
     def __next__(self) -> T:
         while self._index >= len(self._current_items):
-            if self._exhausted:
+            if self._next_start is None:
                 raise StopIteration
 
-            page = self._fetch_page(self._next_start)
-            self._current_items = page.values
+            items, next_start = self._fetch_page(self._next_start)
+            self._current_items = items
             self._index = 0
+            self._next_start = next_start
 
-            if page.is_last_page:
-                self._exhausted = True
-            elif page.next_page_start is not None:
-                self._next_start = page.next_page_start
-            else:
-                self._next_start = page.start + page.limit
-
-            if not self._current_items and self._exhausted:
+            if not self._current_items and self._next_start is None:
                 raise StopIteration
             if not self._current_items:
                 continue
