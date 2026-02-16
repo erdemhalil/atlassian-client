@@ -748,7 +748,7 @@ from .models import (
 class AsyncProjectsResource(AsyncResource):
     async def get_avatar(self, hook_key: str, *, version: str | None = None) -> None:
         """Get project avatar"""
-        return await self._get(GET_AVATAR.path.format(hookKey=hook_key), params={"version": version})
+        return await self._get(GET_AVATAR.path.replace("{hookKey}", str(hook_key)), params={"version": version})
 
     def get_projects(
         self,
@@ -777,28 +777,28 @@ class AsyncProjectsResource(AsyncResource):
 
     async def delete_project(self, project_key: str) -> None:
         """Delete project"""
-        return await self._delete(DELETE_PROJECT.path.format(projectKey=project_key))
+        return await self._delete(DELETE_PROJECT.path.replace("{projectKey}", str(project_key)))
 
     async def get_project(self, project_key: str) -> RestProject:
         """Get a project"""
-        return await self._get(GET_PROJECT.path.format(projectKey=project_key), model=RestProject)
+        return await self._get(GET_PROJECT.path.replace("{projectKey}", str(project_key)), model=RestProject)
 
     async def update_project(self, project_key: str, body: RestProject) -> RestProject:
         """Update project"""
         return await self._put(
-            UPDATE_PROJECT.path.format(projectKey=project_key),
+            UPDATE_PROJECT.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestProject,
         )
 
     async def get_project_avatar(self, project_key: str, *, s: str | None = None) -> None:
         """Get avatar for project"""
-        return await self._get(GET_PROJECT_AVATAR.path.format(projectKey=project_key), params={"s": s})
+        return await self._get(GET_PROJECT_AVATAR.path.replace("{projectKey}", str(project_key)), params={"s": s})
 
     async def upload_avatar(self, project_key: str, body: ExampleAvatarMultipartFormData) -> None:
         """Update project avatar"""
         return await self._post(
-            UPLOAD_AVATAR.path.format(projectKey=project_key),
+            UPLOAD_AVATAR.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -811,7 +811,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestHookScriptConfig]:
         """Get configured hook scripts"""
         return self._get_paged(
-            GET_CONFIGURATIONS.path.format(projectKey=project_key),
+            GET_CONFIGURATIONS.path.replace("{projectKey}", str(project_key)),
             model=RestHookScriptConfig,
             start=start,
             limit=limit,
@@ -819,7 +819,9 @@ class AsyncProjectsResource(AsyncResource):
 
     async def remove_configuration(self, project_key: str, script_id: str) -> None:
         """Remove a hook script"""
-        return await self._delete(REMOVE_CONFIGURATION.path.format(projectKey=project_key, scriptId=script_id))
+        return await self._delete(
+            REMOVE_CONFIGURATION.path.replace("{projectKey}", str(project_key)).replace("{scriptId}", str(script_id)),
+        )
 
     async def set_configuration(
         self,
@@ -829,7 +831,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestHookScriptConfig:
         """Create/update a hook script"""
         return await self._put(
-            SET_CONFIGURATION.path.format(projectKey=project_key, scriptId=script_id),
+            SET_CONFIGURATION.path.replace("{projectKey}", str(project_key)).replace("{scriptId}", str(script_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestHookScriptConfig,
         )
@@ -837,14 +839,14 @@ class AsyncProjectsResource(AsyncResource):
     async def revoke_permissions(self, project_key: str, *, user: str | None = None, group: str | None = None) -> None:
         """Revoke project permissions"""
         return await self._delete(
-            REVOKE_PERMISSIONS.path.format(projectKey=project_key),
+            REVOKE_PERMISSIONS.path.replace("{projectKey}", str(project_key)),
             params={"user": user, "group": group},
         )
 
     async def revoke_permissions_for_group_1(self, project_key: str, *, name: str | None = None) -> None:
         """Revoke group project permission"""
         return await self._delete(
-            REVOKE_PERMISSIONS_FOR_GROUP_1.path.format(projectKey=project_key),
+            REVOKE_PERMISSIONS_FOR_GROUP_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name},
         )
 
@@ -858,7 +860,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPermittedGroup]:
         """Get groups with permission to project"""
         return self._get_paged(
-            GET_GROUPS_WITH_ANY_PERMISSION_1.path.format(projectKey=project_key),
+            GET_GROUPS_WITH_ANY_PERMISSION_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestPermittedGroup,
             start=start,
@@ -874,7 +876,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Update group project permission"""
         return await self._put(
-            SET_PERMISSION_FOR_GROUPS_1.path.format(projectKey=project_key),
+            SET_PERMISSION_FOR_GROUPS_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name, "permission": permission},
         )
 
@@ -888,7 +890,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestDetailedGroup]:
         """Get groups without project permission"""
         return self._get_paged(
-            GET_GROUPS_WITHOUT_ANY_PERMISSION_1.path.format(projectKey=project_key),
+            GET_GROUPS_WITHOUT_ANY_PERMISSION_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestDetailedGroup,
             start=start,
@@ -905,14 +907,14 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Search project permissions"""
         return await self._get(
-            SEARCH_PERMISSIONS.path.format(projectKey=project_key),
+            SEARCH_PERMISSIONS.path.replace("{projectKey}", str(project_key)),
             params={"permission": permission, "filterText": filter_text, "type": type_},
         )
 
     async def revoke_permissions_for_user_1(self, project_key: str, *, name: str | None = None) -> None:
         """Revoke user project permission"""
         return await self._delete(
-            REVOKE_PERMISSIONS_FOR_USER_1.path.format(projectKey=project_key),
+            REVOKE_PERMISSIONS_FOR_USER_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name},
         )
 
@@ -926,7 +928,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPermittedUser]:
         """Get users with permission to project"""
         return self._get_paged(
-            GET_USERS_WITH_ANY_PERMISSION_1.path.format(projectKey=project_key),
+            GET_USERS_WITH_ANY_PERMISSION_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestPermittedUser,
             start=start,
@@ -942,7 +944,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Update user project permission"""
         return await self._put(
-            SET_PERMISSION_FOR_USERS_1.path.format(projectKey=project_key),
+            SET_PERMISSION_FOR_USERS_1.path.replace("{projectKey}", str(project_key)),
             params={"name": name, "permission": permission},
         )
 
@@ -956,7 +958,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestApplicationUser]:
         """Get users without project permission"""
         return self._get_paged(
-            GET_USERS_WITHOUT_PERMISSION.path.format(projectKey=project_key),
+            GET_USERS_WITHOUT_PERMISSION.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter},
             model=RestApplicationUser,
             start=start,
@@ -966,14 +968,18 @@ class AsyncProjectsResource(AsyncResource):
     async def has_all_user_permission(self, project_key: str, permission: str) -> RestPermitted:
         """Check default project permission"""
         return await self._get(
-            HAS_ALL_USER_PERMISSION.path.format(projectKey=project_key, permission=permission),
+            HAS_ALL_USER_PERMISSION.path.replace("{projectKey}", str(project_key)).replace(
+                "{permission}", str(permission)
+            ),
             model=RestPermitted,
         )
 
     async def modify_all_user_permission(self, project_key: str, permission: str, *, allow: str | None = None) -> None:
         """Grant project permission"""
         return await self._post(
-            MODIFY_ALL_USER_PERMISSION.path.format(projectKey=project_key, permission=permission),
+            MODIFY_ALL_USER_PERMISSION.path.replace("{projectKey}", str(project_key)).replace(
+                "{permission}", str(permission)
+            ),
             params={"allow": allow},
         )
 
@@ -986,7 +992,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestRepository]:
         """Get repositories for project"""
         return self._get_paged(
-            GET_REPOSITORIES.path.format(projectKey=project_key),
+            GET_REPOSITORIES.path.replace("{projectKey}", str(project_key)),
             model=RestRepository,
             start=start,
             limit=limit,
@@ -995,26 +1001,34 @@ class AsyncProjectsResource(AsyncResource):
     async def create_repository(self, project_key: str, body: RestRepository) -> RestRepository:
         """Create repository"""
         return await self._post(
-            CREATE_REPOSITORY.path.format(projectKey=project_key),
+            CREATE_REPOSITORY.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepository,
         )
 
     async def delete_repository(self, project_key: str, repository_slug: str) -> None:
         """Delete repository"""
-        return await self._delete(DELETE_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return await self._delete(
+            DELETE_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
+        )
 
     async def get_repository(self, project_key: str, repository_slug: str) -> RestRepository:
         """Get repository"""
         return await self._get(
-            GET_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
         )
 
     async def fork_repository(self, project_key: str, repository_slug: str, body: RestRepository) -> RestRepository:
         """Fork repository"""
         return await self._post(
-            FORK_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            FORK_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepository,
         )
@@ -1022,7 +1036,9 @@ class AsyncProjectsResource(AsyncResource):
     async def update_repository(self, project_key: str, repository_slug: str, body: RestRepository) -> RestRepository:
         """Update repository"""
         return await self._put(
-            UPDATE_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            UPDATE_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepository,
         )
@@ -1040,7 +1056,9 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Get repository contributing guidelines"""
         return await self._get(
-            STREAM_CONTRIBUTING.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_CONTRIBUTING.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "at": at,
                 "markup": markup,
@@ -1053,14 +1071,18 @@ class AsyncProjectsResource(AsyncResource):
     async def get_default_branch_2(self, project_key: str, repository_slug: str) -> RestMinimalRef:
         """Get repository default branch"""
         return await self._get(
-            GET_DEFAULT_BRANCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_DEFAULT_BRANCH_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestMinimalRef,
         )
 
     async def set_default_branch_2(self, project_key: str, repository_slug: str, body: RestBranch) -> None:
         """Update default branch for repository"""
         return await self._put(
-            SET_DEFAULT_BRANCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_DEFAULT_BRANCH_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -1074,7 +1096,9 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestRepository]:
         """Get repository forks"""
         return self._get_paged(
-            GET_FORKED_REPOSITORIES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_FORKED_REPOSITORIES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
             start=start,
             limit=limit,
@@ -1093,7 +1117,9 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Get repository license"""
         return await self._get(
-            STREAM_LICENSE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_LICENSE.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "at": at,
                 "markup": markup,
@@ -1116,7 +1142,9 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Get repository readme"""
         return await self._get(
-            STREAM_README.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_README.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "at": at,
                 "markup": markup,
@@ -1129,7 +1157,9 @@ class AsyncProjectsResource(AsyncResource):
     async def retry_create_repository(self, project_key: str, repository_slug: str) -> RestRepository:
         """Retry repository creation"""
         return await self._post(
-            RETRY_CREATE_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            RETRY_CREATE_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
         )
 
@@ -1143,7 +1173,9 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestRepository]:
         """Get related repository"""
         return self._get_paged(
-            GET_RELATED_REPOSITORIES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_RELATED_REPOSITORIES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepository,
             start=start,
             limit=limit,
@@ -1159,7 +1191,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Stop enforcing project restriction"""
         return await self._delete(
-            DELETE_9.path.format(projectKey=project_key),
+            DELETE_9.path.replace("{projectKey}", str(project_key)),
             params={"namespace": namespace, "componentKey": component_key, "featureKey": feature_key},
         )
 
@@ -1173,7 +1205,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestProjectSettingsRestriction:
         """Get enforcing project setting"""
         return await self._get(
-            GET_7.path.format(projectKey=project_key),
+            GET_7.path.replace("{projectKey}", str(project_key)),
             params={"namespace": namespace, "componentKey": component_key, "featureKey": feature_key},
             model=RestProjectSettingsRestriction,
         )
@@ -1185,7 +1217,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestProjectSettingsRestriction:
         """Enforce project restriction"""
         return await self._post(
-            CREATE_3.path.format(projectKey=project_key),
+            CREATE_3.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestProjectSettingsRestriction,
         )
@@ -1201,7 +1233,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestProjectSettingsRestriction]:
         """Get all enforcing project settings"""
         return self._get_paged(
-            GET_ALL.path.format(projectKey=project_key),
+            GET_ALL.path.replace("{projectKey}", str(project_key)),
             params={"namespace": namespace, "featureKey": feature_key},
             model=RestProjectSettingsRestriction,
             start=start,
@@ -1210,12 +1242,12 @@ class AsyncProjectsResource(AsyncResource):
 
     async def delete_auto_decline_settings(self, project_key: str) -> None:
         """Delete auto decline settings"""
-        return await self._delete(DELETE_AUTO_DECLINE_SETTINGS.path.format(projectKey=project_key))
+        return await self._delete(DELETE_AUTO_DECLINE_SETTINGS.path.replace("{projectKey}", str(project_key)))
 
     async def get_auto_decline_settings(self, project_key: str) -> RestAutoDeclineSettings:
         """Get auto decline settings"""
         return await self._get(
-            GET_AUTO_DECLINE_SETTINGS.path.format(projectKey=project_key),
+            GET_AUTO_DECLINE_SETTINGS.path.replace("{projectKey}", str(project_key)),
             model=RestAutoDeclineSettings,
         )
 
@@ -1226,23 +1258,26 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestAutoDeclineSettings:
         """Create/Update auto decline settings"""
         return await self._put(
-            SET_AUTO_DECLINE_SETTINGS.path.format(projectKey=project_key),
+            SET_AUTO_DECLINE_SETTINGS.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoDeclineSettings,
         )
 
     async def delete_4(self, project_key: str) -> None:
         """Delete pull request auto-merge settings"""
-        return await self._delete(DELETE_4.path.format(projectKey=project_key))
+        return await self._delete(DELETE_4.path.replace("{projectKey}", str(project_key)))
 
     async def get_4(self, project_key: str) -> RestAutoMergeRestrictedSettings:
         """Get pull request auto-merge settings"""
-        return await self._get(GET_4.path.format(projectKey=project_key), model=RestAutoMergeRestrictedSettings)
+        return await self._get(
+            GET_4.path.replace("{projectKey}", str(project_key)),
+            model=RestAutoMergeRestrictedSettings,
+        )
 
     async def set(self, project_key: str, body: RestAutoMergeProjectSettingsRequest) -> RestAutoMergeRestrictedSettings:
         """Create or update the pull request auto-merge settings"""
         return await self._put(
-            SET.path.format(projectKey=project_key),
+            SET.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoMergeRestrictedSettings,
         )
@@ -1257,7 +1292,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestRepositoryHook]:
         """Get repository hooks"""
         return self._get_paged(
-            GET_REPOSITORY_HOOKS.path.format(projectKey=project_key),
+            GET_REPOSITORY_HOOKS.path.replace("{projectKey}", str(project_key)),
             params={"type": type_},
             model=RestRepositoryHook,
             start=start,
@@ -1267,35 +1302,35 @@ class AsyncProjectsResource(AsyncResource):
     async def get_repository_hook(self, project_key: str, hook_key: str) -> RestRepositoryHook:
         """Get a repository hook"""
         return await self._get(
-            GET_REPOSITORY_HOOK.path.format(projectKey=project_key, hookKey=hook_key),
+            GET_REPOSITORY_HOOK.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=RestRepositoryHook,
         )
 
     async def disable_hook(self, project_key: str, hook_key: str) -> RestRepositoryHook:
         """Disable repository hook"""
         return await self._delete(
-            DISABLE_HOOK.path.format(projectKey=project_key, hookKey=hook_key),
+            DISABLE_HOOK.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=RestRepositoryHook,
         )
 
     async def enable_hook(self, project_key: str, hook_key: str) -> RestRepositoryHook:
         """Enable repository hook"""
         return await self._put(
-            ENABLE_HOOK.path.format(projectKey=project_key, hookKey=hook_key),
+            ENABLE_HOOK.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=RestRepositoryHook,
         )
 
     async def get_settings(self, project_key: str, hook_key: str) -> ExampleSettings:
         """Get repository hook settings"""
         return await self._get(
-            GET_SETTINGS.path.format(projectKey=project_key, hookKey=hook_key),
+            GET_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             model=ExampleSettings,
         )
 
     async def set_settings(self, project_key: str, hook_key: str, body: ExampleSettings) -> ExampleSettings:
         """Update repository hook settings"""
         return await self._put(
-            SET_SETTINGS.path.format(projectKey=project_key, hookKey=hook_key),
+            SET_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{hookKey}", str(hook_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ExampleSettings,
         )
@@ -1303,7 +1338,7 @@ class AsyncProjectsResource(AsyncResource):
     async def get_pull_request_settings(self, project_key: str, scm_id: str) -> RestPullRequestSettings:
         """Get merge strategy"""
         return await self._get(
-            GET_PULL_REQUEST_SETTINGS.path.format(projectKey=project_key, scmId=scm_id),
+            GET_PULL_REQUEST_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{scmId}", str(scm_id)),
             model=RestPullRequestSettings,
         )
 
@@ -1315,7 +1350,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestPullRequestSettings:
         """Update merge strategy"""
         return await self._post(
-            UPDATE_PULL_REQUEST_SETTINGS.path.format(projectKey=project_key, scmId=scm_id),
+            UPDATE_PULL_REQUEST_SETTINGS.path.replace("{projectKey}", str(project_key)).replace("{scmId}", str(scm_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestSettings,
         )
@@ -1329,14 +1364,14 @@ class AsyncProjectsResource(AsyncResource):
     ) -> None:
         """Find webhooks"""
         return await self._get(
-            FIND_WEBHOOKS.path.format(projectKey=project_key),
+            FIND_WEBHOOKS.path.replace("{projectKey}", str(project_key)),
             params={"event": event, "statistics": statistics},
         )
 
     async def create_webhook(self, project_key: str, body: RestWebhook) -> RestWebhook:
         """Create webhook"""
         return await self._post(
-            CREATE_WEBHOOK.path.format(projectKey=project_key),
+            CREATE_WEBHOOK.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -1352,7 +1387,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestWebhookRequestResponse:
         """Test webhook"""
         return await self._post(
-            TEST_WEBHOOK.path.format(projectKey=project_key),
+            TEST_WEBHOOK.path.replace("{projectKey}", str(project_key)),
             params={"webhookId": webhook_id, "sslVerificationRequired": ssl_verification_required, "url": url},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhookRequestResponse,
@@ -1360,12 +1395,14 @@ class AsyncProjectsResource(AsyncResource):
 
     async def delete_webhook(self, project_key: str, webhook_id: str) -> None:
         """Delete webhook"""
-        return await self._delete(DELETE_WEBHOOK.path.format(projectKey=project_key, webhookId=webhook_id))
+        return await self._delete(
+            DELETE_WEBHOOK.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
+        )
 
     async def get_webhook(self, project_key: str, webhook_id: str, *, statistics: str | None = None) -> RestWebhook:
         """Get webhook"""
         return await self._get(
-            GET_WEBHOOK.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_WEBHOOK.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
             params={"statistics": statistics},
             model=RestWebhook,
         )
@@ -1373,7 +1410,7 @@ class AsyncProjectsResource(AsyncResource):
     async def update_webhook(self, project_key: str, webhook_id: str, body: RestWebhook) -> RestWebhook:
         """Update webhook"""
         return await self._put(
-            UPDATE_WEBHOOK.path.format(projectKey=project_key, webhookId=webhook_id),
+            UPDATE_WEBHOOK.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -1388,7 +1425,9 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestDetailedInvocation:
         """Get last webhook invocation details"""
         return await self._get(
-            GET_LATEST_INVOCATION.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_LATEST_INVOCATION.path.replace("{projectKey}", str(project_key)).replace(
+                "{webhookId}", str(webhook_id)
+            ),
             params={"event": event, "outcome": outcome},
             model=RestDetailedInvocation,
         )
@@ -1402,7 +1441,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestInvocationHistory:
         """Get webhook statistics"""
         return await self._get(
-            GET_STATISTICS.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_STATISTICS.path.replace("{projectKey}", str(project_key)).replace("{webhookId}", str(webhook_id)),
             params={"event": event},
             model=RestInvocationHistory,
         )
@@ -1410,7 +1449,9 @@ class AsyncProjectsResource(AsyncResource):
     async def get_statistics_summary(self, project_key: str, webhook_id: str) -> RestInvocationHistory:
         """Get webhook statistics summary"""
         return await self._get(
-            GET_STATISTICS_SUMMARY.path.format(projectKey=project_key, webhookId=webhook_id),
+            GET_STATISTICS_SUMMARY.path.replace("{projectKey}", str(project_key)).replace(
+                "{webhookId}", str(webhook_id)
+            ),
             model=RestInvocationHistory,
         )
 
@@ -1426,7 +1467,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestRefRestriction]:
         """Search for ref restrictions"""
         return self._get_paged(
-            GET_RESTRICTIONS.path.format(projectKey=project_key),
+            GET_RESTRICTIONS.path.replace("{projectKey}", str(project_key)),
             params={"matcherType": matcher_type, "matcherId": matcher_id, "type": type_},
             model=RestRefRestriction,
             start=start,
@@ -1435,19 +1476,27 @@ class AsyncProjectsResource(AsyncResource):
 
     async def create_restrictions(self, project_key: str) -> RestRefRestriction:
         """Create multiple ref restrictions"""
-        return await self._post(CREATE_RESTRICTIONS.path.format(projectKey=project_key), model=RestRefRestriction)
+        return await self._post(
+            CREATE_RESTRICTIONS.path.replace("{projectKey}", str(project_key)),
+            model=RestRefRestriction,
+        )
 
     async def delete_restriction(self, project_key: str, id: str) -> None:
         """Delete a ref restriction"""
-        return await self._delete(DELETE_RESTRICTION.path.format(projectKey=project_key, id=id))
+        return await self._delete(
+            DELETE_RESTRICTION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+        )
 
     async def get_restriction(self, project_key: str, id: str) -> RestRefRestriction:
         """Get a ref restriction"""
-        return await self._get(GET_RESTRICTION.path.format(projectKey=project_key, id=id), model=RestRefRestriction)
+        return await self._get(
+            GET_RESTRICTION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+            model=RestRefRestriction,
+        )
 
     async def delete_all_default_tasks(self, project_key: str) -> None:
         """Deletes all default tasks for the project"""
-        return await self._delete(DELETE_ALL_DEFAULT_TASKS.path.format(projectKey=project_key))
+        return await self._delete(DELETE_ALL_DEFAULT_TASKS.path.replace("{projectKey}", str(project_key)))
 
     def get_default_tasks(
         self,
@@ -1459,7 +1508,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> AsyncPageIterator[RestDefaultTask]:
         """Get a page of default tasks"""
         return self._get_paged(
-            GET_DEFAULT_TASKS.path.format(projectKey=project_key),
+            GET_DEFAULT_TASKS.path.replace("{projectKey}", str(project_key)),
             params={"markup": markup},
             model=RestDefaultTask,
             start=start,
@@ -1469,14 +1518,16 @@ class AsyncProjectsResource(AsyncResource):
     async def add_default_task(self, project_key: str, body: RestDefaultTaskRequest) -> RestDefaultTask:
         """Add a default task"""
         return await self._post(
-            ADD_DEFAULT_TASK.path.format(projectKey=project_key),
+            ADD_DEFAULT_TASK.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
 
     async def delete_default_task(self, project_key: str, task_id: str) -> None:
         """Delete a specific default task"""
-        return await self._delete(DELETE_DEFAULT_TASK.path.format(projectKey=project_key, taskId=task_id))
+        return await self._delete(
+            DELETE_DEFAULT_TASK.path.replace("{projectKey}", str(project_key)).replace("{taskId}", str(task_id)),
+        )
 
     async def update_default_task(
         self,
@@ -1486,7 +1537,7 @@ class AsyncProjectsResource(AsyncResource):
     ) -> RestDefaultTask:
         """Update a default task"""
         return await self._put(
-            UPDATE_DEFAULT_TASK.path.format(projectKey=project_key, taskId=task_id),
+            UPDATE_DEFAULT_TASK.path.replace("{projectKey}", str(project_key)).replace("{taskId}", str(task_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
@@ -1522,32 +1573,34 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Stream archive of repository"""
         return await self._get(
-            GET_ARCHIVE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_ARCHIVE.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"path": path, "filename": filename, "at": at, "prefix": prefix, "format": format},
         )
 
     async def delete_attachment(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Delete an attachment"""
         return await self._delete(
-            DELETE_ATTACHMENT.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            DELETE_ATTACHMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_attachment(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Get an attachment"""
         return await self._get(
-            GET_ATTACHMENT.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            GET_ATTACHMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def delete_attachment_metadata(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Delete attachment metadata"""
         return await self._delete(
-            DELETE_ATTACHMENT_METADATA.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            DELETE_ATTACHMENT_METADATA.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_attachment_metadata(
@@ -1558,18 +1611,18 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestAttachmentMetadata:
         """Get attachment metadata"""
         return await self._get(
-            GET_ATTACHMENT_METADATA.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            GET_ATTACHMENT_METADATA.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAttachmentMetadata,
         )
 
     async def save_attachment_metadata(self, project_key: str, attachment_id: str, repository_slug: str) -> None:
         """Save attachment metadata"""
         return await self._put(
-            SAVE_ATTACHMENT_METADATA.path.format(
-                projectKey=project_key, attachmentId=attachment_id, repositorySlug=repository_slug
-            ),
+            SAVE_ATTACHMENT_METADATA.path.replace("{projectKey}", str(project_key))
+            .replace("{attachmentId}", str(attachment_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_branches(
@@ -1588,7 +1641,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestBranch]:
         """Find branches"""
         return self._get_paged(
-            GET_BRANCHES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_BRANCHES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "boostMatches": boost_matches,
                 "context": context,
@@ -1610,7 +1665,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestBranch:
         """Create branch"""
         return await self._post(
-            CREATE_BRANCH_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_BRANCH_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestBranch,
         )
@@ -1622,7 +1679,9 @@ class AsyncRepositoriesResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return await self._get(
-            GET_DEFAULT_BRANCH_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_DEFAULT_BRANCH_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestBranch,
         )
 
@@ -1633,7 +1692,9 @@ class AsyncRepositoriesResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return await self._put(
-            SET_DEFAULT_BRANCH_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_DEFAULT_BRANCH_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -1650,7 +1711,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Get file content at revision"""
         return await self._get(
-            GET_CONTENT.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_CONTENT.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"noContent": no_content, "at": at, "size": size, "blame": blame, "type": type_},
         )
 
@@ -1668,7 +1731,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Get file content"""
         return await self._get(
-            GET_CONTENT_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            GET_CONTENT_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"noContent": no_content, "at": at, "size": size, "blame": blame, "type": type_},
         )
 
@@ -1681,7 +1746,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestCommit:
         """Edit file"""
         return await self._put(
-            EDIT_FILE.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            EDIT_FILE.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestCommit,
         )
@@ -1698,7 +1765,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestChange]:
         """Get changes made in commit"""
         return self._get_paged(
-            GET_CHANGES_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_CHANGES_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"until": until, "since": since},
             model=RestChange,
             start=start,
@@ -1724,7 +1793,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestCommit]:
         """Get commits"""
         return self._get_paged(
-            GET_COMMITS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_COMMITS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "avatarScheme": avatar_scheme,
                 "path": path,
@@ -1751,7 +1822,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestCommit:
         """Get commit by ID"""
         return await self._get(
-            GET_COMMIT.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_COMMIT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"path": path},
             model=RestCommit,
         )
@@ -1769,7 +1842,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestChange]:
         """Get changes in commit"""
         return self._get_paged(
-            GET_CHANGES.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_CHANGES.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"withComments": with_comments, "since": since},
             model=RestChange,
             start=start,
@@ -1789,7 +1864,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestComment]:
         """Search for commit comments"""
         return self._get_paged(
-            GET_COMMENTS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_COMMENTS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"path": path, "since": since},
             model=RestComment,
             start=start,
@@ -1807,7 +1884,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestComment:
         """Add a new commit comment"""
         return await self._post(
-            CREATE_COMMENT.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            CREATE_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"since": since},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
@@ -1824,18 +1903,20 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Delete a commit comment"""
         return await self._delete(
-            DELETE_COMMENT.path.format(
-                projectKey=project_key, commentId=comment_id, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            DELETE_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
         )
 
     async def get_comment(self, project_key: str, comment_id: str, commit_id: str, repository_slug: str) -> RestComment:
         """Get a commit comment"""
         return await self._get(
-            GET_COMMENT.path.format(
-                projectKey=project_key, commentId=comment_id, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            GET_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
         )
 
@@ -1849,9 +1930,10 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestComment:
         """Update a commit comment"""
         return await self._put(
-            UPDATE_COMMENT.path.format(
-                projectKey=project_key, commentId=comment_id, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            UPDATE_COMMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -1870,9 +1952,10 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestDiffStatsSummary:
         """Get diff stats summary between revisions"""
         return await self._get(
-            GET_DIFF_STATS_SUMMARY.path.format(
-                path=path, projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            GET_DIFF_STATS_SUMMARY.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"srcPath": src_path, "autoSrcPath": auto_src_path, "whitespace": whitespace, "since": since},
             model=RestDiffStatsSummary,
         )
@@ -1896,9 +1979,10 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestDiff:
         """Get diff between revisions"""
         return await self._get(
-            STREAM_DIFF.path.format(
-                commitId=commit_id, repositorySlug=repository_slug, path=path, projectKey=project_key
-            ),
+            STREAM_DIFF.path.replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key)),
             params={
                 "srcPath": src_path,
                 "avatarSize": avatar_size,
@@ -1923,7 +2007,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestCommit:
         """Get the common ancestor between two commits"""
         return await self._get(
-            GET_MERGE_BASE.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_MERGE_BASE.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"otherCommitId": other_commit_id},
             model=RestCommit,
         )
@@ -1931,13 +2017,17 @@ class AsyncRepositoriesResource(AsyncResource):
     async def unwatch(self, project_key: str, commit_id: str, repository_slug: str) -> None:
         """Stop watching commit"""
         return await self._delete(
-            UNWATCH.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            UNWATCH.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def watch(self, project_key: str, commit_id: str, repository_slug: str) -> None:
         """Watch commit"""
         return await self._post(
-            WATCH.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            WATCH.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def stream_changes(
@@ -1953,7 +2043,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestChange]:
         """Compare commits"""
         return self._get_paged(
-            STREAM_CHANGES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_CHANGES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"fromRepo": from_repo, "from": from_, "to": to},
             model=RestChange,
             start=start,
@@ -1973,7 +2065,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestCommit]:
         """Get accessible commits"""
         return self._get_paged(
-            STREAM_COMMITS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_COMMITS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"fromRepo": from_repo, "from": from_, "to": to},
             model=RestCommit,
             start=start,
@@ -1994,7 +2088,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestDiff:
         """Retrieve the diff stats summary between commits"""
         return await self._get(
-            GET_DIFF_STATS_SUMMARY_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            GET_DIFF_STATS_SUMMARY_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"fromRepo": from_repo, "srcPath": src_path, "from": from_, "to": to, "whitespace": whitespace},
             model=RestDiff,
         )
@@ -2014,7 +2110,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestDiff:
         """Get diff between commits"""
         return await self._get(
-            STREAM_DIFF_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_DIFF_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "contextLines": context_lines,
                 "fromRepo": from_repo,
@@ -2039,7 +2137,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Get raw diff for path"""
         return await self._get(
-            STREAM_RAW_DIFF.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_RAW_DIFF.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "contextLines": context_lines,
                 "srcPath": src_path,
@@ -2063,7 +2163,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Get raw diff for path"""
         return await self._get(
-            STREAM_RAW_DIFF_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_RAW_DIFF_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "contextLines": context_lines,
                 "srcPath": src_path,
@@ -2084,7 +2186,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[FileListResource]:
         """Get files in directory"""
         return self._get_paged(
-            STREAM_FILES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_FILES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"at": at},
             model=FileListResource,
             start=start,
@@ -2103,7 +2207,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[FileListResource]:
         """Get files in directory"""
         return self._get_paged(
-            STREAM_FILES_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_FILES_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"at": at},
             model=FileListResource,
             start=start,
@@ -2120,7 +2226,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestHookScriptConfig]:
         """Get hook scripts"""
         return self._get_paged(
-            GET_CONFIGURATIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_CONFIGURATIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestHookScriptConfig,
             start=start,
             limit=limit,
@@ -2129,9 +2237,9 @@ class AsyncRepositoriesResource(AsyncResource):
     async def remove_configuration_1(self, project_key: str, script_id: str, repository_slug: str) -> None:
         """Remove a hook script"""
         return await self._delete(
-            REMOVE_CONFIGURATION_1.path.format(
-                projectKey=project_key, scriptId=script_id, repositorySlug=repository_slug
-            ),
+            REMOVE_CONFIGURATION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{scriptId}", str(script_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def set_configuration_1(
@@ -2143,7 +2251,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestHookScriptConfig:
         """Create/update a hook script"""
         return await self._put(
-            SET_CONFIGURATION_1.path.format(projectKey=project_key, scriptId=script_id, repositorySlug=repository_slug),
+            SET_CONFIGURATION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{scriptId}", str(script_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestHookScriptConfig,
         )
@@ -2151,14 +2261,16 @@ class AsyncRepositoriesResource(AsyncResource):
     async def get_all_labels_for_repository(self, project_key: str, repository_slug: str) -> RestLabel:
         """Get repository labels"""
         return await self._get(
-            GET_ALL_LABELS_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_ALL_LABELS_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestLabel,
         )
 
     async def add_label(self, project_key: str, repository_slug: str, body: RestLabel) -> RestLabel:
         """Add repository label"""
         return await self._post(
-            ADD_LABEL.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            ADD_LABEL.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestLabel,
         )
@@ -2166,13 +2278,15 @@ class AsyncRepositoriesResource(AsyncResource):
     async def remove_label(self, project_key: str, label_name: str, repository_slug: str) -> None:
         """Remove repository label"""
         return await self._delete(
-            REMOVE_LABEL.path.format(projectKey=project_key, labelName=label_name, repositorySlug=repository_slug),
+            REMOVE_LABEL.path.replace("{projectKey}", str(project_key))
+            .replace("{labelName}", str(label_name))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def stream(self, project_key: str, repository_slug: str, *, at: str | None = None) -> ExampleFiles:
         """Stream files"""
         return await self._get(
-            STREAM.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"at": at},
             model=ExampleFiles,
         )
@@ -2187,7 +2301,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> ExampleFiles:
         """Stream files with last modified commit in path"""
         return await self._get(
-            STREAM_1.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_1.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"at": at},
             model=ExampleFiles,
         )
@@ -2203,7 +2319,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Get patch content at revision"""
         return await self._get(
-            STREAM_PATCH.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_PATCH.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"until": until, "allAncestors": all_ancestors, "since": since},
         )
 
@@ -2221,7 +2339,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Get raw content of a file at revision"""
         return await self._get(
-            STREAM_RAW.path.format(path=path, projectKey=project_key, repositorySlug=repository_slug),
+            STREAM_RAW.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "at": at,
                 "markup": markup,
@@ -2242,7 +2362,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestRepositoryRefChangeActivity]:
         """Get ref change activity"""
         return self._get_paged(
-            GET_REF_CHANGE_ACTIVITY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REF_CHANGE_ACTIVITY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"ref": ref},
             model=RestRepositoryRefChangeActivity,
             start=start,
@@ -2260,7 +2382,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestMinimalRef]:
         """Get branches with ref change activities for repository"""
         return self._get_paged(
-            FIND_BRANCHES.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            FIND_BRANCHES.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filterText": filter_text},
             model=RestMinimalRef,
             start=start,
@@ -2270,13 +2394,17 @@ class AsyncRepositoriesResource(AsyncResource):
     async def delete_auto_decline_settings_1(self, project_key: str, repository_slug: str) -> None:
         """Delete auto decline settings"""
         return await self._delete(
-            DELETE_AUTO_DECLINE_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            DELETE_AUTO_DECLINE_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
         )
 
     async def get_auto_decline_settings_1(self, project_key: str, repository_slug: str) -> RestAutoDeclineSettings:
         """Get auto decline settings"""
         return await self._get(
-            GET_AUTO_DECLINE_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_AUTO_DECLINE_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestAutoDeclineSettings,
         )
 
@@ -2288,19 +2416,23 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestAutoDeclineSettings:
         """Create auto decline settings"""
         return await self._put(
-            SET_AUTO_DECLINE_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_AUTO_DECLINE_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoDeclineSettings,
         )
 
     async def delete_5(self, project_key: str, repository_slug: str) -> None:
         """Delete pull request auto-merge settings"""
-        return await self._delete(DELETE_5.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return await self._delete(
+            DELETE_5.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
+        )
 
     async def get_5(self, project_key: str, repository_slug: str) -> RestAutoMergeRestrictedSettings:
         """Get pull request auto-merge settings"""
         return await self._get(
-            GET_5.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_5.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             model=RestAutoMergeRestrictedSettings,
         )
 
@@ -2312,7 +2444,7 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestAutoMergeRestrictedSettings:
         """Create or update the pull request auto-merge settings"""
         return await self._put(
-            SET_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_1.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAutoMergeRestrictedSettings,
         )
@@ -2328,7 +2460,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestRepositoryHook]:
         """Get repository hooks"""
         return self._get_paged(
-            GET_REPOSITORY_HOOKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPOSITORY_HOOKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"type": type_},
             model=RestRepositoryHook,
             start=start,
@@ -2338,36 +2472,44 @@ class AsyncRepositoriesResource(AsyncResource):
     async def delete_repository_hook(self, project_key: str, hook_key: str, repository_slug: str) -> None:
         """Delete repository hook"""
         return await self._delete(
-            DELETE_REPOSITORY_HOOK.path.format(
-                projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug
-            ),
+            DELETE_REPOSITORY_HOOK.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_repository_hook_1(self, project_key: str, hook_key: str, repository_slug: str) -> RestRepositoryHook:
         """Get repository hook"""
         return await self._get(
-            GET_REPOSITORY_HOOK_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            GET_REPOSITORY_HOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRepositoryHook,
         )
 
     async def disable_hook_1(self, project_key: str, hook_key: str, repository_slug: str) -> RestRepositoryHook:
         """Disable repository hook"""
         return await self._delete(
-            DISABLE_HOOK_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            DISABLE_HOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRepositoryHook,
         )
 
     async def enable_hook_1(self, project_key: str, hook_key: str, repository_slug: str) -> RestRepositoryHook:
         """Enable repository hook"""
         return await self._put(
-            ENABLE_HOOK_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            ENABLE_HOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRepositoryHook,
         )
 
     async def get_settings_1(self, project_key: str, hook_key: str, repository_slug: str) -> ExampleSettings:
         """Get repository hook settings"""
         return await self._get(
-            GET_SETTINGS_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            GET_SETTINGS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=ExampleSettings,
         )
 
@@ -2380,7 +2522,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> ExampleSettings:
         """Update repository hook settings"""
         return await self._put(
-            SET_SETTINGS_1.path.format(projectKey=project_key, hookKey=hook_key, repositorySlug=repository_slug),
+            SET_SETTINGS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{hookKey}", str(hook_key))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=ExampleSettings,
         )
@@ -2392,7 +2536,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestRepositoryPullRequestSettings:
         """Get pull request settings"""
         return await self._get(
-            GET_PULL_REQUEST_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_PULL_REQUEST_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepositoryPullRequestSettings,
         )
 
@@ -2404,7 +2550,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestRepositoryPullRequestSettings:
         """Update pull request settings"""
         return await self._post(
-            UPDATE_PULL_REQUEST_SETTINGS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            UPDATE_PULL_REQUEST_SETTINGS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRepositoryPullRequestSettings,
         )
@@ -2421,7 +2569,7 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestTag]:
         """Find tag"""
         return self._get_paged(
-            GET_TAGS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_TAGS.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"orderBy": order_by, "filterText": filter_text},
             model=RestTag,
             start=start,
@@ -2436,7 +2584,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestTag:
         """Create tag"""
         return await self._post(
-            CREATE_TAG_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_TAG_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestTag,
         )
@@ -2444,18 +2594,22 @@ class AsyncRepositoriesResource(AsyncResource):
     async def get_tag(self, project_key: str, name: str, repository_slug: str) -> RestTag:
         """Get tag"""
         return await self._get(
-            GET_TAG.path.format(projectKey=project_key, name=name, repositorySlug=repository_slug),
+            GET_TAG.path.replace("{projectKey}", str(project_key))
+            .replace("{name}", str(name))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestTag,
         )
 
     async def unwatch_2(self, project_key: str, repository_slug: str) -> None:
         """Stop watching repository"""
-        return await self._delete(UNWATCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return await self._delete(
+            UNWATCH_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
+        )
 
     async def watch_2(self, project_key: str, repository_slug: str, body: RestRepository) -> None:
         """Watch repository"""
         return await self._post(
-            WATCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            WATCH_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -2469,14 +2623,18 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Find webhooks"""
         return await self._get(
-            FIND_WEBHOOKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            FIND_WEBHOOKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"event": event, "statistics": statistics},
         )
 
     async def create_webhook_1(self, project_key: str, repository_slug: str, body: RestWebhook) -> RestWebhook:
         """Create webhook"""
         return await self._post(
-            CREATE_WEBHOOK_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_WEBHOOK_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -2492,7 +2650,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Search webhooks"""
         return await self._get(
-            SEARCH_WEBHOOKS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_WEBHOOKS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"scopeType": scope_type, "event": event, "statistics": statistics},
         )
 
@@ -2508,7 +2668,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestWebhookRequestResponse:
         """Test webhook"""
         return await self._post(
-            TEST_WEBHOOK_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            TEST_WEBHOOK_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"webhookId": webhook_id, "sslVerificationRequired": ssl_verification_required, "url": url},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhookRequestResponse,
@@ -2517,7 +2679,9 @@ class AsyncRepositoriesResource(AsyncResource):
     async def delete_webhook_1(self, project_key: str, webhook_id: str, repository_slug: str) -> None:
         """Delete webhook"""
         return await self._delete(
-            DELETE_WEBHOOK_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            DELETE_WEBHOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_webhook_1(
@@ -2530,7 +2694,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestWebhook:
         """Get webhook"""
         return await self._get(
-            GET_WEBHOOK_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            GET_WEBHOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"statistics": statistics},
             model=RestWebhook,
         )
@@ -2544,7 +2710,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestWebhook:
         """Update webhook"""
         return await self._put(
-            UPDATE_WEBHOOK_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            UPDATE_WEBHOOK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestWebhook,
         )
@@ -2560,9 +2728,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestDetailedInvocation:
         """Get last webhook invocation details"""
         return await self._get(
-            GET_LATEST_INVOCATION_1.path.format(
-                projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug
-            ),
+            GET_LATEST_INVOCATION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"event": event, "outcome": outcome},
             model=RestDetailedInvocation,
         )
@@ -2577,7 +2745,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestInvocationHistory:
         """Get webhook statistics"""
         return await self._get(
-            GET_STATISTICS_1.path.format(projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug),
+            GET_STATISTICS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"event": event},
             model=RestInvocationHistory,
         )
@@ -2590,9 +2760,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestInvocationHistory:
         """Get webhook statistics summary"""
         return await self._get(
-            GET_STATISTICS_SUMMARY_1.path.format(
-                projectKey=project_key, webhookId=webhook_id, repositorySlug=repository_slug
-            ),
+            GET_STATISTICS_SUMMARY_1.path.replace("{projectKey}", str(project_key))
+            .replace("{webhookId}", str(webhook_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestInvocationHistory,
         )
 
@@ -2639,7 +2809,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestRefRestriction]:
         """Search for ref restrictions"""
         return self._get_paged(
-            GET_RESTRICTIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_RESTRICTIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"matcherType": matcher_type, "matcherId": matcher_id, "type": type_},
             model=RestRefRestriction,
             start=start,
@@ -2649,31 +2821,43 @@ class AsyncRepositoriesResource(AsyncResource):
     async def create_restrictions_1(self, project_key: str, repository_slug: str) -> RestRefRestriction:
         """Create multiple ref restrictions"""
         return await self._post(
-            CREATE_RESTRICTIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_RESTRICTIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRefRestriction,
         )
 
     async def delete_restriction_1(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete a ref restriction"""
         return await self._delete(
-            DELETE_RESTRICTION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_RESTRICTION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_restriction_1(self, project_key: str, id: str, repository_slug: str) -> RestRefRestriction:
         """Get a ref restriction"""
         return await self._get(
-            GET_RESTRICTION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_RESTRICTION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestRefRestriction,
         )
 
     async def delete_branch(self, project_key: str, repository_slug: str, body: RestBranchDeleteRequest) -> None:
         """Delete branch"""
-        return await self._delete(DELETE_BRANCH.path.format(projectKey=project_key, repositorySlug=repository_slug))
+        return await self._delete(
+            DELETE_BRANCH.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
+        )
 
     async def create_branch(self, project_key: str, repository_slug: str, body: RestBranchCreateRequest) -> RestBranch:
         """Create branch"""
         return await self._post(
-            CREATE_BRANCH.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_BRANCH.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestBranch,
         )
@@ -2689,7 +2873,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestMinimalRef]:
         """Get branch"""
         return self._get_paged(
-            FIND_BY_COMMIT.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            FIND_BY_COMMIT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestMinimalRef,
             start=start,
             limit=limit,
@@ -2705,13 +2891,11 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> None:
         """Remove a reaction from comment"""
         return await self._delete(
-            UN_REACT.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                commitId=commit_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            UN_REACT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def react(
@@ -2724,20 +2908,20 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestUserReaction:
         """React to a comment"""
         return await self._put(
-            REACT.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                commitId=commit_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            REACT.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestUserReaction,
         )
 
     async def delete_all_default_tasks_1(self, project_key: str, repository_slug: str) -> None:
         """Deletes all default tasks for the repository"""
         return await self._delete(
-            DELETE_ALL_DEFAULT_TASKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            DELETE_ALL_DEFAULT_TASKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
         )
 
     def get_default_tasks_1(
@@ -2751,7 +2935,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> AsyncPageIterator[RestDefaultTask]:
         """Get a page of default tasks"""
         return self._get_paged(
-            GET_DEFAULT_TASKS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_DEFAULT_TASKS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"markup": markup},
             model=RestDefaultTask,
             start=start,
@@ -2766,7 +2952,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestDefaultTask:
         """Add a default task"""
         return await self._post(
-            ADD_DEFAULT_TASK_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            ADD_DEFAULT_TASK_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
@@ -2774,7 +2962,9 @@ class AsyncRepositoriesResource(AsyncResource):
     async def delete_default_task_1(self, project_key: str, repository_slug: str, task_id: str) -> None:
         """Delete a specific default task"""
         return await self._delete(
-            DELETE_DEFAULT_TASK_1.path.format(projectKey=project_key, repositorySlug=repository_slug, taskId=task_id),
+            DELETE_DEFAULT_TASK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{taskId}", str(task_id)),
         )
 
     async def update_default_task_1(
@@ -2786,7 +2976,9 @@ class AsyncRepositoriesResource(AsyncResource):
     ) -> RestDefaultTask:
         """Update a default task"""
         return await self._put(
-            UPDATE_DEFAULT_TASK_1.path.format(projectKey=project_key, repositorySlug=repository_slug, taskId=task_id),
+            UPDATE_DEFAULT_TASK_1.path.replace("{projectKey}", str(project_key))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{taskId}", str(task_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDefaultTask,
         )
@@ -2794,7 +2986,7 @@ class AsyncRepositoriesResource(AsyncResource):
     async def create_tag(self, project_key: str, repository_slug: str, body: RestGitTagCreateRequest) -> RestTag:
         """Create tag"""
         return await self._post(
-            CREATE_TAG.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_TAG.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestTag,
         )
@@ -2802,13 +2994,17 @@ class AsyncRepositoriesResource(AsyncResource):
     async def delete_tag(self, project_key: str, name: str, repository_slug: str) -> None:
         """Delete tag"""
         return await self._delete(
-            DELETE_TAG.path.format(projectKey=project_key, name=name, repositorySlug=repository_slug),
+            DELETE_TAG.path.replace("{projectKey}", str(project_key))
+            .replace("{name}", str(name))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_status(self, project_key: str, repository_slug: str, *, at: str | None = None) -> RestRefSyncStatus:
         """Get synchronization status"""
         return await self._get(
-            GET_STATUS_PROJECTS_REPOS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_STATUS_PROJECTS_REPOS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"at": at},
             model=RestRefSyncStatus,
         )
@@ -2816,7 +3012,9 @@ class AsyncRepositoriesResource(AsyncResource):
     async def set_enabled(self, project_key: str, repository_slug: str, body: RestRefSyncStatus) -> RestRefSyncStatus:
         """Disable synchronization"""
         return await self._post(
-            SET_ENABLED.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_ENABLED.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRefSyncStatus,
         )
@@ -2824,7 +3022,9 @@ class AsyncRepositoriesResource(AsyncResource):
     async def synchronize(self, project_key: str, repository_slug: str, body: RestRefSyncRequest) -> RestRejectedRef:
         """Manual synchronization"""
         return await self._post(
-            SYNCHRONIZE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SYNCHRONIZE.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRejectedRef,
         )
@@ -2833,12 +3033,12 @@ class AsyncRepositoriesResource(AsyncResource):
 class AsyncPullRequestsResource(AsyncResource):
     async def get_merge_config(self, scm_id: str) -> RestPullRequestMergeConfig:
         """Get merge strategies"""
-        return await self._get(GET_MERGE_CONFIG.path.format(scmId=scm_id), model=RestPullRequestMergeConfig)
+        return await self._get(GET_MERGE_CONFIG.path.replace("{scmId}", str(scm_id)), model=RestPullRequestMergeConfig)
 
     async def set_merge_config(self, scm_id: str, body: RestPullRequestSettings) -> RestPullRequestMergeConfig:
         """Update merge strategies"""
         return await self._post(
-            SET_MERGE_CONFIG.path.format(scmId=scm_id),
+            SET_MERGE_CONFIG.path.replace("{scmId}", str(scm_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestMergeConfig,
         )
@@ -2854,7 +3054,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPullRequest]:
         """Get repository pull requests containing commit"""
         return self._get_paged(
-            GET_PULL_REQUESTS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_PULL_REQUESTS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequest,
             start=start,
             limit=limit,
@@ -2873,7 +3075,7 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestApplicationUser]:
         """Search pull request participants"""
         return self._get_paged(
-            SEARCH.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"filter": filter, "role": role, "direction": direction},
             model=RestApplicationUser,
             start=start,
@@ -2898,7 +3100,7 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPullRequest]:
         """Get pull requests for repository"""
         return self._get_paged(
-            GET_PAGE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_PAGE.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={
                 "withAttributes": with_attributes,
                 "at": at,
@@ -2917,7 +3119,7 @@ class AsyncPullRequestsResource(AsyncResource):
     async def create(self, project_key: str, repository_slug: str, body: RestPullRequest) -> RestPullRequest:
         """Create pull request"""
         return await self._post(
-            CREATE.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
         )
@@ -2931,13 +3133,17 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Delete pull request"""
         return await self._delete(
-            DELETE_3.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            DELETE_3.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_3(self, project_key: str, pull_request_id: str, repository_slug: str) -> RestPullRequest:
         """Get pull request"""
         return await self._get(
-            GET_3.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            GET_3.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequest,
         )
 
@@ -2950,7 +3156,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequest:
         """Update pull request metadata"""
         return await self._put(
-            UPDATE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            UPDATE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
         )
@@ -2966,18 +3174,18 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Stream raw pull request diff"""
         return await self._get(
-            STREAM_RAW_DIFF_2.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_RAW_DIFF_2.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"contextLines": context_lines, "whitespace": whitespace},
         )
 
     async def stream_patch_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Stream pull request as patch"""
         return await self._get(
-            STREAM_PATCH_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_PATCH_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_activities(
@@ -2993,9 +3201,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPullRequestActivity]:
         """Get pull request activity"""
         return self._get_paged(
-            GET_ACTIVITIES.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_ACTIVITIES.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"fromType": from_type, "fromId": from_id},
             model=RestPullRequestActivity,
             start=start,
@@ -3014,9 +3222,9 @@ class AsyncPullRequestsResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return await self._delete(
-            WITHDRAW_APPROVAL.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            WITHDRAW_APPROVAL.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestParticipant,
         )
 
@@ -3027,16 +3235,18 @@ class AsyncPullRequestsResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return await self._post(
-            APPROVE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            APPROVE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestParticipant,
         )
 
     async def cancel_auto_merge(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Cancel auto-merge for pull request"""
         return await self._delete(
-            CANCEL_AUTO_MERGE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CANCEL_AUTO_MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_auto_merge_request(
@@ -3047,9 +3257,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestAutoMergeRequest:
         """Get auto-merge request for pull request"""
         return await self._get(
-            GET_AUTO_MERGE_REQUEST.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_AUTO_MERGE_REQUEST.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAutoMergeRequest,
         )
 
@@ -3061,9 +3271,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestAutoMergeProcessingResult:
         """Auto-merge pull request"""
         return await self._post(
-            TRY_AUTO_MERGE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            TRY_AUTO_MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAutoMergeProcessingResult,
         )
 
@@ -3081,9 +3291,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestComment]:
         """Search pull request comments"""
         return self._get_paged(
-            GET_COMMENTS_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMENTS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"count": count, "state": state, "states": states},
             model=RestComment,
             start=start,
@@ -3099,9 +3309,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestComment:
         """Add new blocker comment"""
         return await self._post(
-            CREATE_COMMENT_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CREATE_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3117,12 +3327,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Delete pull request comment"""
         return await self._delete(
-            DELETE_COMMENT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            DELETE_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
         )
 
@@ -3135,12 +3343,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestComment:
         """Get pull request comment"""
         return await self._get(
-            GET_COMMENT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            GET_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
         )
 
@@ -3154,12 +3360,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestComment:
         """Update pull request comment"""
         return await self._put(
-            UPDATE_COMMENT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UPDATE_COMMENT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3179,9 +3383,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestChange:
         """Gets pull request changes"""
         return await self._get(
-            STREAM_CHANGES_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_CHANGES_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "sinceId": since_id,
                 "changeScope": change_scope,
@@ -3212,9 +3416,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestComment]:
         """Get pull request comments for path"""
         return self._get_paged(
-            GET_COMMENTS_2.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMENTS_2.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "path": path,
                 "fromHash": from_hash,
@@ -3239,9 +3443,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestComment:
         """Add pull request comment"""
         return await self._post(
-            CREATE_COMMENT_2.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CREATE_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3257,12 +3461,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Delete a pull request comment"""
         return await self._delete(
-            DELETE_COMMENT_2.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            DELETE_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
         )
 
@@ -3275,12 +3477,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestComment:
         """Get a pull request comment"""
         return await self._get(
-            GET_COMMENT_2.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            GET_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
         )
 
@@ -3294,12 +3494,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestComment:
         """Update pull request comment"""
         return await self._put(
-            UPDATE_COMMENT_2.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UPDATE_COMMENT_2.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestComment,
         )
@@ -3314,12 +3512,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Apply pull request suggestion"""
         return await self._post(
-            APPLY_SUGGESTION.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            APPLY_SUGGESTION.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -3331,9 +3527,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestCommitMessageSuggestion:
         """Get commit message suggestion"""
         return await self._get(
-            GET_COMMIT_MESSAGE_SUGGESTION.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMIT_MESSAGE_SUGGESTION.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestCommitMessageSuggestion,
         )
 
@@ -3351,9 +3547,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestCommit]:
         """Get pull request commits"""
         return self._get_paged(
-            GET_COMMITS_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_COMMITS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"avatarScheme": avatar_scheme, "withCounts": with_counts, "avatarSize": avatar_size},
             model=RestCommit,
             start=start,
@@ -3371,7 +3567,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequest:
         """Decline pull request"""
         return await self._post(
-            DECLINE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            DECLINE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
@@ -3391,9 +3589,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestDiffStatsSummary:
         """Get diff stats summary for pull request"""
         return await self._get(
-            GET_DIFF_STATS_SUMMARY_2.path.format(
-                path=path, projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_DIFF_STATS_SUMMARY_2.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"sinceId": since_id, "srcPath": src_path, "untilId": until_id, "whitespace": whitespace},
             model=RestDiffStatsSummary,
         )
@@ -3417,9 +3616,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestDiff:
         """Stream a diff within a pull request"""
         return await self._get(
-            STREAM_DIFF_2.path.format(
-                path=path, projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            STREAM_DIFF_2.path.replace("{path}", str(path))
+            .replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "avatarScheme": avatar_scheme,
                 "contextLines": context_lines,
@@ -3442,9 +3642,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestMergeability:
         """Test if pull request can be merged"""
         return await self._get(
-            CAN_MERGE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CAN_MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestMergeability,
         )
 
@@ -3459,7 +3659,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequest:
         """Merge pull request"""
         return await self._post(
-            MERGE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            MERGE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
@@ -3468,9 +3670,9 @@ class AsyncPullRequestsResource(AsyncResource):
     async def get_merge_base_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> RestCommit:
         """Get the common ancestor between the latest commits of the source and target branches of the pull request"""
         return await self._get(
-            GET_MERGE_BASE_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_MERGE_BASE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestCommit,
         )
 
@@ -3488,9 +3690,9 @@ class AsyncPullRequestsResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return await self._delete(
-            UNASSIGN_PARTICIPANT_ROLE_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            UNASSIGN_PARTICIPANT_ROLE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"username": username},
         )
 
@@ -3505,9 +3707,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPullRequestParticipant]:
         """Get pull request participants"""
         return self._get_paged(
-            LIST_PARTICIPANTS.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            LIST_PARTICIPANTS.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestParticipant,
             start=start,
             limit=limit,
@@ -3522,9 +3724,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestParticipant:
         """Assign pull request participant role"""
         return await self._post(
-            ASSIGN_PARTICIPANT_ROLE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            ASSIGN_PARTICIPANT_ROLE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestParticipant,
         )
@@ -3538,12 +3740,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Unassign pull request participant"""
         return await self._delete(
-            UNASSIGN_PARTICIPANT_ROLE.path.format(
-                projectKey=project_key,
-                userSlug=user_slug,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UNASSIGN_PARTICIPANT_ROLE.path.replace("{projectKey}", str(project_key))
+            .replace("{userSlug}", str(user_slug))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def update_status(
@@ -3558,12 +3758,10 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestParticipant:
         """Change pull request status"""
         return await self._put(
-            UPDATE_STATUS.path.format(
-                projectKey=project_key,
-                userSlug=user_slug,
-                pullRequestId=pull_request_id,
-                repositorySlug=repository_slug,
-            ),
+            UPDATE_STATUS.path.replace("{projectKey}", str(project_key))
+            .replace("{userSlug}", str(user_slug))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestParticipant,
@@ -3580,7 +3778,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequest:
         """Re-open pull request"""
         return await self._post(
-            REOPEN.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            REOPEN.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequest,
@@ -3589,9 +3789,9 @@ class AsyncPullRequestsResource(AsyncResource):
     async def discard_review(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Discard pull request review"""
         return await self._delete(
-            DISCARD_REVIEW.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            DISCARD_REVIEW.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_review(
@@ -3605,9 +3805,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestComment]:
         """Get pull request comment thread"""
         return self._get_paged(
-            GET_REVIEW.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_REVIEW.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestComment,
             start=start,
             limit=limit,
@@ -3624,9 +3824,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Complete pull request review"""
         return await self._put(
-            FINISH_REVIEW.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            FINISH_REVIEW.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"version": version},
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
@@ -3634,15 +3834,17 @@ class AsyncPullRequestsResource(AsyncResource):
     async def unwatch_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Stop watching pull request"""
         return await self._delete(
-            UNWATCH_1.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            UNWATCH_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def watch_1(self, project_key: str, pull_request_id: str, repository_slug: str) -> None:
         """Watch pull request"""
         return await self._post(
-            WATCH_1.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            WATCH_1.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     def get_reviewer_groups_1(
@@ -3655,7 +3857,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestReviewerGroup]:
         """Get all reviewer groups"""
         return self._get_paged(
-            GET_REVIEWER_GROUPS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REVIEWER_GROUPS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestReviewerGroup,
             start=start,
             limit=limit,
@@ -3664,19 +3868,25 @@ class AsyncPullRequestsResource(AsyncResource):
     async def create_2(self, project_key: str, repository_slug: str, body: RestReviewerGroup) -> RestReviewerGroup:
         """Create reviewer group"""
         return await self._post(
-            CREATE_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
 
     async def delete_7(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete reviewer group"""
-        return await self._delete(DELETE_7.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug))
+        return await self._delete(
+            DELETE_7.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
+        )
 
     async def get_reviewer_group_1(self, project_key: str, id: str, repository_slug: str) -> RestReviewerGroup:
         """Get reviewer group"""
         return await self._get(
-            GET_REVIEWER_GROUP_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_REVIEWER_GROUP_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestReviewerGroup,
         )
 
@@ -3689,7 +3899,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestReviewerGroup:
         """Update reviewer group attributes"""
         return await self._put(
-            UPDATE_2.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            UPDATE_2.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
@@ -3697,7 +3909,9 @@ class AsyncPullRequestsResource(AsyncResource):
     async def get_users(self, project_key: str, id: str, repository_slug: str) -> RestApplicationUser:
         """Get reviewer group users"""
         return await self._get(
-            GET_USERS.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_USERS.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestApplicationUser,
         )
 
@@ -3710,7 +3924,7 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> AsyncPageIterator[RestReviewerGroup]:
         """Get all reviewer groups"""
         return self._get_paged(
-            GET_REVIEWER_GROUPS.path.format(projectKey=project_key),
+            GET_REVIEWER_GROUPS.path.replace("{projectKey}", str(project_key)),
             model=RestReviewerGroup,
             start=start,
             limit=limit,
@@ -3719,23 +3933,26 @@ class AsyncPullRequestsResource(AsyncResource):
     async def create_1(self, project_key: str, body: RestReviewerGroup) -> RestReviewerGroup:
         """Create reviewer group"""
         return await self._post(
-            CREATE_1.path.format(projectKey=project_key),
+            CREATE_1.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
 
     async def delete_6(self, project_key: str, id: str) -> None:
         """Delete reviewer group"""
-        return await self._delete(DELETE_6.path.format(projectKey=project_key, id=id))
+        return await self._delete(DELETE_6.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)))
 
     async def get_reviewer_group(self, project_key: str, id: str) -> RestReviewerGroup:
         """Get reviewer group"""
-        return await self._get(GET_REVIEWER_GROUP.path.format(projectKey=project_key, id=id), model=RestReviewerGroup)
+        return await self._get(
+            GET_REVIEWER_GROUP.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+            model=RestReviewerGroup,
+        )
 
     async def update_1(self, project_key: str, id: str, body: RestReviewerGroup) -> RestReviewerGroup:
         """Update reviewer group attributes"""
         return await self._put(
-            UPDATE_1.path.format(projectKey=project_key, id=id),
+            UPDATE_1.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestReviewerGroup,
         )
@@ -3750,13 +3967,11 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> None:
         """Remove a reaction from a PR comment"""
         return await self._delete(
-            UN_REACT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            UN_REACT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def react_1(
@@ -3769,13 +3984,11 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestUserReaction:
         """React to a PR comment"""
         return await self._put(
-            REACT_1.path.format(
-                projectKey=project_key,
-                commentId=comment_id,
-                pullRequestId=pull_request_id,
-                emoticon=emoticon,
-                repositorySlug=repository_slug,
-            ),
+            REACT_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commentId}", str(comment_id))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{emoticon}", str(emoticon))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestUserReaction,
         )
 
@@ -3786,14 +3999,16 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestCondition:
         """Create default reviewer"""
         return await self._post(
-            CREATE_PULL_REQUEST_CONDITION.path.format(projectKey=project_key),
+            CREATE_PULL_REQUEST_CONDITION.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestCondition,
         )
 
     async def delete_pull_request_condition(self, project_key: str, id: str) -> None:
         """Remove default reviewer"""
-        return await self._delete(DELETE_PULL_REQUEST_CONDITION.path.format(projectKey=project_key, id=id))
+        return await self._delete(
+            DELETE_PULL_REQUEST_CONDITION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+        )
 
     async def update_pull_request_condition(
         self,
@@ -3803,7 +4018,7 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestCondition:
         """Update the default reviewer"""
         return await self._put(
-            UPDATE_PULL_REQUEST_CONDITION.path.format(projectKey=project_key, id=id),
+            UPDATE_PULL_REQUEST_CONDITION.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestCondition,
         )
@@ -3811,7 +4026,7 @@ class AsyncPullRequestsResource(AsyncResource):
     async def get_pull_request_conditions(self, project_key: str) -> RestPullRequestCondition:
         """Get default reviewers"""
         return await self._get(
-            GET_PULL_REQUEST_CONDITIONS.path.format(projectKey=project_key),
+            GET_PULL_REQUEST_CONDITIONS.path.replace("{projectKey}", str(project_key)),
             model=RestPullRequestCondition,
         )
 
@@ -3823,7 +4038,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestCondition:
         """Create default reviewers condition"""
         return await self._post(
-            CREATE_PULL_REQUEST_CONDITION_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_PULL_REQUEST_CONDITION_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestCondition,
         )
@@ -3831,7 +4048,9 @@ class AsyncPullRequestsResource(AsyncResource):
     async def delete_pull_request_condition_1(self, project_key: str, id: int, repository_slug: str) -> None:
         """Delete a default reviewer condition"""
         return await self._delete(
-            DELETE_PULL_REQUEST_CONDITION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_PULL_REQUEST_CONDITION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def update_pull_request_condition_1(
@@ -3842,14 +4061,18 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestCondition:
         """Update a default reviewer condition"""
         return await self._put(
-            UPDATE_PULL_REQUEST_CONDITION_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            UPDATE_PULL_REQUEST_CONDITION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestCondition,
         )
 
     async def get_pull_request_conditions_1(self, project_key: str, repository_slug: str) -> RestPullRequestCondition:
         """Get configured default reviewers"""
         return await self._get(
-            GET_PULL_REQUEST_CONDITIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_PULL_REQUEST_CONDITIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestPullRequestCondition,
         )
 
@@ -3865,7 +4088,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestCondition:
         """Get required reviewers for PR creation"""
         return await self._get(
-            GET_REVIEWERS.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REVIEWERS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "targetRepoId": target_repo_id,
                 "sourceRepoId": source_repo_id,
@@ -3883,9 +4108,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestRebaseability:
         """Check PR rebase precondition"""
         return await self._get(
-            CAN_REBASE.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            CAN_REBASE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestPullRequestRebaseability,
         )
 
@@ -3898,7 +4123,9 @@ class AsyncPullRequestsResource(AsyncResource):
     ) -> RestPullRequestRebaseResult:
         """Rebase pull request"""
         return await self._post(
-            REBASE.path.format(projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug),
+            REBASE.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestPullRequestRebaseResult,
         )
@@ -3914,7 +4141,7 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> AsyncPageIterator[RestAccessToken]:
         """Get project HTTP tokens"""
         return self._get_paged(
-            GET_ALL_ACCESS_TOKENS.path.format(projectKey=project_key),
+            GET_ALL_ACCESS_TOKENS.path.replace("{projectKey}", str(project_key)),
             model=RestAccessToken,
             start=start,
             limit=limit,
@@ -3923,7 +4150,7 @@ class AsyncAuthenticationResource(AsyncResource):
     async def create_access_token(self, project_key: str, body: RestAccessTokenRequest) -> RestRawAccessToken:
         """Create project HTTP token"""
         return await self._put(
-            CREATE_ACCESS_TOKEN.path.format(projectKey=project_key),
+            CREATE_ACCESS_TOKEN.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRawAccessToken,
         )
@@ -3938,7 +4165,9 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> AsyncPageIterator[RestAccessToken]:
         """Get repository HTTP tokens"""
         return self._get_paged(
-            GET_ALL_ACCESS_TOKENS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_ALL_ACCESS_TOKENS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestAccessToken,
             start=start,
             limit=limit,
@@ -3952,7 +4181,9 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> RestRawAccessToken:
         """Create repository HTTP token"""
         return await self._put(
-            CREATE_ACCESS_TOKEN_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_ACCESS_TOKEN_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRawAccessToken,
         )
@@ -3960,13 +4191,17 @@ class AsyncAuthenticationResource(AsyncResource):
     async def delete_by_id_1(self, project_key: str, token_id: str, repository_slug: str) -> None:
         """Delete a HTTP token"""
         return await self._delete(
-            DELETE_BY_ID_1.path.format(projectKey=project_key, tokenId=token_id, repositorySlug=repository_slug),
+            DELETE_BY_ID_1.path.replace("{projectKey}", str(project_key))
+            .replace("{tokenId}", str(token_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_by_id_1(self, project_key: str, token_id: str, repository_slug: str) -> RestAccessToken:
         """Get HTTP token by ID"""
         return await self._get(
-            GET_BY_ID_1.path.format(projectKey=project_key, tokenId=token_id, repositorySlug=repository_slug),
+            GET_BY_ID_1.path.replace("{projectKey}", str(project_key))
+            .replace("{tokenId}", str(token_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestAccessToken,
         )
 
@@ -3979,18 +4214,25 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> RestAccessToken:
         """Update HTTP token"""
         return await self._post(
-            UPDATE_ACCESS_TOKEN_1.path.format(projectKey=project_key, tokenId=token_id, repositorySlug=repository_slug),
+            UPDATE_ACCESS_TOKEN_1.path.replace("{projectKey}", str(project_key))
+            .replace("{tokenId}", str(token_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAccessToken,
         )
 
     async def delete_by_id(self, project_key: str, token_id: str) -> None:
         """Delete a HTTP token"""
-        return await self._delete(DELETE_BY_ID.path.format(projectKey=project_key, tokenId=token_id))
+        return await self._delete(
+            DELETE_BY_ID.path.replace("{projectKey}", str(project_key)).replace("{tokenId}", str(token_id)),
+        )
 
     async def get_by_id(self, project_key: str, token_id: str) -> RestAccessToken:
         """Get HTTP token by ID"""
-        return await self._get(GET_BY_ID.path.format(projectKey=project_key, tokenId=token_id), model=RestAccessToken)
+        return await self._get(
+            GET_BY_ID.path.replace("{projectKey}", str(project_key)).replace("{tokenId}", str(token_id)),
+            model=RestAccessToken,
+        )
 
     async def update_access_token(
         self,
@@ -4000,7 +4242,7 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> RestAccessToken:
         """Update HTTP token"""
         return await self._post(
-            UPDATE_ACCESS_TOKEN.path.format(projectKey=project_key, tokenId=token_id),
+            UPDATE_ACCESS_TOKEN.path.replace("{projectKey}", str(project_key)).replace("{tokenId}", str(token_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAccessToken,
         )
@@ -4014,7 +4256,7 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> AsyncPageIterator[RestAccessToken]:
         """Get personal HTTP tokens"""
         return self._get_paged(
-            GET_ALL_ACCESS_TOKENS_2.path.format(userSlug=user_slug),
+            GET_ALL_ACCESS_TOKENS_2.path.replace("{userSlug}", str(user_slug)),
             model=RestAccessToken,
             start=start,
             limit=limit,
@@ -4023,18 +4265,23 @@ class AsyncAuthenticationResource(AsyncResource):
     async def create_access_token_2(self, user_slug: str, body: RestAccessTokenRequest) -> RestRawAccessToken:
         """Create personal HTTP token"""
         return await self._put(
-            CREATE_ACCESS_TOKEN_2.path.format(userSlug=user_slug),
+            CREATE_ACCESS_TOKEN_2.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRawAccessToken,
         )
 
     async def delete_by_id_2(self, token_id: str, user_slug: str) -> None:
         """Delete a HTTP token"""
-        return await self._delete(DELETE_BY_ID_2.path.format(tokenId=token_id, userSlug=user_slug))
+        return await self._delete(
+            DELETE_BY_ID_2.path.replace("{tokenId}", str(token_id)).replace("{userSlug}", str(user_slug)),
+        )
 
     async def get_by_id_2(self, token_id: str, user_slug: str) -> RestAccessToken:
         """Get HTTP token by ID"""
-        return await self._get(GET_BY_ID_2.path.format(tokenId=token_id, userSlug=user_slug), model=RestAccessToken)
+        return await self._get(
+            GET_BY_ID_2.path.replace("{tokenId}", str(token_id)).replace("{userSlug}", str(user_slug)),
+            model=RestAccessToken,
+        )
 
     async def update_access_token_2(
         self,
@@ -4044,7 +4291,7 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> RestAccessToken:
         """Update HTTP token"""
         return await self._post(
-            UPDATE_ACCESS_TOKEN_2.path.format(tokenId=token_id, userSlug=user_slug),
+            UPDATE_ACCESS_TOKEN_2.path.replace("{tokenId}", str(token_id)).replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestAccessToken,
         )
@@ -4063,16 +4310,16 @@ class AsyncAuthenticationResource(AsyncResource):
 
     async def remove_idp(self, id: str) -> IdpConfigEntity:
         """Delete IdP configuration"""
-        return await self._delete(REMOVE_IDP.path.format(id=id), model=IdpConfigEntity)
+        return await self._delete(REMOVE_IDP.path.replace("{id}", str(id)), model=IdpConfigEntity)
 
     async def get_idp(self, id: str) -> IdpConfigEntity:
         """Get IdP configuration"""
-        return await self._get(GET_IDP.path.format(id=id), model=IdpConfigEntity)
+        return await self._get(GET_IDP.path.replace("{id}", str(id)), model=IdpConfigEntity)
 
     async def update_idp(self, id: str, body: IdpConfigEntity) -> IdpConfigEntity:
         """Update IdP configuration"""
         return await self._patch(
-            UPDATE_IDP.path.format(id=id),
+            UPDATE_IDP.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=IdpConfigEntity,
         )
@@ -4119,7 +4366,9 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> AsyncPageIterator[RestSshAccessKey]:
         """Get repository SSH keys"""
         return self._get_paged(
-            GET_FOR_REPOSITORY_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_FOR_REPOSITORY_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={
                 "filter": filter,
                 "effective": effective,
@@ -4139,7 +4388,9 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> RestSshAccessKey:
         """Add repository SSH key"""
         return await self._post(
-            ADD_FOR_REPOSITORY.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            ADD_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSshAccessKey,
         )
@@ -4147,13 +4398,17 @@ class AsyncAuthenticationResource(AsyncResource):
     async def revoke_for_repository(self, project_key: str, key_id: str, repository_slug: str) -> None:
         """Revoke repository SSH key"""
         return await self._delete(
-            REVOKE_FOR_REPOSITORY.path.format(projectKey=project_key, keyId=key_id, repositorySlug=repository_slug),
+            REVOKE_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_for_repository(self, project_key: str, key_id: str, repository_slug: str) -> RestSshAccessKey:
         """Get repository SSH key"""
         return await self._get(
-            GET_FOR_REPOSITORY.path.format(projectKey=project_key, keyId=key_id, repositorySlug=repository_slug),
+            GET_FOR_REPOSITORY.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSshAccessKey,
         )
 
@@ -4166,9 +4421,10 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> RestSshAccessKey:
         """Update repository SSH key permission"""
         return await self._put(
-            UPDATE_PERMISSION_1.path.format(
-                projectKey=project_key, keyId=key_id, permission=permission, repositorySlug=repository_slug
-            ),
+            UPDATE_PERMISSION_1.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{permission}", str(permission))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSshAccessKey,
         )
 
@@ -4183,7 +4439,7 @@ class AsyncAuthenticationResource(AsyncResource):
     ) -> AsyncPageIterator[RestSshAccessKey]:
         """Get SSH key"""
         return self._get_paged(
-            GET_SSH_KEYS_FOR_PROJECT.path.format(projectKey=project_key),
+            GET_SSH_KEYS_FOR_PROJECT.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter, "permission": permission},
             model=RestSshAccessKey,
             start=start,
@@ -4193,41 +4449,45 @@ class AsyncAuthenticationResource(AsyncResource):
     async def add_for_project(self, project_key: str, body: RestSshAccessKey) -> RestSshAccessKey:
         """Add project SSH key"""
         return await self._post(
-            ADD_FOR_PROJECT.path.format(projectKey=project_key),
+            ADD_FOR_PROJECT.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSshAccessKey,
         )
 
     async def revoke_for_project(self, project_key: str, key_id: str) -> None:
         """Revoke project SSH key"""
-        return await self._delete(REVOKE_FOR_PROJECT.path.format(projectKey=project_key, keyId=key_id))
+        return await self._delete(
+            REVOKE_FOR_PROJECT.path.replace("{projectKey}", str(project_key)).replace("{keyId}", str(key_id)),
+        )
 
     async def get_for_project(self, project_key: str, key_id: str) -> RestSshAccessKey:
         """Get project SSH key"""
         return await self._get(
-            GET_FOR_PROJECT.path.format(projectKey=project_key, keyId=key_id),
+            GET_FOR_PROJECT.path.replace("{projectKey}", str(project_key)).replace("{keyId}", str(key_id)),
             model=RestSshAccessKey,
         )
 
     async def update_permission(self, project_key: str, key_id: str, permission: str) -> RestSshAccessKey:
         """Update project SSH key permission"""
         return await self._put(
-            UPDATE_PERMISSION.path.format(projectKey=project_key, keyId=key_id, permission=permission),
+            UPDATE_PERMISSION.path.replace("{projectKey}", str(project_key))
+            .replace("{keyId}", str(key_id))
+            .replace("{permission}", str(permission)),
             model=RestSshAccessKey,
         )
 
     async def revoke_many(self, key_id: str) -> None:
         """Revoke project SSH key"""
-        return await self._delete(REVOKE_MANY.path.format(keyId=key_id))
+        return await self._delete(REVOKE_MANY.path.replace("{keyId}", str(key_id)))
 
     async def get_for_projects(self, key_id: int) -> None:
         """Get project SSH keys"""
-        return await self._get(GET_FOR_PROJECTS.path.format(keyId=key_id))
+        return await self._get(GET_FOR_PROJECTS.path.replace("{keyId}", str(key_id)))
 
     async def get_for_repositories(self, key_id: str, *, with_restrictions: str | None = None) -> None:
         """Get repository SSH key"""
         return await self._get(
-            GET_FOR_REPOSITORIES.path.format(keyId=key_id),
+            GET_FOR_REPOSITORIES.path.replace("{keyId}", str(key_id)),
             params={"withRestrictions": with_restrictions},
         )
 
@@ -4258,11 +4518,11 @@ class AsyncAuthenticationResource(AsyncResource):
 
     async def delete_ssh_key(self, key_id: str) -> None:
         """Remove SSH key"""
-        return await self._delete(DELETE_SSH_KEY.path.format(keyId=key_id))
+        return await self._delete(DELETE_SSH_KEY.path.replace("{keyId}", str(key_id)))
 
     async def get_ssh_key(self, key_id: str) -> RestSshKey:
         """Get SSH key for user by keyId"""
-        return await self._get(GET_SSH_KEY.path.format(keyId=key_id), model=RestSshKey)
+        return await self._get(GET_SSH_KEY.path.replace("{keyId}", str(key_id)), model=RestSshKey)
 
     async def ssh_settings(self) -> RestSshSettings:
         """Get SSH settings"""
@@ -4394,7 +4654,7 @@ class AsyncAuthenticationResource(AsyncResource):
 
     async def unenroll_user(self, user_name: str, body: TotpElevationRestDTO) -> None:
         """Unenroll specific user from two-step verification"""
-        return await self._delete(UNENROLL_USER.path.format(userName=user_name))
+        return await self._delete(UNENROLL_USER.path.replace("{userName}", str(user_name)))
 
 
 class AsyncBuildsResource(AsyncResource):
@@ -4409,14 +4669,18 @@ class AsyncBuildsResource(AsyncResource):
     async def delete(self, project_key: str, commit_id: str, repository_slug: str, *, key: str) -> None:
         """Delete a specific build status"""
         return await self._delete(
-            DELETE.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            DELETE.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"key": key},
         )
 
     async def get(self, project_key: str, commit_id: str, repository_slug: str, *, key: str) -> RestBuildStatus:
         """Get a specific build status"""
         return await self._get(
-            GET_COMMITS_BUILDS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_COMMITS_BUILDS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"key": key},
             model=RestBuildStatus,
         )
@@ -4430,7 +4694,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> None:
         """Store a build status"""
         return await self._post(
-            ADD.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            ADD.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4446,7 +4712,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> None:
         """Delete a deployment"""
         return await self._delete(
-            DELETE_1.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            DELETE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "deploymentSequenceNumber": deployment_sequence_number,
                 "key": key,
@@ -4466,7 +4734,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestDeployment:
         """Get a deployment"""
         return await self._get(
-            GET_1.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={
                 "deploymentSequenceNumber": deployment_sequence_number,
                 "key": key,
@@ -4484,9 +4754,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestDeployment:
         """Create or update a deployment"""
         return await self._post(
-            CREATE_OR_UPDATE_DEPLOYMENT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug
-            ),
+            CREATE_OR_UPDATE_DEPLOYMENT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestDeployment,
         )
@@ -4506,7 +4776,7 @@ class AsyncBuildsResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return await self._get(
-            GET_BUILD_STATUS_STATS.path.format(commitId=commit_id),
+            GET_BUILD_STATUS_STATS.path.replace("{commitId}", str(commit_id)),
             params={"includeUnique": include_unique},
             model=RestBuildStats,
         )
@@ -4525,7 +4795,7 @@ class AsyncBuildsResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return self._get_paged(
-            GET_BUILD_STATUS.path.format(commitId=commit_id),
+            GET_BUILD_STATUS.path.replace("{commitId}", str(commit_id)),
             params={"orderBy": order_by},
             model=RestBuildStatus,
             start=start,
@@ -4539,7 +4809,7 @@ class AsyncBuildsResource(AsyncResource):
             This endpoint is deprecated in the Bitbucket Data Center API.
         """
         return await self._post(
-            ADD_BUILD_STATUS.path.format(commitId=commit_id),
+            ADD_BUILD_STATUS.path.replace("{commitId}", str(commit_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4557,7 +4827,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestInsightAnnotationsResponse:
         """Get Code Insights annotations for a commit"""
         return await self._get(
-            GET_ANNOTATIONS_1.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_ANNOTATIONS_1.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             params={"severity": severity, "path": path, "externalId": external_id, "type": type_, "key": key},
             model=RestInsightAnnotationsResponse,
         )
@@ -4573,7 +4845,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> AsyncPageIterator[RestInsightReport]:
         """Get all Code Insights reports for a commit"""
         return self._get_paged(
-            GET_REPORTS.path.format(projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug),
+            GET_REPORTS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestInsightReport,
             start=start,
             limit=limit,
@@ -4588,9 +4862,10 @@ class AsyncBuildsResource(AsyncResource):
     ) -> None:
         """Delete a Code Insights report"""
         return await self._delete(
-            DELETE_A_CODE_INSIGHTS_REPORT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            DELETE_A_CODE_INSIGHTS_REPORT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
         )
 
     async def get_a_code_insights_report(
@@ -4602,9 +4877,10 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestInsightReport:
         """Get a Code Insights report"""
         return await self._get(
-            GET_A_CODE_INSIGHTS_REPORT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            GET_A_CODE_INSIGHTS_REPORT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             model=RestInsightReport,
         )
 
@@ -4618,9 +4894,10 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestInsightReport:
         """Create a Code Insights report"""
         return await self._put(
-            SET_A_CODE_INSIGHTS_REPORT.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            SET_A_CODE_INSIGHTS_REPORT.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestInsightReport,
         )
@@ -4636,9 +4913,10 @@ class AsyncBuildsResource(AsyncResource):
     ) -> None:
         """Delete Code Insights annotations"""
         return await self._delete(
-            DELETE_ANNOTATIONS.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            DELETE_ANNOTATIONS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             params={"externalId": external_id},
         )
 
@@ -4651,9 +4929,10 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestInsightAnnotationsResponse:
         """Get Code Insights annotations for a report"""
         return await self._get(
-            GET_ANNOTATIONS.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            GET_ANNOTATIONS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             model=RestInsightAnnotationsResponse,
         )
 
@@ -4667,9 +4946,10 @@ class AsyncBuildsResource(AsyncResource):
     ) -> None:
         """Add Code Insights annotations"""
         return await self._post(
-            ADD_ANNOTATIONS.path.format(
-                projectKey=project_key, commitId=commit_id, repositorySlug=repository_slug, key=key
-            ),
+            ADD_ANNOTATIONS.path.replace("{projectKey}", str(project_key))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4684,13 +4964,11 @@ class AsyncBuildsResource(AsyncResource):
     ) -> None:
         """Create or replace a Code Insights annotation"""
         return await self._put(
-            SET_ANNOTATION.path.format(
-                projectKey=project_key,
-                externalId=external_id,
-                commitId=commit_id,
-                repositorySlug=repository_slug,
-                key=key,
-            ),
+            SET_ANNOTATION.path.replace("{projectKey}", str(project_key))
+            .replace("{externalId}", str(external_id))
+            .replace("{commitId}", str(commit_id))
+            .replace("{repositorySlug}", str(repository_slug))
+            .replace("{key}", str(key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -4702,7 +4980,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestRequiredBuildCondition:
         """Create a required builds merge check"""
         return await self._post(
-            CREATE_REQUIRED_BUILDS_MERGE_CHECK.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_REQUIRED_BUILDS_MERGE_CHECK.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRequiredBuildCondition,
         )
@@ -4710,9 +4990,9 @@ class AsyncBuildsResource(AsyncResource):
     async def delete_required_builds_merge_check(self, project_key: str, id: int, repository_slug: str) -> None:
         """Delete a required builds merge check"""
         return await self._delete(
-            DELETE_REQUIRED_BUILDS_MERGE_CHECK.path.format(
-                projectKey=project_key, id=id, repositorySlug=repository_slug
-            ),
+            DELETE_REQUIRED_BUILDS_MERGE_CHECK.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def update_required_builds_merge_check(
@@ -4724,9 +5004,9 @@ class AsyncBuildsResource(AsyncResource):
     ) -> RestRequiredBuildCondition:
         """Update a required builds merge check"""
         return await self._put(
-            UPDATE_REQUIRED_BUILDS_MERGE_CHECK.path.format(
-                projectKey=project_key, id=id, repositorySlug=repository_slug
-            ),
+            UPDATE_REQUIRED_BUILDS_MERGE_CHECK.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestRequiredBuildCondition,
         )
@@ -4741,8 +5021,8 @@ class AsyncBuildsResource(AsyncResource):
     ) -> AsyncPageIterator[RestRequiredBuildCondition]:
         """Get required builds merge checks"""
         return self._get_paged(
-            GET_PAGE_OF_REQUIRED_BUILDS_MERGE_CHECKS.path.format(
-                projectKey=project_key, repositorySlug=repository_slug
+            GET_PAGE_OF_REQUIRED_BUILDS_MERGE_CHECKS.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
             ),
             model=RestRequiredBuildCondition,
             start=start,
@@ -5062,14 +5342,18 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> None:
         """Revoke all repository permissions for users and groups"""
         return await self._delete(
-            REVOKE_PERMISSIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            REVOKE_PERMISSIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"user": user, "group": group},
         )
 
     async def revoke_permissions_for_group_2(self, project_key: str, repository_slug: str, *, name: str) -> None:
         """Revoke group repository permission"""
         return await self._delete(
-            REVOKE_PERMISSIONS_FOR_GROUP_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            REVOKE_PERMISSIONS_FOR_GROUP_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name},
         )
 
@@ -5084,7 +5368,9 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPermittedGroup]:
         """Get groups with permission to repository"""
         return self._get_paged(
-            GET_GROUPS_WITH_ANY_PERMISSION_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_GROUPS_WITH_ANY_PERMISSION_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestPermittedGroup,
             start=start,
@@ -5101,7 +5387,9 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> None:
         """Update group repository permission"""
         return await self._put(
-            SET_PERMISSION_FOR_GROUP.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_PERMISSION_FOR_GROUP.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name, "permission": permission},
         )
 
@@ -5116,7 +5404,9 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> AsyncPageIterator[RestDetailedGroup]:
         """Get groups without repository permission"""
         return self._get_paged(
-            GET_GROUPS_WITHOUT_ANY_PERMISSION_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_GROUPS_WITHOUT_ANY_PERMISSION_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestDetailedGroup,
             start=start,
@@ -5134,14 +5424,18 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> None:
         """Search repository permissions"""
         return await self._get(
-            SEARCH_PERMISSIONS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_PERMISSIONS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"permission": permission, "filterText": filter_text, "type": type_},
         )
 
     async def revoke_permissions_for_user_2(self, project_key: str, repository_slug: str, *, name: str) -> None:
         """Revoke user repository permission"""
         return await self._delete(
-            REVOKE_PERMISSIONS_FOR_USER_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            REVOKE_PERMISSIONS_FOR_USER_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name},
         )
 
@@ -5156,7 +5450,9 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> AsyncPageIterator[RestPermittedUser]:
         """Get users with permission to repository"""
         return self._get_paged(
-            GET_USERS_WITH_ANY_PERMISSION_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_USERS_WITH_ANY_PERMISSION_2.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestPermittedUser,
             start=start,
@@ -5173,7 +5469,9 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> None:
         """Update user repository permission"""
         return await self._put(
-            SET_PERMISSION_FOR_USER.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SET_PERMISSION_FOR_USER.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"name": name, "permission": permission},
         )
 
@@ -5188,7 +5486,9 @@ class AsyncPermissionsResource(AsyncResource):
     ) -> AsyncPageIterator[RestApplicationUser]:
         """Get users without repository permission"""
         return self._get_paged(
-            GET_USERS_WITHOUT_PERMISSION_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_USERS_WITHOUT_PERMISSION_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             params={"filter": filter},
             model=RestApplicationUser,
             start=start,
@@ -5209,7 +5509,7 @@ class AsyncSecurityResource(AsyncResource):
     ) -> AsyncPageIterator[RestSecretScanningAllowlistRule]:
         """Find repository secret scanning allowlist rules"""
         return self._get_paged(
-            SEARCH_2.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_2.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningAllowlistRule,
             start=start,
@@ -5224,7 +5524,9 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningAllowlistRule:
         """Create repository secret scanning allowlist rule"""
         return await self._post(
-            CREATE_ALLOWLIST_RULE_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
@@ -5232,7 +5534,9 @@ class AsyncSecurityResource(AsyncResource):
     async def delete_allowlist_rule_1(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete a repository secret scanning allowlist rule"""
         return await self._delete(
-            DELETE_ALLOWLIST_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_allowlist_rule_1(
@@ -5243,7 +5547,9 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningAllowlistRule:
         """Get a repository secret scanning allowlist rule"""
         return await self._get(
-            GET_ALLOWLIST_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSecretScanningAllowlistRule,
         )
 
@@ -5256,7 +5562,9 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningAllowlistRule:
         """Edit an existing repository secret scanning allowlist rule"""
         return await self._put(
-            EDIT_ALLOWLIST_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            EDIT_ALLOWLIST_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
@@ -5285,7 +5593,7 @@ class AsyncSecurityResource(AsyncResource):
     ) -> AsyncPageIterator[RestSecretScanningRule]:
         """Find repository secret scanning rules"""
         return self._get_paged(
-            SEARCH_3.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            SEARCH_3.path.replace("{projectKey}", str(project_key)).replace("{repositorySlug}", str(repository_slug)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningRule,
             start=start,
@@ -5300,7 +5608,9 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningRule:
         """Create repository secret scanning rule"""
         return await self._post(
-            CREATE_RULE_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            CREATE_RULE_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5308,13 +5618,17 @@ class AsyncSecurityResource(AsyncResource):
     async def delete_rule_1(self, project_key: str, id: str, repository_slug: str) -> None:
         """Delete a repository secret scanning rule"""
         return await self._delete(
-            DELETE_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            DELETE_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
         )
 
     async def get_rule_1(self, project_key: str, id: str, repository_slug: str) -> RestSecretScanningRule:
         """Get a repository secret scanning rule"""
         return await self._get(
-            GET_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            GET_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestSecretScanningRule,
         )
 
@@ -5327,7 +5641,9 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningRule:
         """Edit an existing repository secret scanning rule"""
         return await self._put(
-            EDIT_RULE_1.path.format(projectKey=project_key, id=id, repositorySlug=repository_slug),
+            EDIT_RULE_1.path.replace("{projectKey}", str(project_key))
+            .replace("{id}", str(id))
+            .replace("{repositorySlug}", str(repository_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5343,7 +5659,7 @@ class AsyncSecurityResource(AsyncResource):
     ) -> AsyncPageIterator[RestSecretScanningAllowlistRule]:
         """Find project secret scanning allowlist rules"""
         return self._get_paged(
-            SEARCH_ALLOWLIST_RULE.path.format(projectKey=project_key),
+            SEARCH_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningAllowlistRule,
             start=start,
@@ -5357,19 +5673,21 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningAllowlistRule:
         """Create project secret scanning allowlist rule"""
         return await self._post(
-            CREATE_ALLOWLIST_RULE.path.format(projectKey=project_key),
+            CREATE_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
 
     async def delete_allowlist_rule(self, project_key: str, id: str) -> None:
         """Delete a project secret scanning allowlist rule"""
-        return await self._delete(DELETE_ALLOWLIST_RULE.path.format(projectKey=project_key, id=id))
+        return await self._delete(
+            DELETE_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+        )
 
     async def get_allowlist_rule(self, project_key: str, id: str) -> RestSecretScanningAllowlistRule:
         """Get a project secret scanning allowlist rule"""
         return await self._get(
-            GET_ALLOWLIST_RULE.path.format(projectKey=project_key, id=id),
+            GET_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             model=RestSecretScanningAllowlistRule,
         )
 
@@ -5381,7 +5699,7 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningAllowlistRule:
         """Edit an existing project secret scanning allowlist rule"""
         return await self._put(
-            EDIT_ALLOWLIST_RULE.path.format(projectKey=project_key, id=id),
+            EDIT_ALLOWLIST_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningAllowlistRule,
         )
@@ -5417,7 +5735,7 @@ class AsyncSecurityResource(AsyncResource):
     ) -> AsyncPageIterator[RestSecretScanningRule]:
         """Find project secret scanning rules"""
         return self._get_paged(
-            SEARCH_1.path.format(projectKey=project_key),
+            SEARCH_1.path.replace("{projectKey}", str(project_key)),
             params={"filter": filter, "order": order},
             model=RestSecretScanningRule,
             start=start,
@@ -5427,18 +5745,21 @@ class AsyncSecurityResource(AsyncResource):
     async def create_rule(self, project_key: str, body: RestSecretScanningRuleSetRequest) -> RestSecretScanningRule:
         """Create project secret scanning rule"""
         return await self._post(
-            CREATE_RULE.path.format(projectKey=project_key),
+            CREATE_RULE.path.replace("{projectKey}", str(project_key)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
 
     async def delete_rule(self, project_key: str, id: str) -> None:
         """Delete a project secret scanning rule"""
-        return await self._delete(DELETE_RULE.path.format(projectKey=project_key, id=id))
+        return await self._delete(DELETE_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)))
 
     async def get_rule(self, project_key: str, id: str) -> RestSecretScanningRule:
         """Get a project secret scanning rule"""
-        return await self._get(GET_RULE.path.format(projectKey=project_key, id=id), model=RestSecretScanningRule)
+        return await self._get(
+            GET_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
+            model=RestSecretScanningRule,
+        )
 
     async def edit_rule(
         self,
@@ -5448,7 +5769,7 @@ class AsyncSecurityResource(AsyncResource):
     ) -> RestSecretScanningRule:
         """Edit an existing project secret scanning rule"""
         return await self._put(
-            EDIT_RULE.path.format(projectKey=project_key, id=id),
+            EDIT_RULE.path.replace("{projectKey}", str(project_key)).replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5500,16 +5821,16 @@ class AsyncSecurityResource(AsyncResource):
 
     async def delete_rule_2(self, id: str) -> None:
         """Delete a global secret scanning rule"""
-        return await self._delete(DELETE_RULE_2.path.format(id=id))
+        return await self._delete(DELETE_RULE_2.path.replace("{id}", str(id)))
 
     async def get_rule_2(self, id: str) -> RestSecretScanningRule:
         """Get a global secret scanning rule"""
-        return await self._get(GET_RULE_2.path.format(id=id), model=RestSecretScanningRule)
+        return await self._get(GET_RULE_2.path.replace("{id}", str(id)), model=RestSecretScanningRule)
 
     async def edit_rule_2(self, id: str, body: RestSecretScanningRuleSetRequest) -> RestSecretScanningRule:
         """Edit a global secret scanning rule."""
         return await self._put(
-            EDIT_RULE_2.path.format(id=id),
+            EDIT_RULE_2.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestSecretScanningRule,
         )
@@ -5528,11 +5849,11 @@ class AsyncSecurityResource(AsyncResource):
 
     async def update_certificate_revocation_list_entries(self, id: str) -> None:
         """Update X.509 CRL entries"""
-        return await self._put(UPDATE_CERTIFICATE_REVOCATION_LIST_ENTRIES.path.format(id=id))
+        return await self._put(UPDATE_CERTIFICATE_REVOCATION_LIST_ENTRIES.path.replace("{id}", str(id)))
 
     async def delete_certificate(self, id: str) -> None:
         """Delete an X.509 certificate"""
-        return await self._delete(DELETE_CERTIFICATE.path.format(id=id))
+        return await self._delete(DELETE_CERTIFICATE.path.replace("{id}", str(id)))
 
     async def get_system_signing_configuration(self) -> RestSystemSigningConfiguration:
         """Get system signing configuration"""
@@ -5573,7 +5894,7 @@ class AsyncSecurityResource(AsyncResource):
 
     async def delete_key(self, fingerprint_or_id: str) -> None:
         """Delete a GPG key"""
-        return await self._delete(DELETE_KEY.path.format(fingerprintOrId=fingerprint_or_id))
+        return await self._delete(DELETE_KEY.path.replace("{fingerprintOrId}", str(fingerprint_or_id)))
 
 
 class AsyncAdminResource(AsyncResource):
@@ -5639,16 +5960,16 @@ class AsyncAdminResource(AsyncResource):
 
     async def delete_2(self, id: int, *, force: bool | None = False) -> None:
         """Delete Mesh node"""
-        return await self._delete(DELETE_2.path.format(id=id), params={"force": force})
+        return await self._delete(DELETE_2.path.replace("{id}", str(id)), params={"force": force})
 
     async def get_registered_mesh_node_by_id(self, id: str) -> RestMeshNode:
         """Get Mesh node"""
-        return await self._get(GET_REGISTERED_MESH_NODE_BY_ID.path.format(id=id), model=RestMeshNode)
+        return await self._get(GET_REGISTERED_MESH_NODE_BY_ID.path.replace("{id}", str(id)), model=RestMeshNode)
 
     async def update_mesh_node(self, id: str, body: RestMeshNode) -> RestMeshNode:
         """Update Mesh node"""
         return await self._put(
-            UPDATE_MESH_NODE.path.format(id=id),
+            UPDATE_MESH_NODE.path.replace("{id}", str(id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestMeshNode,
         )
@@ -5659,7 +5980,7 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_support_zip(self, id: str) -> None:
         """Get support zip for node"""
-        return await self._get(GET_SUPPORT_ZIP.path.format(id=id))
+        return await self._get(GET_SUPPORT_ZIP.path.replace("{id}", str(id)))
 
     async def get_2(self) -> RestBitbucketLicense:
         """Get license details"""
@@ -5751,16 +6072,16 @@ class AsyncAdminResource(AsyncResource):
 
     async def delete_8(self, user_slug: str) -> None:
         """Delete user specific rate limit settings"""
-        return await self._delete(DELETE_8.path.format(userSlug=user_slug))
+        return await self._delete(DELETE_8.path.replace("{userSlug}", str(user_slug)))
 
     async def get_6(self, user_slug: str) -> RestUserRateLimitSettings:
         """Get user specific rate limit settings"""
-        return await self._get(GET_6.path.format(userSlug=user_slug), model=RestUserRateLimitSettings)
+        return await self._get(GET_6.path.replace("{userSlug}", str(user_slug)), model=RestUserRateLimitSettings)
 
     async def set_3(self, user_slug: str, body: RestUserRateLimitSettingsUpdateRequest) -> RestUserRateLimitSettings:
         """Set rate limit settings for user"""
         return await self._put(
-            SET_3.path.format(userSlug=user_slug),
+            SET_3.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestUserRateLimitSettings,
         )
@@ -5779,23 +6100,23 @@ class AsyncAdminResource(AsyncResource):
 
     async def delete_hook_script(self, script_id: str) -> None:
         """Delete a hook script."""
-        return await self._delete(DELETE_HOOK_SCRIPT.path.format(scriptId=script_id))
+        return await self._delete(DELETE_HOOK_SCRIPT.path.replace("{scriptId}", str(script_id)))
 
     async def get_hook_script(self, script_id: str) -> RestHookScript:
         """Get a hook script"""
-        return await self._get(GET_HOOK_SCRIPT.path.format(scriptId=script_id), model=RestHookScript)
+        return await self._get(GET_HOOK_SCRIPT.path.replace("{scriptId}", str(script_id)), model=RestHookScript)
 
     async def update_hook_script(self, script_id: str, body: ExamplePutMultipartFormData) -> RestHookScript:
         """Update a hook script"""
         return await self._put(
-            UPDATE_HOOK_SCRIPT.path.format(scriptId=script_id),
+            UPDATE_HOOK_SCRIPT.path.replace("{scriptId}", str(script_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestHookScript,
         )
 
     async def read(self, script_id: str) -> None:
         """Get hook script content"""
-        return await self._get(READ.path.format(scriptId=script_id))
+        return await self._get(READ.path.replace("{scriptId}", str(script_id)))
 
     def get_labels(self, *, prefix: str | None = None, start: int = 0, limit: int = 25) -> AsyncPageIterator[RestLabel]:
         """Get all labels"""
@@ -5803,7 +6124,7 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_label(self, label_name: str) -> RestLabel:
         """Get label"""
-        return await self._get(GET_LABEL.path.format(labelName=label_name), model=RestLabel)
+        return await self._get(GET_LABEL.path.replace("{labelName}", str(label_name)), model=RestLabel)
 
     def get_labelables(
         self,
@@ -5815,7 +6136,7 @@ class AsyncAdminResource(AsyncResource):
     ) -> AsyncPageIterator[RestLabelable]:
         """Get labelables for label"""
         return self._get_paged(
-            GET_LABELABLES.path.format(labelName=label_name),
+            GET_LABELABLES.path.replace("{labelName}", str(label_name)),
             params={"type": type_},
             model=RestLabelable,
             start=start,
@@ -5824,11 +6145,13 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_level(self, logger_name: str) -> RestLogLevel:
         """Get current log level"""
-        return await self._get(GET_LEVEL.path.format(loggerName=logger_name), model=RestLogLevel)
+        return await self._get(GET_LEVEL.path.replace("{loggerName}", str(logger_name)), model=RestLogLevel)
 
     async def set_level(self, level_name: str, logger_name: str) -> None:
         """Set log level"""
-        return await self._put(SET_LEVEL.path.format(levelName=level_name, loggerName=logger_name))
+        return await self._put(
+            SET_LEVEL.path.replace("{levelName}", str(level_name)).replace("{loggerName}", str(logger_name)),
+        )
 
     async def get_root_level(self) -> RestLogLevel:
         """Get root log level"""
@@ -5836,7 +6159,7 @@ class AsyncAdminResource(AsyncResource):
 
     async def set_root_level(self, level_name: str) -> None:
         """Set root log level"""
-        return await self._put(SET_ROOT_LEVEL.path.format(levelName=level_name))
+        return await self._put(SET_ROOT_LEVEL.path.replace("{levelName}", str(level_name)))
 
     async def start_export(self, body: RestExportRequest) -> RestJob:
         """Start export job"""
@@ -5856,11 +6179,11 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_export_job(self, job_id: str) -> RestJob:
         """Get export job details"""
-        return await self._get(GET_EXPORT_JOB.path.format(jobId=job_id), model=RestJob)
+        return await self._get(GET_EXPORT_JOB.path.replace("{jobId}", str(job_id)), model=RestJob)
 
     async def cancel_export_job(self, job_id: str) -> None:
         """Cancel export job"""
-        return await self._post(CANCEL_EXPORT_JOB.path.format(jobId=job_id))
+        return await self._post(CANCEL_EXPORT_JOB.path.replace("{jobId}", str(job_id)))
 
     def get_export_job_messages(
         self,
@@ -5873,7 +6196,7 @@ class AsyncAdminResource(AsyncResource):
     ) -> AsyncPageIterator[RestJobMessage]:
         """Get job messages"""
         return self._get_paged(
-            GET_EXPORT_JOB_MESSAGES.path.format(jobId=job_id),
+            GET_EXPORT_JOB_MESSAGES.path.replace("{jobId}", str(job_id)),
             params={"severity": severity, "subject": subject},
             model=RestJobMessage,
             start=start,
@@ -5890,11 +6213,11 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_import_job(self, job_id: str) -> RestJob:
         """Get import job status"""
-        return await self._get(GET_IMPORT_JOB.path.format(jobId=job_id), model=RestJob)
+        return await self._get(GET_IMPORT_JOB.path.replace("{jobId}", str(job_id)), model=RestJob)
 
     async def cancel_import_job(self, job_id: str) -> None:
         """Cancel import job"""
-        return await self._post(CANCEL_IMPORT_JOB.path.format(jobId=job_id))
+        return await self._post(CANCEL_IMPORT_JOB.path.replace("{jobId}", str(job_id)))
 
     def get_import_job_messages(
         self,
@@ -5907,7 +6230,7 @@ class AsyncAdminResource(AsyncResource):
     ) -> AsyncPageIterator[RestJobMessage]:
         """Get import job messages"""
         return self._get_paged(
-            GET_IMPORT_JOB_MESSAGES.path.format(jobId=job_id),
+            GET_IMPORT_JOB_MESSAGES.path.replace("{jobId}", str(job_id)),
             params={"severity": severity, "subject": subject},
             model=RestJobMessage,
             start=start,
@@ -5972,11 +6295,11 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_mesh_migration_job(self, job_id: str) -> None:
         """Get Mesh migration job details"""
-        return await self._get(GET_MESH_MIGRATION_JOB.path.format(jobId=job_id))
+        return await self._get(GET_MESH_MIGRATION_JOB.path.replace("{jobId}", str(job_id)))
 
     async def cancel_mesh_migration_job(self, job_id: str) -> None:
         """Cancel Mesh migration job"""
-        return await self._post(CANCEL_MESH_MIGRATION_JOB.path.format(jobId=job_id))
+        return await self._post(CANCEL_MESH_MIGRATION_JOB.path.replace("{jobId}", str(job_id)))
 
     def get_mesh_migration_job_messages(
         self,
@@ -5989,7 +6312,7 @@ class AsyncAdminResource(AsyncResource):
     ) -> AsyncPageIterator[RestJobMessage]:
         """Get Mesh migration job messages"""
         return self._get_paged(
-            GET_MESH_MIGRATION_JOB_MESSAGES.path.format(jobId=job_id),
+            GET_MESH_MIGRATION_JOB_MESSAGES.path.replace("{jobId}", str(job_id)),
             params={"severity": severity, "subject": subject},
             model=RestJobMessage,
             start=start,
@@ -5998,7 +6321,10 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_mesh_migration_job_summary(self, job_id: str) -> RestMeshMigrationSummary:
         """Get Mesh migration job summary"""
-        return await self._get(GET_MESH_MIGRATION_JOB_SUMMARY.path.format(jobId=job_id), model=RestMeshMigrationSummary)
+        return await self._get(
+            GET_MESH_MIGRATION_JOB_SUMMARY.path.replace("{jobId}", str(job_id)),
+            model=RestMeshMigrationSummary,
+        )
 
     async def get_users_2(
         self,
@@ -6029,27 +6355,27 @@ class AsyncAdminResource(AsyncResource):
 
     async def get_user(self, user_slug: str) -> RestApplicationUser:
         """Get user"""
-        return await self._get(GET_USER.path.format(userSlug=user_slug), model=RestApplicationUser)
+        return await self._get(GET_USER.path.replace("{userSlug}", str(user_slug)), model=RestApplicationUser)
 
     async def delete_avatar(self, user_slug: str) -> RestNamedLink:
         """Delete user avatar"""
-        return await self._delete(DELETE_AVATAR.path.format(userSlug=user_slug), model=RestNamedLink)
+        return await self._delete(DELETE_AVATAR.path.replace("{userSlug}", str(user_slug)), model=RestNamedLink)
 
     async def upload_avatar_1(self, user_slug: str, body: ExampleAvatarMultipartFormData) -> None:
         """Update user avatar"""
         return await self._post(
-            UPLOAD_AVATAR_1.path.format(userSlug=user_slug),
+            UPLOAD_AVATAR_1.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
     async def get_user_settings(self, user_slug: str) -> ExampleSettingsMap:
         """Get user settings"""
-        return await self._get(GET_USER_SETTINGS.path.format(userSlug=user_slug), model=ExampleSettingsMap)
+        return await self._get(GET_USER_SETTINGS.path.replace("{userSlug}", str(user_slug)), model=ExampleSettingsMap)
 
     async def update_settings(self, user_slug: str, body: ExampleSettingsMap) -> None:
         """Update user settings"""
         return await self._post(
-            UPDATE_SETTINGS.path.format(userSlug=user_slug),
+            UPDATE_SETTINGS.path.replace("{userSlug}", str(user_slug)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -6174,7 +6500,7 @@ class AsyncMirroringResource(AsyncResource):
     async def get_mirrored_repository(self, external_repository_id: str) -> RestMirroredRepository:
         """Get clone URLs"""
         return await self._get(
-            GET_MIRRORED_REPOSITORY.path.format(externalRepositoryId=external_repository_id),
+            GET_MIRRORED_REPOSITORY.path.replace("{externalRepositoryId}", str(external_repository_id)),
             model=RestMirroredRepository,
         )
 
@@ -6184,16 +6510,16 @@ class AsyncMirroringResource(AsyncResource):
 
     async def remove(self, mirror_id: str) -> None:
         """Delete mirror by ID"""
-        return await self._delete(REMOVE.path.format(mirrorId=mirror_id))
+        return await self._delete(REMOVE.path.replace("{mirrorId}", str(mirror_id)))
 
     async def get_mirror(self, mirror_id: str) -> RestMirrorServer:
         """Get mirror by ID"""
-        return await self._get(GET_MIRROR.path.format(mirrorId=mirror_id), model=RestMirrorServer)
+        return await self._get(GET_MIRROR.path.replace("{mirrorId}", str(mirror_id)), model=RestMirrorServer)
 
     async def upgrade(self, mirror_id: str, body: RestMirrorUpgradeRequest) -> RestMirrorServer:
         """Upgrade mirror server"""
         return await self._put(
-            UPGRADE.path.format(mirrorId=mirror_id),
+            UPGRADE.path.replace("{mirrorId}", str(mirror_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
             model=RestMirrorServer,
         )
@@ -6201,7 +6527,7 @@ class AsyncMirroringResource(AsyncResource):
     async def publish_event(self, mirror_id: str, body: RestRepositoryMirrorEvent) -> None:
         """Publish RepositoryMirrorEvent"""
         return await self._post(
-            PUBLISH_EVENT.path.format(mirrorId=mirror_id),
+            PUBLISH_EVENT.path.replace("{mirrorId}", str(mirror_id)),
             json=body.model_dump(by_alias=True, exclude_none=True),
         )
 
@@ -6211,7 +6537,7 @@ class AsyncMirroringResource(AsyncResource):
 
     async def get_project_by_id(self, project_id: str) -> RestProject:
         """Get project"""
-        return await self._get(GET_PROJECT_BY_ID.path.format(projectId=project_id), model=RestProject)
+        return await self._get(GET_PROJECT_BY_ID.path.replace("{projectId}", str(project_id)), model=RestProject)
 
     def get_all_repos_for_project(
         self,
@@ -6223,7 +6549,7 @@ class AsyncMirroringResource(AsyncResource):
     ) -> AsyncPageIterator[EnrichedRepository]:
         """Get hashes for repositories in project"""
         return self._get_paged(
-            GET_ALL_REPOS_FOR_PROJECT.path.format(projectId=project_id),
+            GET_ALL_REPOS_FOR_PROJECT.path.replace("{projectId}", str(project_id)),
             params={"includeDefaultBranch": include_default_branch},
             model=EnrichedRepository,
             start=start,
@@ -6246,7 +6572,7 @@ class AsyncMirroringResource(AsyncResource):
     ) -> EnrichedRepository:
         """Get content hash for a repository"""
         return await self._get(
-            GET_CONTENT_HASH_BY_ID.path.format(repoId=repo_id),
+            GET_CONTENT_HASH_BY_ID.path.replace("{repoId}", str(repo_id)),
             params={"includeDefaultBranch": include_default_branch},
             model=EnrichedRepository,
         )
@@ -6259,7 +6585,7 @@ class AsyncMirroringResource(AsyncResource):
     ) -> RestMirroredRepositoryDescriptor:
         """Get mirrors for repository"""
         return await self._get(
-            GET_REPOSITORY_MIRRORS.path.format(repoId=repo_id),
+            GET_REPOSITORY_MIRRORS.path.replace("{repoId}", str(repo_id)),
             params={"preAuthorized": pre_authorized},
             model=RestMirroredRepositoryDescriptor,
         )
@@ -6290,22 +6616,30 @@ class AsyncMirroringResource(AsyncResource):
 
     async def delete_mirroring_request(self, mirroring_request_id: str) -> None:
         """Delete a mirroring request"""
-        return await self._delete(DELETE_MIRRORING_REQUEST.path.format(mirroringRequestId=mirroring_request_id))
+        return await self._delete(
+            DELETE_MIRRORING_REQUEST.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
+        )
 
     async def get_mirroring_request(self, mirroring_request_id: str) -> RestMirroringRequest:
         """Get a mirroring request"""
         return await self._get(
-            GET_MIRRORING_REQUEST.path.format(mirroringRequestId=mirroring_request_id),
+            GET_MIRRORING_REQUEST.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
             model=RestMirroringRequest,
         )
 
     async def accept(self, mirroring_request_id: str) -> RestMirrorServer:
         """Accept a mirroring request"""
-        return await self._post(ACCEPT.path.format(mirroringRequestId=mirroring_request_id), model=RestMirrorServer)
+        return await self._post(
+            ACCEPT.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
+            model=RestMirrorServer,
+        )
 
     async def reject(self, mirroring_request_id: str) -> RestMirrorServer:
         """Reject a mirroring request"""
-        return await self._post(REJECT.path.format(mirroringRequestId=mirroring_request_id), model=RestMirrorServer)
+        return await self._post(
+            REJECT.path.replace("{mirroringRequestId}", str(mirroring_request_id)),
+            model=RestMirrorServer,
+        )
 
     async def get_out_of_sync_repositories(self) -> None:
         """Get out-of-sync repositories"""
@@ -6314,7 +6648,9 @@ class AsyncMirroringResource(AsyncResource):
     async def get_repository_lock_owner(self, project_key: str, repository_slug: str) -> RestRepositoryLockOwner:
         """Get the repository lock owner for the syncing process"""
         return await self._get(
-            GET_REPOSITORY_LOCK_OWNER.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPOSITORY_LOCK_OWNER.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestRepositoryLockOwner,
         )
 
@@ -6325,7 +6661,9 @@ class AsyncMirroringResource(AsyncResource):
     ) -> RestMirrorRepositorySynchronizationStatus:
         """Gets information about the mirrored repository"""
         return await self._get(
-            GET_REPO_SYNC_STATUS_1.path.format(projectKey=project_key, repositorySlug=repository_slug),
+            GET_REPO_SYNC_STATUS_1.path.replace("{projectKey}", str(project_key)).replace(
+                "{repositorySlug}", str(repository_slug)
+            ),
             model=RestMirrorRepositorySynchronizationStatus,
         )
 
@@ -6385,11 +6723,11 @@ class AsyncMirroringResource(AsyncResource):
 
     async def stop_mirroring_project(self, project_id: str) -> None:
         """Stop mirroring project"""
-        return await self._delete(STOP_MIRRORING_PROJECT.path.format(projectId=project_id))
+        return await self._delete(STOP_MIRRORING_PROJECT.path.replace("{projectId}", str(project_id)))
 
     async def start_mirroring_project(self, project_id: str) -> None:
         """Add project to be mirrored"""
-        return await self._post(START_MIRRORING_PROJECT.path.format(projectId=project_id))
+        return await self._post(START_MIRRORING_PROJECT.path.replace("{projectId}", str(project_id)))
 
     async def get_upstream_server(self) -> RestUpstreamServer:
         """Get upstream server"""
@@ -6408,7 +6746,7 @@ class AsyncJiraIntegrationResource(AsyncResource):
     async def create_issue(self, comment_id: str, *, application_id: str | None = None) -> RestCommentJiraIssue:
         """Create Jira Issue"""
         return await self._post(
-            CREATE_ISSUE.path.format(commentId=comment_id),
+            CREATE_ISSUE.path.replace("{commentId}", str(comment_id)),
             params={"applicationId": application_id},
             model=RestCommentJiraIssue,
         )
@@ -6423,7 +6761,7 @@ class AsyncJiraIntegrationResource(AsyncResource):
     ) -> AsyncPageIterator[RestChangeset]:
         """Get changesets for issue key"""
         return self._get_paged(
-            GET_COMMITS_BY_ISSUE_KEY.path.format(issueKey=issue_key),
+            GET_COMMITS_BY_ISSUE_KEY.path.replace("{issueKey}", str(issue_key)),
             params={"maxChanges": max_changes},
             model=RestChangeset,
             start=start,
@@ -6433,7 +6771,7 @@ class AsyncJiraIntegrationResource(AsyncResource):
     async def get_enhanced_entity_link_for_project(self, project_key: str) -> RestEnhancedEntityLink:
         """Get entity link"""
         return await self._get(
-            GET_ENHANCED_ENTITY_LINK_FOR_PROJECT.path.format(projectKey=project_key),
+            GET_ENHANCED_ENTITY_LINK_FOR_PROJECT.path.replace("{projectKey}", str(project_key)),
             model=RestEnhancedEntityLink,
         )
 
@@ -6445,9 +6783,9 @@ class AsyncJiraIntegrationResource(AsyncResource):
     ) -> RestJiraIssue:
         """Get issues for a pull request"""
         return await self._get(
-            GET_ISSUE_KEYS_FOR_PULL_REQUEST.path.format(
-                projectKey=project_key, pullRequestId=pull_request_id, repositorySlug=repository_slug
-            ),
+            GET_ISSUE_KEYS_FOR_PULL_REQUEST.path.replace("{projectKey}", str(project_key))
+            .replace("{pullRequestId}", str(pull_request_id))
+            .replace("{repositorySlug}", str(repository_slug)),
             model=RestJiraIssue,
         )
 

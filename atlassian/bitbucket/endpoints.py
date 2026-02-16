@@ -73,7 +73,9 @@ UPDATE_WEBHOOK = Endpoint("PUT", "/api/latest/projects/{projectKey}/webhooks/{we
 GET_LATEST_INVOCATION = Endpoint("GET", "/api/latest/projects/{projectKey}/webhooks/{webhookId}/latest", "Get last ...")
 GET_STATISTICS = Endpoint("GET", "/api/latest/projects/{projectKey}/webhooks/{webhookId}/statistics", "Get webhook ...")
 GET_STATISTICS_SUMMARY = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/webhooks/{webhookId}/statistics/summary", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/webhooks/{webhookId}/statistics/summary",
+    "",
 )
 GET_RESTRICTIONS = Endpoint("GET", "/branch-permissions/latest/projects/{projectKey}/restrictions", "Search for ref...")
 CREATE_RESTRICTIONS = Endpoint("POST", "/branch-permissions/latest/projects/{projectKey}/restrictions", "Create mul...")
@@ -90,19 +92,29 @@ UPDATE_DEFAULT_TASK = Endpoint("PUT", "/default-tasks/latest/projects/{projectKe
 GET_REPOSITORIES_RECENTLY_ACCESSED = Endpoint("GET", "/api/latest/profile/recent/repos", "Get recently accessed rep...")
 GET_ARCHIVE = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/archive", "Stream archive o...")
 DELETE_ATTACHMENT = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}",
+    "",
 )
 GET_ATTACHMENT = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}",
+    "",
 )
 DELETE_ATTACHMENT_METADATA = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata",
+    "",
 )
 GET_ATTACHMENT_METADATA = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata",
+    "",
 )
 SAVE_ATTACHMENT_METADATA = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/attachments/{attachmentId}/metadata",
+    "",
 )
 GET_BRANCHES = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/branches", "Find branches")
 CREATE_BRANCH_FOR_REPOSITORY = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/branches", "")
@@ -116,35 +128,53 @@ GET_COMMITS = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{reposito
 GET_COMMIT = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}", "Get co...")
 GET_CHANGES = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/changes", "")
 GET_COMMENTS = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments",
+    "",
 )
 CREATE_COMMENT = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments",
+    "",
 )
 DELETE_COMMENT = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}",
+    "",
 )
 GET_COMMENT = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}",
+    "",
 )
 UPDATE_COMMENT = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/comments/{commentId}",
+    "",
 )
 GET_DIFF_STATS_SUMMARY = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff-stats-summary/{path}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff-stats-summary/{path}",
+    "",
 )
 STREAM_DIFF = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff/{path}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/diff/{path}",
+    "",
 )
 GET_MERGE_BASE = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/merge-base", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/merge-base",
+    "",
 )
 UNWATCH = Endpoint("DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/watch", "Sto")
 WATCH = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/watch", "Watc...")
 STREAM_CHANGES = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/compare/changes", "Compa...")
 STREAM_COMMITS = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/compare/commits", "Get a...")
 GET_DIFF_STATS_SUMMARY_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/compare/diff-stats-summary{path}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/compare/diff-stats-summary{path}",
+    "",
 )
 STREAM_DIFF_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/compare/diff{path}", "Get...")
 STREAM_RAW_DIFF = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/diff", "Get raw diff fo...")
@@ -153,10 +183,14 @@ STREAM_FILES = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{reposit
 STREAM_FILES_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/files/{path}", "Get file...")
 GET_CONFIGURATIONS_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/hook-scripts", "Ge...")
 REMOVE_CONFIGURATION_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/hook-scripts/{scriptId}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/hook-scripts/{scriptId}",
+    "",
 )
 SET_CONFIGURATION_1 = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/hook-scripts/{scriptId}", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/hook-scripts/{scriptId}",
+    "",
 )
 GET_ALL_LABELS_FOR_REPOSITORY = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/labels", "Ge")
 ADD_LABEL = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/labels", "Add repository label")
@@ -166,47 +200,73 @@ STREAM_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositoryS
 STREAM_PATCH = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/patch", "Get patch content...")
 STREAM_RAW = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/raw/{path}", "Get raw conten...")
 GET_REF_CHANGE_ACTIVITY = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/ref-change-activities", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/ref-change-activities",
+    "",
 )
 FIND_BRANCHES = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/ref-change-activities/branches", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/ref-change-activities/branches",
+    "",
 )
 DELETE_AUTO_DECLINE_SETTINGS_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline",
+    "",
 )
 GET_AUTO_DECLINE_SETTINGS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline",
+    "",
 )
 SET_AUTO_DECLINE_SETTINGS_1 = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-decline",
+    "",
 )
 DELETE_5 = Endpoint("DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-merge", "Dele...")
 GET_5 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-merge", "Get pull r...")
 SET_1 = Endpoint("PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/auto-merge", "Create or ...")
 GET_REPOSITORY_HOOKS_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks", "G")
 DELETE_REPOSITORY_HOOK = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}",
+    "",
 )
 GET_REPOSITORY_HOOK_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}",
+    "",
 )
 DISABLE_HOOK_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/enabled", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/enabled",
+    "",
 )
 ENABLE_HOOK_1 = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/enabled", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/enabled",
+    "",
 )
 GET_SETTINGS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/settings", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/settings",
+    "",
 )
 SET_SETTINGS_1 = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/settings", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/hooks/{hookKey}/settings",
+    "",
 )
 GET_PULL_REQUEST_SETTINGS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/pull-requests", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/pull-requests",
+    "",
 )
 UPDATE_PULL_REQUEST_SETTINGS_1 = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/pull-requests", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/pull-requests",
+    "",
 )
 GET_TAGS = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/tags", "Find tag")
 CREATE_TAG_FOR_REPOSITORY = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/tags", "Crea...")
@@ -218,36 +278,54 @@ CREATE_WEBHOOK_1 = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{re
 SEARCH_WEBHOOKS = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/search", "Sear...")
 TEST_WEBHOOK_1 = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/test", "Test w...")
 DELETE_WEBHOOK_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}",
+    "",
 )
 GET_WEBHOOK_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}", "G...")
 UPDATE_WEBHOOK_1 = Endpoint("PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}", "U")
 GET_LATEST_INVOCATION_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/latest", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/latest",
+    "",
 )
 GET_STATISTICS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/statistics", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/statistics",
+    "",
 )
 GET_STATISTICS_SUMMARY_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/statistics/summary", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/webhooks/{webhookId}/statistics/summary",
+    "",
 )
 GET_REPOSITORIES_1 = Endpoint("GET", "/api/latest/repos", "Search for repositories")
 GET_RESTRICTIONS_1 = Endpoint(
-    "GET", "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions", ""
+    "GET",
+    "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions",
+    "",
 )
 CREATE_RESTRICTIONS_1 = Endpoint(
-    "POST", "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions", ""
+    "POST",
+    "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions",
+    "",
 )
 DELETE_RESTRICTION_1 = Endpoint(
-    "DELETE", "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions/{id}", ""
+    "DELETE",
+    "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions/{id}",
+    "",
 )
 GET_RESTRICTION_1 = Endpoint(
-    "GET", "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions/{id}", ""
+    "GET",
+    "/branch-permissions/latest/projects/{projectKey}/repos/{repositorySlug}/restrictions/{id}",
+    "",
 )
 DELETE_BRANCH = Endpoint("DELETE", "/branch-utils/latest/projects/{projectKey}/repos/{repositorySlug}/branches", "D...")
 CREATE_BRANCH = Endpoint("POST", "/branch-utils/latest/projects/{projectKey}/repos/{repositorySlug}/branches", "Cre...")
 FIND_BY_COMMIT = Endpoint(
-    "GET", "/branch-utils/latest/projects/{projectKey}/repos/{repositorySlug}/branches/info/{commitId}", ""
+    "GET",
+    "/branch-utils/latest/projects/{projectKey}/repos/{repositorySlug}/branches/info/{commitId}",
+    "",
 )
 UN_REACT = Endpoint(
     "DELETE",
@@ -260,15 +338,21 @@ REACT = Endpoint(
     "",
 )
 DELETE_ALL_DEFAULT_TASKS_1 = Endpoint(
-    "DELETE", "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks", ""
+    "DELETE",
+    "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks",
+    "",
 )
 GET_DEFAULT_TASKS_1 = Endpoint("GET", "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks", "Get")
 ADD_DEFAULT_TASK_1 = Endpoint("POST", "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks", "Add")
 DELETE_DEFAULT_TASK_1 = Endpoint(
-    "DELETE", "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks/{taskId}", ""
+    "DELETE",
+    "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks/{taskId}",
+    "",
 )
 UPDATE_DEFAULT_TASK_1 = Endpoint(
-    "PUT", "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks/{taskId}", ""
+    "PUT",
+    "/default-tasks/latest/projects/{projectKey}/repos/{repositorySlug}/tasks/{taskId}",
+    "",
 )
 CREATE_TAG = Endpoint("POST", "/git/latest/projects/{projectKey}/repos/{repositorySlug}/tags", "Create tag")
 DELETE_TAG = Endpoint("DELETE", "/git/latest/projects/{projectKey}/repos/{repositorySlug}/tags/{name}", "Delete tag")
@@ -281,42 +365,64 @@ SYNCHRONIZE = Endpoint("POST", "/sync/latest/projects/{projectKey}/repos/{reposi
 GET_MERGE_CONFIG = Endpoint("GET", "/api/latest/admin/pull-requests/{scmId}", "Get merge strategies")
 SET_MERGE_CONFIG = Endpoint("POST", "/api/latest/admin/pull-requests/{scmId}", "Update merge strategies")
 GET_PULL_REQUESTS = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/pull-requests", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/pull-requests",
+    "",
 )
 SEARCH = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/participants", "Search pull requ...")
 GET_PAGE = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests", "Get pull requ...")
 CREATE = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests", "Create pull re...")
 DELETE_3 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}",
+    "",
 )
 GET_3 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}", "Get")
 UPDATE = Endpoint("PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}", "Up")
 STREAM_RAW_DIFF_2 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}.diff", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}.diff",
+    "",
 )
 STREAM_PATCH_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}.patch", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}.patch",
+    "",
 )
 GET_ACTIVITIES = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/activities", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/activities",
+    "",
 )
 WITHDRAW_APPROVAL = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/approve", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/approve",
+    "",
 )
 APPROVE = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/approve", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/approve",
+    "",
 )
 CANCEL_AUTO_MERGE = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/auto-merge", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/auto-merge",
+    "",
 )
 GET_AUTO_MERGE_REQUEST = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/auto-merge", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/auto-merge",
+    "",
 )
 TRY_AUTO_MERGE = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/auto-merge", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/auto-merge",
+    "",
 )
 GET_COMMENTS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/blocker-comments", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/blocker-comments",
+    "",
 )
 CREATE_COMMENT_1 = Endpoint(
     "POST",
@@ -339,13 +445,19 @@ UPDATE_COMMENT_1 = Endpoint(
     "",
 )
 STREAM_CHANGES_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/changes", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/changes",
+    "",
 )
 GET_COMMENTS_2 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments",
+    "",
 )
 CREATE_COMMENT_2 = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/comments",
+    "",
 )
 DELETE_COMMENT_2 = Endpoint(
     "DELETE",
@@ -373,10 +485,14 @@ GET_COMMIT_MESSAGE_SUGGESTION = Endpoint(
     "",
 )
 GET_COMMITS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/commits", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/commits",
+    "",
 )
 DECLINE = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/decline", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/decline",
+    "",
 )
 GET_DIFF_STATS_SUMMARY_2 = Endpoint(
     "GET",
@@ -384,25 +500,39 @@ GET_DIFF_STATS_SUMMARY_2 = Endpoint(
     "",
 )
 STREAM_DIFF_2 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff/{path}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/diff/{path}",
+    "",
 )
 CAN_MERGE = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge",
+    "",
 )
 MERGE = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge",
+    "",
 )
 GET_MERGE_BASE_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge-base", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/merge-base",
+    "",
 )
 UNASSIGN_PARTICIPANT_ROLE_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants",
+    "",
 )
 LIST_PARTICIPANTS = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants",
+    "",
 )
 ASSIGN_PARTICIPANT_ROLE = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/participants",
+    "",
 )
 UNASSIGN_PARTICIPANT_ROLE = Endpoint(
     "DELETE",
@@ -415,36 +545,56 @@ UPDATE_STATUS = Endpoint(
     "",
 )
 REOPEN = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/reopen", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/reopen",
+    "",
 )
 DISCARD_REVIEW = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review",
+    "",
 )
 GET_REVIEW = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review",
+    "",
 )
 FINISH_REVIEW = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/review",
+    "",
 )
 UNWATCH_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/watch", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/watch",
+    "",
 )
 WATCH_1 = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/watch", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/watch",
+    "",
 )
 GET_REVIEWER_GROUPS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups",
+    "",
 )
 CREATE_2 = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups", "C...")
 DELETE_7 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}",
+    "",
 )
 GET_REVIEWER_GROUP_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}",
+    "",
 )
 UPDATE_2 = Endpoint("PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}", "")
 GET_USERS = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}/users", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/settings/reviewer-groups/{id}/users",
+    "",
 )
 GET_REVIEWER_GROUPS = Endpoint("GET", "/api/latest/projects/{projectKey}/settings/reviewer-groups", "Get all review...")
 CREATE_1 = Endpoint("POST", "/api/latest/projects/{projectKey}/settings/reviewer-groups", "Create reviewer group")
@@ -466,23 +616,35 @@ DELETE_PULL_REQUEST_CONDITION = Endpoint("DELETE", "/default-reviewers/latest/pr
 UPDATE_PULL_REQUEST_CONDITION = Endpoint("PUT", "/default-reviewers/latest/projects/{projectKey}/condition/{id}", "Upd")
 GET_PULL_REQUEST_CONDITIONS = Endpoint("GET", "/default-reviewers/latest/projects/{projectKey}/conditions", "Get de...")
 CREATE_PULL_REQUEST_CONDITION_1 = Endpoint(
-    "POST", "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/condition", ""
+    "POST",
+    "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/condition",
+    "",
 )
 DELETE_PULL_REQUEST_CONDITION_1 = Endpoint(
-    "DELETE", "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}", ""
+    "DELETE",
+    "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}",
+    "",
 )
 UPDATE_PULL_REQUEST_CONDITION_1 = Endpoint(
-    "PUT", "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}", ""
+    "PUT",
+    "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}",
+    "",
 )
 GET_PULL_REQUEST_CONDITIONS_1 = Endpoint(
-    "GET", "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/conditions", ""
+    "GET",
+    "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/conditions",
+    "",
 )
 GET_REVIEWERS = Endpoint("GET", "/default-reviewers/latest/projects/{projectKey}/repos/{repositorySlug}/reviewers", "G")
 CAN_REBASE = Endpoint(
-    "GET", "/git/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/rebase", ""
+    "GET",
+    "/git/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/rebase",
+    "",
 )
 REBASE = Endpoint(
-    "POST", "/git/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/rebase", ""
+    "POST",
+    "/git/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/rebase",
+    "",
 )
 
 # --- Authentication ---
@@ -494,7 +656,9 @@ CREATE_ACCESS_TOKEN_1 = Endpoint("PUT", "/access-tokens/latest/projects/{project
 DELETE_BY_ID_1 = Endpoint("DELETE", "/access-tokens/latest/projects/{projectKey}/repos/{repositorySlug}/{tokenId}", "D")
 GET_BY_ID_1 = Endpoint("GET", "/access-tokens/latest/projects/{projectKey}/repos/{repositorySlug}/{tokenId}", "Get ...")
 UPDATE_ACCESS_TOKEN_1 = Endpoint(
-    "POST", "/access-tokens/latest/projects/{projectKey}/repos/{repositorySlug}/{tokenId}", ""
+    "POST",
+    "/access-tokens/latest/projects/{projectKey}/repos/{repositorySlug}/{tokenId}",
+    "",
 )
 DELETE_BY_ID = Endpoint("DELETE", "/access-tokens/latest/projects/{projectKey}/{tokenId}", "Delete a HTTP token")
 GET_BY_ID = Endpoint("GET", "/access-tokens/latest/projects/{projectKey}/{tokenId}", "Get HTTP token by ID")
@@ -520,7 +684,9 @@ ADD_FOR_REPOSITORY = Endpoint("POST", "/keys/latest/projects/{projectKey}/repos/
 REVOKE_FOR_REPOSITORY = Endpoint("DELETE", "/keys/latest/projects/{projectKey}/repos/{repositorySlug}/ssh/{keyId}", "R")
 GET_FOR_REPOSITORY = Endpoint("GET", "/keys/latest/projects/{projectKey}/repos/{repositorySlug}/ssh/{keyId}", "Get ...")
 UPDATE_PERMISSION_1 = Endpoint(
-    "PUT", "/keys/latest/projects/{projectKey}/repos/{repositorySlug}/ssh/{keyId}/permission/{permission}", ""
+    "PUT",
+    "/keys/latest/projects/{projectKey}/repos/{repositorySlug}/ssh/{keyId}/permission/{permission}",
+    "",
 )
 GET_SSH_KEYS_FOR_PROJECT = Endpoint("GET", "/keys/latest/projects/{projectKey}/ssh", "Get SSH key")
 ADD_FOR_PROJECT = Endpoint("POST", "/keys/latest/projects/{projectKey}/ssh", "Add project SSH key")
@@ -562,34 +728,50 @@ GET_CAPABILITIES = Endpoint("GET", "/api/latest/build/capabilities", "Get build 
 GET_CAPABILITIES_1 = Endpoint("GET", "/api/latest/deployment/capabilities", "Get deployment capabilities")
 DELETE = Endpoint("DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/builds", "Del")
 GET_COMMITS_BUILDS = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/builds", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/builds",
+    "",
 )
 ADD = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/builds", "Store...")
 DELETE_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments",
+    "",
 )
 GET_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments", "Ge")
 CREATE_OR_UPDATE_DEPLOYMENT = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/deployments",
+    "",
 )
 GET_MULTIPLE_BUILD_STATUS_STATS = Endpoint("POST", "/build-status/latest/commits/stats", "Get build status statisti...")
 GET_BUILD_STATUS_STATS = Endpoint("GET", "/build-status/latest/commits/stats/{commitId}", "Get build status statist...")
 GET_BUILD_STATUS = Endpoint("GET", "/build-status/latest/commits/{commitId}", "Get build statuses for commit")
 ADD_BUILD_STATUS = Endpoint("POST", "/build-status/latest/commits/{commitId}", "Create build status for commit")
 GET_ANNOTATIONS_1 = Endpoint(
-    "GET", "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/annotations", ""
+    "GET",
+    "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/annotations",
+    "",
 )
 GET_REPORTS = Endpoint(
-    "GET", "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports", ""
+    "GET",
+    "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports",
+    "",
 )
 DELETE_A_CODE_INSIGHTS_REPORT = Endpoint(
-    "DELETE", "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports/{key}", ""
+    "DELETE",
+    "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports/{key}",
+    "",
 )
 GET_A_CODE_INSIGHTS_REPORT = Endpoint(
-    "GET", "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports/{key}", ""
+    "GET",
+    "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports/{key}",
+    "",
 )
 SET_A_CODE_INSIGHTS_REPORT = Endpoint(
-    "PUT", "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports/{key}", ""
+    "PUT",
+    "/insights/latest/projects/{projectKey}/repos/{repositorySlug}/commits/{commitId}/reports/{key}",
+    "",
 )
 DELETE_ANNOTATIONS = Endpoint(
     "DELETE",
@@ -612,16 +794,24 @@ SET_ANNOTATION = Endpoint(
     "",
 )
 CREATE_REQUIRED_BUILDS_MERGE_CHECK = Endpoint(
-    "POST", "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/condition", ""
+    "POST",
+    "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/condition",
+    "",
 )
 DELETE_REQUIRED_BUILDS_MERGE_CHECK = Endpoint(
-    "DELETE", "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}", ""
+    "DELETE",
+    "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}",
+    "",
 )
 UPDATE_REQUIRED_BUILDS_MERGE_CHECK = Endpoint(
-    "PUT", "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}", ""
+    "PUT",
+    "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/condition/{id}",
+    "",
 )
 GET_PAGE_OF_REQUIRED_BUILDS_MERGE_CHECKS = Endpoint(
-    "GET", "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/conditions", ""
+    "GET",
+    "/required-builds/latest/projects/{projectKey}/repos/{repositorySlug}/conditions",
+    "",
 )
 
 # --- Permissions ---
@@ -660,57 +850,87 @@ RENAME_USER = Endpoint("POST", "/api/latest/admin/users/rename", "Rename user")
 GET_GROUPS = Endpoint("GET", "/api/latest/groups", "Get group names")
 REVOKE_PERMISSIONS_1 = Endpoint("DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions", "Rev")
 REVOKE_PERMISSIONS_FOR_GROUP_2 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups",
+    "",
 )
 GET_GROUPS_WITH_ANY_PERMISSION_2 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups",
+    "",
 )
 SET_PERMISSION_FOR_GROUP = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups",
+    "",
 )
 GET_GROUPS_WITHOUT_ANY_PERMISSION_2 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups/none", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/groups/none",
+    "",
 )
 SEARCH_PERMISSIONS_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/search", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/search",
+    "",
 )
 REVOKE_PERMISSIONS_FOR_USER_2 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users",
+    "",
 )
 GET_USERS_WITH_ANY_PERMISSION_2 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users",
+    "",
 )
 SET_PERMISSION_FOR_USER = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users",
+    "",
 )
 GET_USERS_WITHOUT_PERMISSION_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users/none", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/permissions/users/none",
+    "",
 )
 
 # --- Security ---
 
 SEARCH_2 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist", "F...")
 CREATE_ALLOWLIST_RULE_1 = Endpoint(
-    "POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist", ""
+    "POST",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist",
+    "",
 )
 DELETE_ALLOWLIST_RULE_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist/{id}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist/{id}",
+    "",
 )
 GET_ALLOWLIST_RULE_1 = Endpoint(
-    "GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist/{id}", ""
+    "GET",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist/{id}",
+    "",
 )
 EDIT_ALLOWLIST_RULE_1 = Endpoint(
-    "PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist/{id}", ""
+    "PUT",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/allowlist/{id}",
+    "",
 )
 DELETE_EXEMPT_REPO = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/exempt", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/exempt",
+    "",
 )
 IS_REPO_EXEMPT = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/exempt", "G")
 ADD_EXEMPT_REPO = Endpoint("PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/exempt", "")
 SEARCH_3 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/rules", "Find ...")
 CREATE_RULE_1 = Endpoint("POST", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/rules", "Cr")
 DELETE_RULE_1 = Endpoint(
-    "DELETE", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/rules/{id}", ""
+    "DELETE",
+    "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/rules/{id}",
+    "",
 )
 GET_RULE_1 = Endpoint("GET", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/rules/{id}", "G")
 EDIT_RULE_1 = Endpoint("PUT", "/api/latest/projects/{projectKey}/repos/{repositorySlug}/secret-scanning/rules/{id}", "")
@@ -821,7 +1041,9 @@ UPLOAD_AVATAR_1 = Endpoint("POST", "/api/latest/users/{userSlug}/avatar.png", "U
 GET_USER_SETTINGS = Endpoint("GET", "/api/latest/users/{userSlug}/settings", "Get user settings")
 UPDATE_SETTINGS = Endpoint("POST", "/api/latest/users/{userSlug}/settings", "Update user settings")
 DISMISS_RETENTION_CONFIG_REVIEW_NOTIFICATION = Endpoint(
-    "DELETE", "/audit/latest/notification-settings/retention-config-review", ""
+    "DELETE",
+    "/audit/latest/notification-settings/retention-config-review",
+    "",
 )
 GET_REPOSITORY_ARCHIVE_POLICY = Endpoint("GET", "/policies/latest/admin/repos/archive", "Get repository archive policy")
 SET_REPOSITORY_ARCHIVE_POLICY = Endpoint("PUT", "/policies/latest/admin/repos/archive", "Update repository archive ...")
@@ -863,10 +1085,14 @@ ACCEPT = Endpoint("POST", "/mirroring/latest/requests/{mirroringRequestId}/accep
 REJECT = Endpoint("POST", "/mirroring/latest/requests/{mirroringRequestId}/reject", "Reject a mirroring request")
 GET_OUT_OF_SYNC_REPOSITORIES = Endpoint("GET", "/mirroring/latest/supportInfo/out-of-sync-repos/content", "Get out-...")
 GET_REPOSITORY_LOCK_OWNER = Endpoint(
-    "GET", "/mirroring/latest/supportInfo/projects/{projectKey}/repos/{repositorySlug}/repo-lock-owner", ""
+    "GET",
+    "/mirroring/latest/supportInfo/projects/{projectKey}/repos/{repositorySlug}/repo-lock-owner",
+    "",
 )
 GET_REPO_SYNC_STATUS_1 = Endpoint(
-    "GET", "/mirroring/latest/supportInfo/projects/{projectKey}/repos/{repositorySlug}/repoSyncStatus", ""
+    "GET",
+    "/mirroring/latest/supportInfo/projects/{projectKey}/repos/{repositorySlug}/repoSyncStatus",
+    "",
 )
 GET_REF_CHANGES_QUEUE = Endpoint("GET", "/mirroring/latest/supportInfo/refChangesQueue", "Get items in ref changes ...")
 GET_REF_CHANGES_QUEUE_COUNT = Endpoint("GET", "/mirroring/latest/supportInfo/refChangesQueue/count", "Get total num...")
@@ -889,10 +1115,14 @@ START_ROLLING_UPGRADE = Endpoint("POST", "/mirroring/latest/zdu/start", "Start Z
 CREATE_ISSUE = Endpoint("POST", "/jira/latest/comments/{commentId}/issues", "Create Jira Issue")
 GET_COMMITS_BY_ISSUE_KEY = Endpoint("GET", "/jira/latest/issues/{issueKey}/commits", "Get changesets for issue key")
 GET_ENHANCED_ENTITY_LINK_FOR_PROJECT = Endpoint(
-    "GET", "/jira/latest/projects/{projectKey}/primary-enhanced-entitylink", ""
+    "GET",
+    "/jira/latest/projects/{projectKey}/primary-enhanced-entitylink",
+    "",
 )
 GET_ISSUE_KEYS_FOR_PULL_REQUEST = Endpoint(
-    "GET", "/jira/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/issues", ""
+    "GET",
+    "/jira/latest/projects/{projectKey}/repos/{repositorySlug}/pull-requests/{pullRequestId}/issues",
+    "",
 )
 
 # --- Markup ---
