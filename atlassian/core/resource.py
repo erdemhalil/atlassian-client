@@ -48,11 +48,7 @@ class AsyncResource:
             page = page_model.model_validate(response.json())
             if page.is_last_page:
                 return page.values, None
-            next_start = (
-                page.next_page_start
-                if page.next_page_start is not None
-                else page.start + page.limit
-            )
+            next_start = page.next_page_start if page.next_page_start is not None else page.start + page.limit
             return page.values, next_start
 
         return AsyncPageIterator(fetch_page, start=start)
@@ -173,11 +169,7 @@ class Resource:
             page = page_model.model_validate(response.json())
             if page.is_last_page:
                 return page.values, None
-            next_start = (
-                page.next_page_start
-                if page.next_page_start is not None
-                else page.start + page.limit
-            )
+            next_start = page.next_page_start if page.next_page_start is not None else page.start + page.limit
             return page.values, next_start
 
         return PageIterator(fetch_page, start=start)

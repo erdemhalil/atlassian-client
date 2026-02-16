@@ -467,12 +467,7 @@ class AsyncContentPropertyResource(ConfluenceAsyncResource):
         return await self._delete(DELETE_2.path.format(id=id, key=key))
 
     async def find_by_key(
-        self,
-        id: str,
-        key: str,
-        *,
-        expand: str | None = None,
-        limit: str | None = None
+        self, id: str, key: str, *, expand: str | None = None, limit: str | None = None
     ) -> JsonContentProperty:
         """Find content property by key"""
         return await self._get(
@@ -489,12 +484,7 @@ class AsyncContentPropertyResource(ConfluenceAsyncResource):
         )
 
     async def update_1(
-        self,
-        id: str,
-        key: str,
-        body: JsonContentProperty,
-        *,
-        expand: str | None = None
+        self, id: str, key: str, body: JsonContentProperty, *, expand: str | None = None
     ) -> JsonContentProperty:
         """Update content property"""
         return await self._put(

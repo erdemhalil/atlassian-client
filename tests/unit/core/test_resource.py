@@ -22,9 +22,7 @@ class _TestResource(AsyncResource):
 class _FakeClient(AsyncBaseClient):
     def __init__(self, response: httpx.Response) -> None:
         self._response = response
-        self.calls: list[
-            tuple[str, str, Mapping[str, Any] | None, Any, Any, Mapping[str, str] | None]
-        ] = []
+        self.calls: list[tuple[str, str, Mapping[str, Any] | None, Any, Any, Mapping[str, str] | None]] = []
 
     async def _request(
         self,
