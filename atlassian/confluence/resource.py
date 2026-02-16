@@ -32,12 +32,32 @@ class ConfluenceAsyncResource(AsyncResource):
         start: int = 0,
         limit: int = 25,
     ) -> AsyncPageIterator[T]:
+        return self._request_paged(
+            "GET",
+            path,
+            params=params,
+            model=model,
+            start=start,
+            limit=limit,
+        )
+
+    def _request_paged(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: Mapping[str, Any] | None = None,
+        json: Any = None,
+        model: type[T],
+        start: int = 0,
+        limit: int = 25,
+    ) -> AsyncPageIterator[T]:
         page_model = ConfluencePage[model]  # type: ignore[valid-type]
 
         async def fetch_page(page_start: int) -> tuple[list[T], int | None]:
             merged: dict[str, Any] = {**(params or {}), "start": page_start, "limit": limit}
             merged = {k: v for k, v in merged.items() if v is not None}
-            response = await self._client._request("GET", path, params=merged)
+            response = await self._client._request(method, path, params=merged, json=json)
             page = page_model.model_validate(response.json())
             if not page.has_next:
                 return page.results, None
@@ -61,12 +81,32 @@ class ConfluenceResource(Resource):
         start: int = 0,
         limit: int = 25,
     ) -> PageIterator[T]:
+        return self._request_paged(
+            "GET",
+            path,
+            params=params,
+            model=model,
+            start=start,
+            limit=limit,
+        )
+
+    def _request_paged(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: Mapping[str, Any] | None = None,
+        json: Any = None,
+        model: type[T],
+        start: int = 0,
+        limit: int = 25,
+    ) -> PageIterator[T]:
         page_model = ConfluencePage[model]  # type: ignore[valid-type]
 
         def fetch_page(page_start: int) -> tuple[list[T], int | None]:
             merged: dict[str, Any] = {**(params or {}), "start": page_start, "limit": limit}
             merged = {k: v for k, v in merged.items() if v is not None}
-            response = self._client._request("GET", path, params=merged)
+            response = self._client._request(method, path, params=merged, json=json)
             page = page_model.model_validate(response.json())
             if not page.has_next:
                 return page.results, None

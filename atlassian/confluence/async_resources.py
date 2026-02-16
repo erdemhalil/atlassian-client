@@ -1,4 +1,4 @@
-"""Confluence Data Center async resource classes.
+"""Confluence Data Center resource classes.
 
 Auto-generated scaffold from the OpenAPI spec. Safe to hand-edit.
 """
@@ -429,7 +429,14 @@ class AsyncContentLabelsResource(ConfluenceAsyncResource):
 
     def add_labels(self, id: str, body: Label, *, start: int = 0, limit: int = 25) -> AsyncPageIterator[Label]:
         """Add Labels"""
-        return self._get_paged(ADD_LABELS.path.format(id=id), model=Label, start=start, limit=limit)
+        return self._request_paged(
+            "POST",
+            ADD_LABELS.path.format(id=id),
+            json=body.model_dump(by_alias=True, exclude_none=True),
+            model=Label,
+            start=start,
+            limit=limit,
+        )
 
     async def delete_label(self, id: str, label: str) -> None:
         """Delete label"""
@@ -467,7 +474,12 @@ class AsyncContentPropertyResource(ConfluenceAsyncResource):
         return await self._delete(DELETE_2.path.format(id=id, key=key))
 
     async def find_by_key(
-        self, id: str, key: str, *, expand: str | None = None, limit: str | None = None
+        self,
+        id: str,
+        key: str,
+        *,
+        expand: str | None = None,
+        limit: str | None = None,
     ) -> JsonContentProperty:
         """Find content property by key"""
         return await self._get(
@@ -484,7 +496,12 @@ class AsyncContentPropertyResource(ConfluenceAsyncResource):
         )
 
     async def update_1(
-        self, id: str, key: str, body: JsonContentProperty, *, expand: str | None = None
+        self,
+        id: str,
+        key: str,
+        body: JsonContentProperty,
+        *,
+        expand: str | None = None,
     ) -> JsonContentProperty:
         """Update content property"""
         return await self._put(
@@ -505,7 +522,8 @@ class AsyncContentRestrictionsResource(ConfluenceAsyncResource):
         limit: int = 25,
     ) -> AsyncPageIterator[OperationRestriction]:
         """Update restrictions"""
-        return self._get_paged(
+        return self._request_paged(
+            "PUT",
             UPDATE_RESTRICTIONS.path.format(id=id),
             params={"expand": expand},
             model=OperationRestriction,

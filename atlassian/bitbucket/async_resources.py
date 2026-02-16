@@ -1,4 +1,4 @@
-"""Bitbucket Data Center async resource classes.
+"""Bitbucket Data Center resource classes.
 
 Auto-generated scaffold from the OpenAPI spec. Safe to hand-edit.
 """

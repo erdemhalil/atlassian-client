@@ -8,6 +8,7 @@ from atlassian.confluence.async_resources import (
     AsyncContentResource,
     AsyncSpaceResource,
 )
+from atlassian.confluence.models import Label
 from atlassian.core.auth import BasicAuth, TokenAuth
 
 
@@ -162,4 +163,39 @@ async def test_confluence_pagination_stops_without_next_link() -> None:
 
     assert len(values) == 1
     assert calls["index"] == 1
+    await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_add_labels_uses_post_and_sends_body_for_paged_response() -> None:
+    requests: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"name": "label", "prefix": "my"}],
+                "start": 0,
+                "limit": 25,
+                "size": 1,
+                "_links": {},
+            },
+        )
+
+    client = AsyncConfluenceClient(
+        url="https://confluence.example.com",
+        transport=httpx.MockTransport(handler),
+    )
+
+    iterator = client.content_labels.add_labels("123", Label(prefix="my", name="label"))
+    values = [item async for item in iterator]
+
+    assert len(values) == 1
+    assert requests
+    assert requests[0].method == "POST"
+    assert requests[0].url.params["start"] == "0"
+    assert requests[0].url.params["limit"] == "25"
+    assert requests[0].content.decode("utf-8") == '{"prefix":"my","name":"label"}'
+
     await client.aclose()

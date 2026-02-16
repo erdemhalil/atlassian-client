@@ -27,7 +27,7 @@ line-length = 120
 extend-exclude = ["atlassian/*/models.py"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM", "I", "N"]
+select = ["E", "F", "I", "UP", "B", "SIM", "N"]
 
 [tool.unasyncd]
 transform_docstrings = true
